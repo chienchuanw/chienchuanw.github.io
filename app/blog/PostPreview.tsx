@@ -5,11 +5,24 @@ const PostPreview = () => {
     <section className="flex justify-center mt-10">
       <div className="container space-y-4">
         <div className="flex justify-between gap-4">
-          <div className="bg-blue-500 w-9/12 h-[500px]">
+          <div className="bg-neutral-500 w-9/12 h-[500px]">
             <Image />
           </div>
-          <div className="bg-red-500 w-3/12 h-[500px]">
-            <Image />
+          <div className="bg-black w-3/12 h-[500px] relative">
+            <button className="bg-neutral-50 text-neutral-950 py-2 px-4 rounded-full flex items-center justify-center gap-1 w-fit absolute bottom-10 left-10 text-sm">
+              read more
+              <span>
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  height="16px"
+                  width="16px"
+                  viewBox="0 -960 960 960"
+                  fill="#fffff"
+                >
+                  <path d="m216-160-56-56 464-464H360v-80h400v400h-80v-264L216-160Z" />
+                </svg>
+              </span>
+            </button>
           </div>
         </div>
         <div>

@@ -18,7 +18,7 @@ const Navbar = () => {
       <div className="container grid grid-cols-3 items-center">
         <div className="">
           <Avatar>
-            <AvatarImage src="https://github.com/shadcn.png" />
+            <AvatarImage src="/images/avatar.jpg" className="object-cover" />
             <AvatarFallback>CN</AvatarFallback>
           </Avatar>
         </div>
