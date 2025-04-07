@@ -2,12 +2,18 @@ type PostPreviewProps = {
   title: string;
   subtitle: string;
   content: string;
+  slug: string;
+  tags?: string[];
 };
+
+import Link from 'next/link';
 
 const PostPreview: React.FC<PostPreviewProps> = ({
   title,
   subtitle,
   content,
+  slug,
+  tags = [],
 }) => {
   return (
     <section className="flex justify-center mt-10">
@@ -15,7 +21,7 @@ const PostPreview: React.FC<PostPreviewProps> = ({
         <div className="flex justify-between gap-4">
           <div className="bg-neutral-500 w-9/12 h-[500px]"></div>
           <div className="bg-black w-3/12 h-[500px] relative">
-            <button className="bg-neutral-50 text-neutral-950 py-2 px-4 rounded-full flex items-center justify-center gap-1 w-fit absolute bottom-10 left-10 text-sm">
+            <Link href={`/blog/${slug}`} className="bg-neutral-50 text-neutral-950 py-2 px-4 rounded-full flex items-center justify-center gap-1 w-fit absolute bottom-10 left-10 text-sm">
               read more
               <span>
                 <svg
@@ -28,7 +34,7 @@ const PostPreview: React.FC<PostPreviewProps> = ({
                   <path d="m216-160-56-56 464-464H360v-80h400v400h-80v-264L216-160Z" />
                 </svg>
               </span>
-            </button>
+            </Link>
           </div>
         </div>
         <div>
@@ -37,9 +43,20 @@ const PostPreview: React.FC<PostPreviewProps> = ({
             <h1 className="font-medium text-3xl pl-2">{title}</h1>
           </div>
           <div className="py-6 border-b border-neutral-300 flex w-9/12 px-10 justify-center">
-            <h2 className="text-sm font-bold text-neutral-950 w-1/3 pr-10">
-              {subtitle}
-            </h2>
+            <div className="w-1/3 pr-10">
+              <h2 className="text-sm font-bold text-neutral-950 mb-2">
+                {subtitle}
+              </h2>
+              {tags.length > 0 && (
+                <div className="flex flex-wrap gap-2 mt-2">
+                  {tags.map((tag, index) => (
+                    <span key={index} className="text-xs bg-neutral-100 px-2 py-1 rounded-full">
+                      {tag}
+                    </span>
+                  ))}
+                </div>
+              )}
+            </div>
             <p className="text-sm text-neutral-700 w-2/3 flex-shrink-0">
               {content}
             </p>
