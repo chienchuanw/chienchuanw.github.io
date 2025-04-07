@@ -1,0 +1,135 @@
+import Link from "next/link";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Github, Mail, Linkedin, ArrowRight } from "lucide-react";
+
+export default function Contact() {
+  return (
+    <div className="flex min-h-screen flex-col items-center justify-center p-4 md:p-8">
+      <main className="max-w-2xl w-full space-y-8 mx-auto">
+        {/* Profile Section */}
+        <section className="flex flex-col items-center space-y-4 text-center md:items-start md:text-left">
+          <Avatar className="h-24 w-24 md:h-32 md:w-32">
+            <AvatarImage src="/images/avatar.jpg" alt="Chien Chuan" />
+            <AvatarFallback>CC</AvatarFallback>
+          </Avatar>
+          
+          <div className="space-y-2">
+            <h1 className="text-3xl font-bold tracking-tight md:text-4xl">Chien Chuan W</h1>
+            <p className="text-muted-foreground max-w-md">
+              Web Developer specializing in Python and TypeScript. Currently working with Ruby on Rails.
+            </p>
+          </div>
+          
+          <div className="flex flex-wrap gap-2 justify-center md:justify-start">
+            <Badge variant="secondary">TypeScript</Badge>
+            <Badge variant="secondary">Python</Badge>
+            <Badge variant="secondary">Ruby on Rails</Badge>
+            <Badge variant="secondary">Next.js</Badge>
+          </div>
+        </section>
+        
+        {/* Contact Information */}
+        <section className="space-y-4">
+          <div className="h-px w-full bg-border" />
+          
+          <div className="space-y-4">
+            <h2 className="text-xl font-semibold">聯絡資訊</h2>
+            <p className="text-muted-foreground">
+              如果您對我的工作有興趣，或想討論合作機會，請透過以下方式與我聯繫。
+            </p>
+            
+            <div className="grid gap-4">
+              <div className="flex items-center gap-2">
+                <Mail className="h-5 w-5" />
+                <a href="mailto:contact@chienchuan.com" className="hover:underline">
+                  contact@chienchuan.com
+                </a>
+              </div>
+              
+              <div className="flex items-center gap-2">
+                <Github className="h-5 w-5" />
+                <a href="https://github.com/chienchuanw" target="_blank" rel="noopener noreferrer" className="hover:underline">
+                  github.com/chienchuanw
+                </a>
+              </div>
+              
+              <div className="flex items-center gap-2">
+                <Linkedin className="h-5 w-5" />
+                <a href="https://linkedin.com/in/chienchuanw" target="_blank" rel="noopener noreferrer" className="hover:underline">
+                  linkedin.com/in/chienchuanw
+                </a>
+              </div>
+            </div>
+          </div>
+        </section>
+        
+        {/* Main Links */}
+        <section className="space-y-4">
+          <div className="h-px w-full bg-border" />
+          
+          <div className="grid gap-2">
+            <Link href="/" className="group">
+              <Button variant="ghost" className="w-full justify-between">
+                <span>首頁</span>
+                <ArrowRight className="h-4 w-4 opacity-0 transition-opacity group-hover:opacity-100" />
+              </Button>
+            </Link>
+            
+            <Link href="/blog" className="group">
+              <Button variant="ghost" className="w-full justify-between">
+                <span>Blog</span>
+                <ArrowRight className="h-4 w-4 opacity-0 transition-opacity group-hover:opacity-100" />
+              </Button>
+            </Link>
+            
+            <Link href="/projects" className="group">
+              <Button variant="ghost" className="w-full justify-between">
+                <span>Projects</span>
+                <ArrowRight className="h-4 w-4 opacity-0 transition-opacity group-hover:opacity-100" />
+              </Button>
+            </Link>
+            
+            <Link href="/about" className="group">
+              <Button variant="ghost" className="w-full justify-between">
+                <span>About</span>
+                <ArrowRight className="h-4 w-4 opacity-0 transition-opacity group-hover:opacity-100" />
+              </Button>
+            </Link>
+          </div>
+        </section>
+        
+        {/* Social Links */}
+        <section className="pt-4">
+          <div className="flex justify-center gap-4 md:justify-start">
+            <Button variant="outline" size="icon" asChild>
+              <a href="https://github.com/chienchuanw" target="_blank" rel="noopener noreferrer">
+                <Github className="h-5 w-5" />
+                <span className="sr-only">GitHub</span>
+              </a>
+            </Button>
+            
+            <Button variant="outline" size="icon" asChild>
+              <a href="https://linkedin.com/in/chienchuanw" target="_blank" rel="noopener noreferrer">
+                <Linkedin className="h-5 w-5" />
+                <span className="sr-only">LinkedIn</span>
+              </a>
+            </Button>
+            
+            <Button variant="outline" size="icon" asChild>
+              <a href="mailto:contact@chienchuan.com">
+                <Mail className="h-5 w-5" />
+                <span className="sr-only">Email</span>
+              </a>
+            </Button>
+          </div>
+        </section>
+      </main>
+      
+      <footer className="mt-auto pt-8 pb-4 text-center text-sm text-muted-foreground">
+        <p>© {new Date().getFullYear()} Chien Chuan W. All rights reserved.</p>
+      </footer>
+    </div>
+  );
+}

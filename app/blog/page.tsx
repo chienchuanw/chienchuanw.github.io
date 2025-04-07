@@ -3,6 +3,8 @@
 import { useEffect, useState } from 'react';
 import PostPreview from "@/app/blog/PostPreview";
 import { getAllPosts, Post } from "@/lib/posts";
+import Link from "next/link";
+import { ArrowLeft } from "lucide-react";
 
 export default function Blog() {
   const [posts, setPosts] = useState<Post[]>([]);
@@ -16,27 +18,35 @@ export default function Blog() {
     setPosts(fetchedPosts);
   }, []);
 
-  if (posts.length === 0) {
-    return (
-      <div className="container mx-auto py-20 text-center">
-        <h2 className="text-2xl font-medium">目前還沒有發布的文章</h2>
-        <p className="mt-4 text-neutral-600">文章將很快上線，請稍後再來查看</p>
-      </div>
-    );
-  }
-
   return (
     <div className="container mx-auto py-10">
-      {posts.map((post) => (
-        <PostPreview
-          key={post.id}
-          title={post.title}
-          subtitle={post.excerpt}
-          content={post.content}
-          slug={post.slug}
-          tags={post.tags}
-        />
-      ))}
+      <div className="mb-8">
+        <Link href="/" className="inline-flex items-center text-neutral-600 hover:text-neutral-900">
+          <ArrowLeft className="w-4 h-4 mr-1" /> 返回首頁
+        </Link>
+      </div>
+      
+      <h1 className="text-3xl font-bold mb-10">所有文章</h1>
+      
+      {posts.length === 0 ? (
+        <div className="py-10 text-center">
+          <h2 className="text-2xl font-medium">目前還沒有發布的文章</h2>
+          <p className="mt-4 text-neutral-600">文章將很快上線，請稍後再來查看</p>
+        </div>
+      ) : (
+        <div className="space-y-10">
+          {posts.map((post) => (
+            <PostPreview
+              key={post.id}
+              title={post.title}
+              subtitle={post.excerpt}
+              content={post.content}
+              slug={post.slug}
+              tags={post.tags}
+            />
+          ))}
+        </div>
+      )}
     </div>
   );
 }
