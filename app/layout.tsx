@@ -13,11 +13,14 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  // 使用動態判斷當前路徑的方式處理（客戶端會做 hydration）
   return (
     <html lang="en">
-      <body>
-        <Navbar />
-        <Tags />
+      <body className="min-h-screen bg-background font-sans antialiased root-body">
+        <div id="nav-container" data-hide-on-admin="true">
+          <Navbar />
+          <Tags />
+        </div>
         <main>{children}</main>
       </body>
     </html>
