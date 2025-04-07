@@ -1,92 +1,88 @@
+'use client';
+
+import { useEffect, useState } from 'react';
+import PostPreview from "@/app/blog/PostPreview";
+import { getAllPosts, Post } from "@/lib/posts";
 import Link from "next/link";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Github, Mail, Linkedin, ArrowRight } from "lucide-react";
+import { Github, Mail, Linkedin } from "lucide-react";
 
 export default function Home() {
+  const [posts, setPosts] = useState<Post[]>([]);
+
+  useEffect(() => {
+    // 獲取所有已發布的文章並按更新日期排序
+    const fetchedPosts = getAllPosts()
+      .filter(post => post.published)
+      .sort((a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime());
+    
+    setPosts(fetchedPosts);
+  }, []);
+
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center p-4 md:p-8">
-      <main className="max-w-2xl w-full space-y-8 mx-auto">
-        {/* Profile Section */}
-        <section className="flex flex-col items-center space-y-4 text-center md:items-start md:text-left">
-          <Avatar className="h-24 w-24 md:h-32 md:w-32">
-            <AvatarImage src="/images/avatar.jpg" alt="Chien Chuan" />
-            <AvatarFallback>CC</AvatarFallback>
-          </Avatar>
+    <div className="min-h-screen flex flex-col">
+      {/* Header with nav links */}
+      <header className="border-b py-4">
+        <div className="container mx-auto flex justify-between items-center px-4">
+          <h1 className="text-2xl font-bold">Chien Chuan W</h1>
           
-          <div className="space-y-2">
-            <h1 className="text-3xl font-bold tracking-tight md:text-4xl">Chien Chuan W</h1>
-            <p className="text-muted-foreground max-w-md">
-              Web Developer specializing in Python and TypeScript. Currently working with Ruby on Rails.
-            </p>
-          </div>
-          
-          <div className="flex flex-wrap gap-2 justify-center md:justify-start">
-            <Badge variant="secondary">TypeScript</Badge>
-            <Badge variant="secondary">Python</Badge>
-            <Badge variant="secondary">Ruby on Rails</Badge>
-            <Badge variant="secondary">Next.js</Badge>
-          </div>
-        </section>
-        
-        {/* Main Links */}
-        <section className="space-y-4">
-          <div className="h-px w-full bg-border" />
-          
-          <div className="grid gap-2">
-            <Link href="/blog" className="group">
-              <Button variant="ghost" className="w-full justify-between">
-                <span>Blog</span>
-                <ArrowRight className="h-4 w-4 opacity-0 transition-opacity group-hover:opacity-100" />
-              </Button>
+          <nav className="flex gap-6">
+            <Link href="/contact" className="hover:text-gray-600 transition-colors">
+              Contact
             </Link>
-            
-            <Link href="/projects" className="group">
-              <Button variant="ghost" className="w-full justify-between">
-                <span>Projects</span>
-                <ArrowRight className="h-4 w-4 opacity-0 transition-opacity group-hover:opacity-100" />
-              </Button>
+            <Link href="/projects" className="hover:text-gray-600 transition-colors">
+              Projects
             </Link>
-            
-            <Link href="/about" className="group">
-              <Button variant="ghost" className="w-full justify-between">
-                <span>About</span>
-                <ArrowRight className="h-4 w-4 opacity-0 transition-opacity group-hover:opacity-100" />
-              </Button>
+            <Link href="/about" className="hover:text-gray-600 transition-colors">
+              About
             </Link>
+          </nav>
+        </div>
+      </header>
+
+      <main className="flex-grow">
+        {posts.length === 0 ? (
+          <div className="container mx-auto py-20 text-center">
+            <h2 className="text-2xl font-medium">目前還沒有發布的文章</h2>
+            <p className="mt-4 text-neutral-600">文章將很快上線，請稍後再來查看</p>
           </div>
-        </section>
-        
-        {/* Social Links */}
-        <section className="pt-4">
-          <div className="flex justify-center gap-4 md:justify-start">
-            <Button variant="outline" size="icon" asChild>
-              <a href="https://github.com/chienchuanw" target="_blank" rel="noopener noreferrer">
-                <Github className="h-5 w-5" />
-                <span className="sr-only">GitHub</span>
-              </a>
-            </Button>
-            
-            <Button variant="outline" size="icon" asChild>
-              <a href="https://linkedin.com/in/chienchuanw" target="_blank" rel="noopener noreferrer">
-                <Linkedin className="h-5 w-5" />
-                <span className="sr-only">LinkedIn</span>
-              </a>
-            </Button>
-            
-            <Button variant="outline" size="icon" asChild>
-              <a href="mailto:contact@chienchuan.com">
-                <Mail className="h-5 w-5" />
-                <span className="sr-only">Email</span>
-              </a>
-            </Button>
+        ) : (
+          <div className="container mx-auto py-10">
+            <h2 className="text-3xl font-bold mb-10">最新文章</h2>
+            {posts.map((post) => (
+              <PostPreview
+                key={post.id}
+                title={post.title}
+                subtitle={post.excerpt}
+                content={post.content}
+                slug={post.slug}
+                tags={post.tags}
+              />
+            ))}
           </div>
-        </section>
+        )}
       </main>
       
-      <footer className="mt-auto pt-8 pb-4 text-center text-sm text-muted-foreground">
-        <p>© {new Date().getFullYear()} Chien Chuan W. All rights reserved.</p>
+      <footer className="border-t py-8 mt-auto">
+        <div className="container mx-auto px-4">
+          <div className="flex flex-col md:flex-row justify-between items-center gap-4">
+            <p className="text-sm text-muted-foreground">
+              © {new Date().getFullYear()} Chien Chuan W. All rights reserved.
+            </p>
+            
+            <div className="flex gap-4">
+              <a href="https://github.com/chienchuanw" target="_blank" rel="noopener noreferrer" aria-label="GitHub">
+                <Github className="h-5 w-5" />
+              </a>
+              <a href="https://linkedin.com/in/chienchuanw" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn">
+                <Linkedin className="h-5 w-5" />
+              </a>
+              <a href="mailto:contact@chienchuan.com" aria-label="Email">
+                <Mail className="h-5 w-5" />
+              </a>
+            </div>
+          </div>
+        </div>
       </footer>
     </div>
   );
