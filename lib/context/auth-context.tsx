@@ -1,0 +1,184 @@
+"use client";
+
+import React, {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  ReactNode,
+} from "react";
+
+// 用戶類型定義
+interface User {
+  id: number;
+  email: string;
+  username: string;
+  fullName?: string;
+  role: string;
+  isActive: boolean;
+}
+
+// 認證上下文類型
+interface AuthContextType {
+  user: User | null;
+  loading: boolean;
+  error: string | null;
+  login: (email: string, password: string) => Promise<void>;
+  register: (userData: {
+    email: string;
+    username: string;
+    password: string;
+    fullName?: string;
+  }) => Promise<void>;
+  logout: () => Promise<void>;
+}
+
+// 創建認證上下文
+const AuthContext = createContext<AuthContextType | undefined>(undefined);
+
+// AuthProvider 組件
+export function AuthProvider({ children }: { children: ReactNode }) {
+  const [user, setUser] = useState<User | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  // 獲取當前用戶
+  useEffect(() => {
+    const fetchCurrentUser = async () => {
+      try {
+        setLoading(true);
+        const response = await fetch("/api/auth/me");
+
+        if (response.ok) {
+          const data = await response.json();
+          setUser(data.user);
+        } else {
+          // 如果沒有登入或會話已過期則返回 null
+          setUser(null);
+        }
+      } catch (err) {
+        console.error("獲取當前用戶時出錯:", err);
+        setError("無法獲取用戶數據");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchCurrentUser();
+  }, []);
+
+  // 登入函數
+  const login = async (email: string, password: string) => {
+    setLoading(true);
+    setError(null);
+
+    try {
+      const response = await fetch("/api/auth/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email, password }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || "登入失敗");
+      }
+
+      setUser(data.user);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "登入過程中發生錯誤");
+      throw err;
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // 註冊函數
+  const register = async (userData: {
+    email: string;
+    username: string;
+    password: string;
+    fullName?: string;
+  }) => {
+    setLoading(true);
+    setError(null);
+
+    try {
+      const response = await fetch("/api/auth/register", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(userData),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || "註冊失敗");
+      }
+
+      // 註冊成功後不自動登入，需要用戶手動登入
+      setUser(null);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "註冊過程中發生錯誤");
+      throw err;
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // 登出函數
+  const logout = async () => {
+    setLoading(true);
+    setError(null);
+
+    try {
+      const response = await fetch("/api/auth/logout", {
+        method: "POST",
+      });
+
+      if (!response.ok) {
+        const data = await response.json();
+        throw new Error(data.error || "登出失敗");
+      }
+
+      // 清除用戶狀態
+      setUser(null);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "登出過程中發生錯誤");
+      throw err;
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <AuthContext.Provider
+      value={{
+        user,
+        loading,
+        error,
+        login,
+        register,
+        logout,
+      }}
+    >
+      {children}
+    </AuthContext.Provider>
+  );
+}
+
+// 自定義 Hook 用於在組件中使用認證上下文
+export function useAuth() {
+  const context = useContext(AuthContext);
+
+  if (context === undefined) {
+    throw new Error("useAuth 必須在 AuthProvider 內部使用");
+  }
+
+  return context;
+}

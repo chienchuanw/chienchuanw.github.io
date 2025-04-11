@@ -1,0 +1,104 @@
+'use client';
+
+import React from 'react';
+import { useAuth } from '@/lib/context/auth-context';
+import { useRouter } from 'next/navigation';
+
+export default function ProfilePage() {
+  const { user, logout, loading } = useAuth();
+  const router = useRouter();
+  
+  // 處理登出
+  const handleLogout = async () => {
+    try {
+      await logout();
+      router.push('/');
+      router.refresh();
+    } catch (error) {
+      console.error('登出失敗:', error);
+    }
+  };
+  
+  if (loading) {
+    return (
+      <div className="container py-10">
+        <div className="flex justify-center items-center h-[60vh]">
+          <p className="text-lg">載入中...</p>
+        </div>
+      </div>
+    );
+  }
+  
+  return (
+    <div className="container py-10">
+      <div className="max-w-3xl mx-auto">
+        <h1 className="text-3xl font-bold mb-6">用戶資料</h1>
+        
+        {user ? (
+          <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md">
+            <div className="space-y-4">
+              <div className="flex items-center space-x-4">
+                <div className="h-16 w-16 rounded-full bg-gray-200 flex items-center justify-center">
+                  <span className="text-2xl font-semibold">
+                    {user.username.charAt(0).toUpperCase()}
+                  </span>
+                </div>
+                <div>
+                  <h2 className="text-xl font-semibold">{user.fullName || user.username}</h2>
+                  <p className="text-gray-500 dark:text-gray-400">{user.email}</p>
+                </div>
+              </div>
+              
+              <div className="border-t border-gray-200 dark:border-gray-700 pt-4 mt-4">
+                <h3 className="font-medium mb-2">帳戶信息</h3>
+                <dl className="grid grid-cols-1 gap-x-4 gap-y-3 sm:grid-cols-2">
+                  <div>
+                    <dt className="text-sm text-gray-500 dark:text-gray-400">用戶名</dt>
+                    <dd className="mt-1">{user.username}</dd>
+                  </div>
+                  <div>
+                    <dt className="text-sm text-gray-500 dark:text-gray-400">電子郵件</dt>
+                    <dd className="mt-1">{user.email}</dd>
+                  </div>
+                  <div>
+                    <dt className="text-sm text-gray-500 dark:text-gray-400">姓名</dt>
+                    <dd className="mt-1">{user.fullName || '-'}</dd>
+                  </div>
+                  <div>
+                    <dt className="text-sm text-gray-500 dark:text-gray-400">角色</dt>
+                    <dd className="mt-1">{user.role}</dd>
+                  </div>
+                </dl>
+              </div>
+              
+              <div className="flex justify-end space-x-3 pt-4 mt-6 border-t border-gray-200 dark:border-gray-700">
+                <button
+                  onClick={() => router.push('/profile/edit')}
+                  className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                >
+                  編輯個人資料
+                </button>
+                <button
+                  onClick={handleLogout}
+                  className="px-4 py-2 text-sm font-medium text-white bg-red-600 border border-transparent rounded-md shadow-sm hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
+                >
+                  登出
+                </button>
+              </div>
+            </div>
+          </div>
+        ) : (
+          <div className="text-center py-12">
+            <p className="text-lg mb-4">您尚未登入</p>
+            <button
+              onClick={() => router.push('/login')}
+              className="px-4 py-2 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-md shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+            >
+              前往登入
+            </button>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
