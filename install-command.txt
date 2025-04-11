@@ -1,0 +1,3 @@
+npm install drizzle-orm postgres @neondatabase/serverless bcrypt
+npm install -D drizzle-kit
+npm install @types/bcrypt --save-dev

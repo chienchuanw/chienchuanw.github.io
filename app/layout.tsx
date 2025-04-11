@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import "./globals.css";
 import Navbar from "@/components/shared/Navbar";
 import Tags from "@/components/shared/Tags";
+import { AuthProvider } from "@/lib/context/auth-context";
+import { AuthStatusButton } from "@/components/auth/auth-status-button";
 
 export const metadata: Metadata = {
   title: "shadcn blog",
@@ -17,11 +19,14 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className="min-h-screen bg-background font-sans antialiased root-body">
-        <div id="nav-container" data-hide-on-admin="true">
-          <Navbar />
-          <Tags />
-        </div>
-        <main>{children}</main>
+        <AuthProvider>
+          <div id="nav-container" data-hide-on-admin="true">
+            <Navbar />
+            <Tags />
+          </div>
+          <main>{children}</main>
+          <AuthStatusButton />
+        </AuthProvider>
       </body>
     </html>
   );

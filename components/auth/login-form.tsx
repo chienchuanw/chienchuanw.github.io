@@ -1,140 +1,132 @@
-'use client';
+"use client";
+import React, { useState } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
+import { useRouter } from "next/navigation";
+import { useAuth } from "@/lib/context/auth-context";
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import * as z from 'zod';
-
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from '@/components/ui/form';
-import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
-import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from '@/components/ui/card';
-import { useToast } from '@/components/ui/use-toast';
-import { authenticate, setAuthStatus } from '@/lib/auth/auth-utils';
-import { Eye, EyeOff } from 'lucide-react';
-
-// 定義登入表單的驗證規則
+// 表單驗證模式
 const loginSchema = z.object({
-  username: z.string().min(1, { message: '請輸入使用者名稱' }),
-  password: z.string().min(1, { message: '請輸入密碼' }),
+  email: z.string().email("請輸入有效的電子郵件地址"),
+  password: z.string().min(6, "密碼至少需要6個字符"),
 });
 
 type LoginFormValues = z.infer<typeof loginSchema>;
 
 export function LoginForm() {
+  const { login } = useAuth();
   const router = useRouter();
-  const { toast } = useToast();
-  const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  // 初始化表單
-  const form = useForm<LoginFormValues>({
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
-      username: '',
-      password: '',
+      email: "",
+      password: "",
     },
   });
 
-  // 處理表單提交
-  function onSubmit(data: LoginFormValues) {
-    setIsLoading(true);
-    
-    // 模擬網絡延遲
-    setTimeout(() => {
-      const { username, password } = data;
-      const isAuthenticated = authenticate(username, password);
-      
-      if (isAuthenticated) {
-        // 設置認證狀態
-        setAuthStatus(true);
-        
-        toast({
-          title: "登入成功",
-          description: "歡迎回來，管理員。",
-        });
-        
-        // 登入成功後重定向到管理後台
-        // 使用 Next.js 路由
-        router.push('/admin/dashboard');
-      } else {
-        toast({
-          title: "登入失敗",
-          description: "使用者名稱或密碼錯誤。",
-          variant: "destructive",
-        });
-      }
-      
+  const onSubmit = async (data: LoginFormValues) => {
+    try {
+      setIsLoading(true);
+      setError(null);
+
+      await login(data.email, data.password);
+
+      // 登入成功後重定向到首頁
+      router.push("/");
+      router.refresh();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "登入失敗，請稍後再試");
+    } finally {
       setIsLoading(false);
-    }, 1000);
-  }
+    }
+  };
 
   return (
-    <Card className="w-full max-w-md mx-auto">
-      <CardHeader>
-        <CardTitle>管理員登入</CardTitle>
-        <CardDescription>
-          請輸入您的管理員憑證以進入後台。
-        </CardDescription>
-      </CardHeader>
-      <CardContent>
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-            <FormField
-              control={form.control}
-              name="username"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>使用者名稱</FormLabel>
-                  <FormControl>
-                    <Input placeholder="輸入使用者名稱" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="password"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>密碼</FormLabel>
-                  <FormControl>
-                    <div className="relative">
-                      <Input
-                        type={showPassword ? "text" : "password"}
-                        placeholder="輸入密碼"
-                        {...field}
-                      />
-                      <Button
-                        type="button"
-                        variant="ghost"
-                        size="icon"
-                        className="absolute right-0 top-0 h-full"
-                        onClick={() => setShowPassword(!showPassword)}
-                      >
-                        {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
-                      </Button>
-                    </div>
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <Button type="submit" className="w-full" disabled={isLoading}>
-              {isLoading ? "登入中..." : "登入"}
-            </Button>
-          </form>
-        </Form>
-      </CardContent>
-    </Card>
+    <div className="space-y-6">
+      <div className="space-y-2 text-center">
+        <h1 className="text-3xl font-bold">登入</h1>
+        <p className="text-gray-500 dark:text-gray-400">
+          輸入您的信息以登入您的帳戶
+        </p>
+      </div>
+
+      {error && (
+        <div className="p-3 rounded-md bg-red-50 text-red-700 border border-red-200">
+          {error}
+        </div>
+      )}
+
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+        <div className="space-y-2">
+          <label
+            className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+            htmlFor="email"
+          >
+            電子郵件
+          </label>
+          <input
+            className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+            id="email"
+            placeholder="name@example.com"
+            type="email"
+            disabled={isLoading}
+            {...register("email")}
+          />
+          {errors.email && (
+            <p className="text-sm text-red-500">{errors.email.message}</p>
+          )}
+        </div>
+
+        <div className="space-y-2">
+          <div className="flex items-center justify-between">
+            <label
+              className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+              htmlFor="password"
+            >
+              密碼
+            </label>
+            <a
+              className="text-sm text-blue-500 hover:text-blue-700"
+              href="/forgot-password"
+            >
+              忘記密碼?
+            </a>
+          </div>
+          <input
+            className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+            id="password"
+            type="password"
+            disabled={isLoading}
+            {...register("password")}
+          />
+          {errors.password && (
+            <p className="text-sm text-red-500">{errors.password.message}</p>
+          )}
+        </div>
+
+        <button
+          className="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2 w-full"
+          type="submit"
+          disabled={isLoading}
+        >
+          {isLoading ? "登入中..." : "登入"}
+        </button>
+      </form>
+
+      <div className="mt-4 text-center text-sm">
+        還沒有帳戶?{" "}
+        <a className="text-blue-500 hover:text-blue-700" href="/register">
+          註冊
+        </a>
+      </div>
+    </div>
   );
 }
