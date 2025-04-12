@@ -13,6 +13,12 @@ export default function ProfilePage() {
   const handleLogout = async () => {
     try {
       await logout();
+
+      // 觸發 localStorage 事件以確保其他組件（如 Navbar）也能收到通知
+      if (typeof window !== "undefined") {
+        localStorage.setItem("lastAuthChange", Date.now().toString());
+      }
+
       router.push(routes.home);
       router.refresh();
     } catch (error) {
@@ -110,13 +116,13 @@ export default function ProfilePage() {
                   onClick={() => router.push(routes.profileEdit)}
                   className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
                 >
-                  編輯個人資料
+                  Edit Profile
                 </button>
                 <button
                   onClick={handleLogout}
                   className="px-4 py-2 text-sm font-medium text-white bg-red-600 border border-transparent rounded-md shadow-sm hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
                 >
-                  登出
+                  Logout
                 </button>
               </div>
             </div>
