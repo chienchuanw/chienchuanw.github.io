@@ -12,14 +12,13 @@ export default function ProfilePage() {
   // 處理登出
   const handleLogout = async () => {
     try {
+      // 使用 auth-context 的 logout 函數
       await logout();
 
-      // 觸發 localStorage 事件以確保其他組件（如 Navbar）也能收到通知
-      if (typeof window !== "undefined") {
-        localStorage.setItem("lastAuthChange", Date.now().toString());
-      }
-
+      // 重定向到首頁
       router.push(routes.home);
+
+      // 強制刷新頁面以確保狀態更新
       router.refresh();
     } catch (error) {
       console.error("登出失敗:", error);

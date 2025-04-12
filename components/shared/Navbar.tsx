@@ -11,38 +11,45 @@ import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/lib/context/auth-context";
 import { useCurrentUser } from "@/hooks/swr/useCurrentUser";
+import useAuthStore from "@/lib/store/useAuthStore";
 
 import Link from "next/link";
 import routes from "@/lib/routes";
 
 const Navbar = () => {
   const router = useRouter();
+  // 直接使用 useAuthStore 來訂閱登入狀態
+  const isLoggedInFromStore = useAuthStore((state) => state.isLoggedIn);
   const { isLoggedIn, mutate } = useCurrentUser();
   const { logout } = useAuth();
 
-  // 不再需要監聽 localStorage 事件，因為我們現在使用 Zustand 來管理狀態
+  // 使用一個狀態來追蹤當前的登入狀態，結合 Zustand 和 SWR 的狀態
+  // 這樣可以確保即使在 SWR 重新驗證之前，也能反映最新的登入狀態
+  const currentLoggedIn = isLoggedIn || isLoggedInFromStore;
 
   const handleLogout = async () => {
     try {
-      // 使用 Zustand store 的 logout 方法
-      // 這會自動觸發 store 變化，進而觸發所有訂閱的組件重新渲染
+      // 使用 auth-context 的 logout 函數
       await logout();
-      
+
       // 手動重新驗證當前用戶狀態
       await mutate();
 
+      // 重定向到首頁
       router.push(routes.home);
+
+      // 強制刷新頁面以確保狀態更新
       router.refresh();
     } catch (error) {
       console.error("登出失敗:", error);
     }
   };
-  
+
   return (
     <header className="w-full flex justify-center pt-10">
       <div className="container grid grid-cols-3 items-center">
         <div>
-          {isLoggedIn && (
+          {currentLoggedIn && (
             <Avatar>
               <Link href={routes.profile}>
                 <AvatarImage
@@ -80,7 +87,7 @@ const Navbar = () => {
                 <Button asChild variant="link" className="rounded-full">
                   <Link href={routes.contact}>Contact</Link>
                 </Button>
-                {isLoggedIn && (
+                {currentLoggedIn && (
                   <Button
                     variant="link"
                     className="text-red-500 font-bold"

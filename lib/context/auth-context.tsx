@@ -54,6 +54,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     const fetchCurrentUser = async () => {
       try {
+        // 檢查是否有可能已登入，如果沒有登入記錄，則不發送請求
+        const hasAuthStorage =
+          typeof window !== "undefined" &&
+          localStorage.getItem("auth-storage") !== null;
+
+        // 如果沒有登入記錄，則直接設置為未登入狀態
+        if (!hasAuthStorage) {
+          setUser(null);
+          setLoading(false);
+          return;
+        }
+
         setLoading(true);
         const response = await fetch("/api/auth/me");
 
@@ -67,6 +79,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       } catch (err) {
         console.error("獲取當前用戶時出錯:", err);
         setError("無法獲取用戶數據");
+        setUser(null);
       } finally {
         setLoading(false);
       }
@@ -162,6 +175,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setUser(null);
 
       // 直接更新 Zustand 狀態以確保立即同步
+      // 這會觸發 Zustand 的訂閱事件，進而觸發所有使用 useAuthStore 的組件重新渲染
       setZustandUser(null);
       setZustandLoggedIn(false);
 
