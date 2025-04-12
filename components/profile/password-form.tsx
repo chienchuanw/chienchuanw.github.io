@@ -20,12 +20,16 @@ import { toast } from "@/components/ui/use-toast";
 // 密碼表單驗證模式
 const passwordSchema = z
   .object({
-    currentPassword: z.string().min(6, "密碼至少需要6個字符"),
-    newPassword: z.string().min(6, "密碼至少需要6個字符"),
-    confirmPassword: z.string().min(6, "密碼至少需要6個字符"),
+    currentPassword: z
+      .string()
+      .min(6, "Password must be at least 6 characters"),
+    newPassword: z.string().min(6, "Password must be at least 6 characters"),
+    confirmPassword: z
+      .string()
+      .min(6, "Password must be at least 6 characters"),
   })
   .refine((data) => data.newPassword === data.confirmPassword, {
-    message: "新密碼與確認密碼不匹配",
+    message: "New password and confirmation do not match",
     path: ["confirmPassword"],
   });
 
@@ -54,8 +58,8 @@ export default function PasswordForm() {
       await updatePassword(data.currentPassword, data.newPassword);
 
       toast({
-        title: "密碼更新成功",
-        description: "您的密碼已成功更新",
+        title: "Password Updated Successfully",
+        description: "Your password has been successfully updated",
         variant: "success",
       });
 
@@ -63,9 +67,11 @@ export default function PasswordForm() {
       form.reset();
     } catch (error) {
       toast({
-        title: "更新失敗",
+        title: "Update Failed",
         description:
-          error instanceof Error ? error.message : "更新密碼時發生錯誤",
+          error instanceof Error
+            ? error.message
+            : "An error occurred while updating the password",
         variant: "destructive",
       });
     } finally {
@@ -83,12 +89,12 @@ export default function PasswordForm() {
             name="currentPassword"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>當前密碼</FormLabel>
+                <FormLabel>Current Password</FormLabel>
                 <FormControl>
                   <Input
                     {...field}
                     type="password"
-                    placeholder="輸入當前密碼"
+                    placeholder="Enter current password"
                   />
                 </FormControl>
                 <FormMessage />
@@ -102,9 +108,13 @@ export default function PasswordForm() {
             name="newPassword"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>新密碼</FormLabel>
+                <FormLabel>New Password</FormLabel>
                 <FormControl>
-                  <Input {...field} type="password" placeholder="輸入新密碼" />
+                  <Input
+                    {...field}
+                    type="password"
+                    placeholder="Enter new password"
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -117,12 +127,12 @@ export default function PasswordForm() {
             name="confirmPassword"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>確認新密碼</FormLabel>
+                <FormLabel>Confirm New Password</FormLabel>
                 <FormControl>
                   <Input
                     {...field}
                     type="password"
-                    placeholder="再次輸入新密碼"
+                    placeholder="Re-enter new password"
                   />
                 </FormControl>
                 <FormMessage />
@@ -132,7 +142,7 @@ export default function PasswordForm() {
 
           <div className="flex justify-end pt-4">
             <Button type="submit" disabled={isSubmitting}>
-              {isSubmitting ? "更新中..." : "更新密碼"}
+              {isSubmitting ? "Updating..." : "Update Password"}
             </Button>
           </div>
         </form>
