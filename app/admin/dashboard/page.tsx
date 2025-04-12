@@ -21,20 +21,20 @@ export default function AdminDashboardPage() {
   const { toast } = useToast();
   const [isLoggingOut, setIsLoggingOut] = useState(false);
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
     setIsLoggingOut(true);
 
-    // 模擬網絡延遲
-    setTimeout(() => {
-      logout();
-      toast({
-        title: "已登出",
-        description: "您已成功登出管理員後台。",
-      });
+    try {
+      await logout();
+      // toast 會在 logout 函數中自動調用
+      
       // 使用 Next.js 路由
-      router.push(routes.login);
+      router.push('/login'); // 使用直接的路徑，避免 routes 定義的問題
+    } catch (error) {
+      console.error('登出錯誤:', error);
+    } finally {
       setIsLoggingOut(false);
-    }, 500);
+    }
   };
 
   return (

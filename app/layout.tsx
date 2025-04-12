@@ -4,6 +4,7 @@ import Navbar from "@/components/shared/Navbar";
 import Tags from "@/components/shared/Tags";
 import { AuthProvider } from "@/lib/context/auth-context";
 import { Providers } from "./providers";
+import { Toaster } from "@/components/ui/toaster";
 
 export const metadata: Metadata = {
   title: "chienchuanw",
@@ -26,6 +27,7 @@ export default function RootLayout({
               <Tags />
             </div>
             <main className="max-w-screen-xl mx-auto px-4">{children}</main>
+            <Toaster />
             {/* 移除登入狀態指示燈 */}
           </AuthProvider>
         </Providers>
