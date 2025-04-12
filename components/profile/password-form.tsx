@@ -5,6 +5,8 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useAuth } from "@/lib/context/auth-context";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
 import {
   Form,
   FormControl,
@@ -47,6 +49,9 @@ type PasswordFormValues = z.infer<typeof passwordSchema>;
 export default function PasswordForm() {
   const { updatePassword, loading } = useAuth();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showCurrentPassword, setShowCurrentPassword] = useState(false);
+  const [showNewPassword, setShowNewPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   // 表單設置
   const form = useForm<PasswordFormValues>({
@@ -166,17 +171,32 @@ export default function PasswordForm() {
                 <FormItem>
                   <FormLabel>Current Password</FormLabel>
                   <FormControl>
-                    <Input
-                      {...field}
-                      type="password"
-                      placeholder="Enter current password"
-                      autoComplete="current-password"
-                      className={
-                        form.formState.errors.currentPassword
-                          ? "border-destructive focus-visible:ring-destructive"
-                          : ""
-                      }
-                    />
+                    <div className="relative">
+                      <Input
+                        {...field}
+                        type={showCurrentPassword ? "text" : "password"}
+                        placeholder="Enter current password"
+                        autoComplete="current-password"
+                        className={
+                          form.formState.errors.currentPassword
+                            ? "border-destructive focus-visible:ring-destructive pr-10"
+                            : "pr-10"
+                        }
+                      />
+                      <button
+                        type="button"
+                        className="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400 hover:text-gray-600"
+                        onClick={() =>
+                          setShowCurrentPassword(!showCurrentPassword)
+                        }
+                        tabIndex={-1}
+                      >
+                        <FontAwesomeIcon
+                          icon={showCurrentPassword ? faEyeSlash : faEye}
+                          className="h-4 w-4"
+                        />
+                      </button>
+                    </div>
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -191,17 +211,30 @@ export default function PasswordForm() {
                 <FormItem>
                   <FormLabel>New Password</FormLabel>
                   <FormControl>
-                    <Input
-                      {...field}
-                      type="password"
-                      placeholder="Enter new password"
-                      autoComplete="new-password"
-                      className={
-                        form.formState.errors.newPassword
-                          ? "border-destructive focus-visible:ring-destructive"
-                          : ""
-                      }
-                    />
+                    <div className="relative">
+                      <Input
+                        {...field}
+                        type={showNewPassword ? "text" : "password"}
+                        placeholder="Enter new password"
+                        autoComplete="new-password"
+                        className={
+                          form.formState.errors.newPassword
+                            ? "border-destructive focus-visible:ring-destructive pr-10"
+                            : "pr-10"
+                        }
+                      />
+                      <button
+                        type="button"
+                        className="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400 hover:text-gray-600"
+                        onClick={() => setShowNewPassword(!showNewPassword)}
+                        tabIndex={-1}
+                      >
+                        <FontAwesomeIcon
+                          icon={showNewPassword ? faEyeSlash : faEye}
+                          className="h-4 w-4"
+                        />
+                      </button>
+                    </div>
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -216,17 +249,32 @@ export default function PasswordForm() {
                 <FormItem>
                   <FormLabel>Confirm New Password</FormLabel>
                   <FormControl>
-                    <Input
-                      {...field}
-                      type="password"
-                      placeholder="Re-enter new password"
-                      autoComplete="new-password"
-                      className={
-                        form.formState.errors.confirmPassword
-                          ? "border-destructive focus-visible:ring-destructive"
-                          : ""
-                      }
-                    />
+                    <div className="relative">
+                      <Input
+                        {...field}
+                        type={showConfirmPassword ? "text" : "password"}
+                        placeholder="Re-enter new password"
+                        autoComplete="new-password"
+                        className={
+                          form.formState.errors.confirmPassword
+                            ? "border-destructive focus-visible:ring-destructive pr-10"
+                            : "pr-10"
+                        }
+                      />
+                      <button
+                        type="button"
+                        className="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400 hover:text-gray-600"
+                        onClick={() =>
+                          setShowConfirmPassword(!showConfirmPassword)
+                        }
+                        tabIndex={-1}
+                      >
+                        <FontAwesomeIcon
+                          icon={showConfirmPassword ? faEyeSlash : faEye}
+                          className="h-4 w-4"
+                        />
+                      </button>
+                    </div>
                   </FormControl>
                   <FormMessage />
                 </FormItem>
