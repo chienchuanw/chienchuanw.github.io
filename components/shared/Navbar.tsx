@@ -3,9 +3,7 @@
 import {
   NavigationMenu,
   NavigationMenuItem,
-  NavigationMenuLink,
   NavigationMenuList,
-  navigationMenuTriggerStyle,
 } from "@/components/ui/navigation-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
@@ -64,19 +62,17 @@ const Navbar = () => {
         <div className="flex justify-end">
           <NavigationMenu>
             <NavigationMenuList>
-              <NavigationMenuItem className="space-x-4">
-                <Link href={routes.blog} legacyBehavior passHref>
-                  <NavigationMenuLink className={navigationMenuTriggerStyle()}>
-                    Blog
-                  </NavigationMenuLink>
-                </Link>
-                <Button asChild className="rounded-full">
+              <NavigationMenuItem>
+                <Button asChild variant="link" className="rounded-full">
+                  <Link href={routes.blog}>Blog</Link>
+                </Button>
+                <Button asChild variant="link" className="rounded-full">
                   <Link href={routes.contact}>Contact</Link>
                 </Button>
                 {isLoggedIn && (
                   <Button
-                    variant="destructive"
-                    className="rounded-full bg-red-600 text-white hover:bg-red-700"
+                    variant="link"
+                    className="text-red-500 font-bold"
                     onClick={handleLogout}
                   >
                     Logout
