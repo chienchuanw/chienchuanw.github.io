@@ -23,7 +23,7 @@ interface AuthContextType {
   user: User | null;
   loading: boolean;
   error: string | null;
-  login: (email: string, password: string) => Promise<void>;
+  login: (identifier: string, password: string) => Promise<void>;
   register: (userData: {
     email: string;
     username: string;
@@ -68,9 +68,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   // 登入函數
-  const login = async (email: string, password: string) => {
+  const login = async (identifier: string, password: string) => {
     setLoading(true);
     setError(null);
+    console.log('嘗試登入，識別碼:', identifier);
 
     try {
       const response = await fetch("/api/auth/login", {
@@ -78,10 +79,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify({ identifier, password }),
       });
 
+      console.log('登入響應狀態:', response.status);
       const data = await response.json();
+      console.log('登入響應數據:', data);
 
       if (!response.ok) {
         throw new Error(data.error || "登入失敗");
