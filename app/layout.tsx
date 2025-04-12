@@ -24,7 +24,7 @@ export default function RootLayout({
             <Navbar />
             <Tags />
           </div>
-          <main>{children}</main>
+          <main className="max-w-screen-xl mx-auto px-4">{children}</main>
           <AuthStatusButton />
         </AuthProvider>
       </body>
