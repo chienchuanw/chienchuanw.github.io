@@ -2,7 +2,13 @@ import Link from "next/link";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Github, Mail, Linkedin, ArrowRight } from "lucide-react";
+// 移除 Lucide React 圖標
+// import { Github, Mail, Linkedin, ArrowRight } from "lucide-react";
+// 引入 Font Awesome 圖標
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faEnvelope } from '@fortawesome/free-solid-svg-icons';
+import { faGithub, faLinkedin } from '@fortawesome/free-brands-svg-icons';
+import { faArrowRight } from '@fortawesome/free-solid-svg-icons';
 
 export default function Contact() {
   return (
@@ -42,21 +48,21 @@ export default function Contact() {
             
             <div className="grid gap-4">
               <div className="flex items-center gap-2">
-                <Mail className="h-5 w-5" />
+                <FontAwesomeIcon icon={faEnvelope} className="h-5 w-5" />
                 <a href="mailto:contact@chienchuan.com" className="hover:underline">
                   contact@chienchuan.com
                 </a>
               </div>
               
               <div className="flex items-center gap-2">
-                <Github className="h-5 w-5" />
+                <FontAwesomeIcon icon={faGithub} className="h-5 w-5" />
                 <a href="https://github.com/chienchuanw" target="_blank" rel="noopener noreferrer" className="hover:underline">
                   github.com/chienchuanw
                 </a>
               </div>
               
               <div className="flex items-center gap-2">
-                <Linkedin className="h-5 w-5" />
+                <FontAwesomeIcon icon={faLinkedin} className="h-5 w-5" />
                 <a href="https://linkedin.com/in/chienchuanw" target="_blank" rel="noopener noreferrer" className="hover:underline">
                   linkedin.com/in/chienchuanw
                 </a>
@@ -73,28 +79,28 @@ export default function Contact() {
             <Link href="/" className="group">
               <Button variant="ghost" className="w-full justify-between">
                 <span>首頁</span>
-                <ArrowRight className="h-4 w-4 opacity-0 transition-opacity group-hover:opacity-100" />
+                <FontAwesomeIcon icon={faArrowRight} className="h-4 w-4 opacity-0 transition-opacity group-hover:opacity-100" />
               </Button>
             </Link>
             
             <Link href="/blog" className="group">
               <Button variant="ghost" className="w-full justify-between">
                 <span>Blog</span>
-                <ArrowRight className="h-4 w-4 opacity-0 transition-opacity group-hover:opacity-100" />
+                <FontAwesomeIcon icon={faArrowRight} className="h-4 w-4 opacity-0 transition-opacity group-hover:opacity-100" />
               </Button>
             </Link>
             
             <Link href="/projects" className="group">
               <Button variant="ghost" className="w-full justify-between">
                 <span>Projects</span>
-                <ArrowRight className="h-4 w-4 opacity-0 transition-opacity group-hover:opacity-100" />
+                <FontAwesomeIcon icon={faArrowRight} className="h-4 w-4 opacity-0 transition-opacity group-hover:opacity-100" />
               </Button>
             </Link>
             
             <Link href="/about" className="group">
               <Button variant="ghost" className="w-full justify-between">
                 <span>About</span>
-                <ArrowRight className="h-4 w-4 opacity-0 transition-opacity group-hover:opacity-100" />
+                <FontAwesomeIcon icon={faArrowRight} className="h-4 w-4 opacity-0 transition-opacity group-hover:opacity-100" />
               </Button>
             </Link>
           </div>
@@ -105,21 +111,21 @@ export default function Contact() {
           <div className="flex justify-center gap-4 md:justify-start">
             <Button variant="outline" size="icon" asChild>
               <a href="https://github.com/chienchuanw" target="_blank" rel="noopener noreferrer">
-                <Github className="h-5 w-5" />
+                <FontAwesomeIcon icon={faGithub} className="h-5 w-5" />
                 <span className="sr-only">GitHub</span>
               </a>
             </Button>
             
             <Button variant="outline" size="icon" asChild>
               <a href="https://linkedin.com/in/chienchuanw" target="_blank" rel="noopener noreferrer">
-                <Linkedin className="h-5 w-5" />
+                <FontAwesomeIcon icon={faLinkedin} className="h-5 w-5" />
                 <span className="sr-only">LinkedIn</span>
               </a>
             </Button>
             
             <Button variant="outline" size="icon" asChild>
               <a href="mailto:contact@chienchuan.com">
-                <Mail className="h-5 w-5" />
+                <FontAwesomeIcon icon={faEnvelope} className="h-5 w-5" />
                 <span className="sr-only">Email</span>
               </a>
             </Button>

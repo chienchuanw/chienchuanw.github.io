@@ -4,7 +4,11 @@ import { useEffect, useState } from 'react';
 import PostPreview from "@/app/blog/PostPreview";
 import { getAllPosts, Post } from "@/lib/posts";
 import Link from "next/link";
-import { ArrowLeft } from "lucide-react";
+// 移除 Lucide React 圖標
+// import { ArrowLeft } from "lucide-react";
+// 引入 Font Awesome 圖標
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faArrowLeft } from '@fortawesome/free-solid-svg-icons';
 
 export default function Blog() {
   const [posts, setPosts] = useState<Post[]>([]);
@@ -22,7 +26,7 @@ export default function Blog() {
     <div className="container mx-auto py-10">
       <div className="mb-8">
         <Link href="/" className="inline-flex items-center text-neutral-600 hover:text-neutral-900">
-          <ArrowLeft className="w-4 h-4 mr-1" /> 返回首頁
+          <FontAwesomeIcon icon={faArrowLeft} className="w-4 h-4 mr-1" /> 返回首頁
         </Link>
       </div>
       

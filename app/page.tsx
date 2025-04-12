@@ -5,7 +5,12 @@ import PostPreview from "@/app/blog/PostPreview";
 import { getAllPosts, Post } from "@/lib/posts";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { Github, Mail, Linkedin } from "lucide-react";
+// 移除 Lucide React 圖標
+// import { Github, Mail, Linkedin } from "lucide-react";
+// 引入 Font Awesome 組件和圖標
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faEnvelope } from '@fortawesome/free-solid-svg-icons';
+import { faGithub, faLinkedin } from '@fortawesome/free-brands-svg-icons';
 
 export default function Home() {
   const [posts, setPosts] = useState<Post[]>([]);
@@ -54,13 +59,13 @@ export default function Home() {
             
             <div className="flex gap-4">
               <a href="https://github.com/chienchuanw" target="_blank" rel="noopener noreferrer" aria-label="GitHub">
-                <Github className="h-5 w-5" />
+                <FontAwesomeIcon icon={faGithub} className="h-5 w-5" />
               </a>
               <a href="https://linkedin.com/in/chienchuanw" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn">
-                <Linkedin className="h-5 w-5" />
+                <FontAwesomeIcon icon={faLinkedin} className="h-5 w-5" />
               </a>
               <a href="mailto:contact@chienchuan.com" aria-label="Email">
-                <Mail className="h-5 w-5" />
+                <FontAwesomeIcon icon={faEnvelope} className="h-5 w-5" />
               </a>
             </div>
           </div>
