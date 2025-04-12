@@ -25,9 +25,8 @@ export default function AdminDashboardPage() {
       logout();
       // 不需要 await，因為 logout 函數不返回 Promise
 
-      // 使用 window.location 而不是 router.push
-      // 這會強制頁面完全重新加載，避免狀態不一致的問題
-      window.location.href = routes.home;
+      // 使用 Next.js 路由器進行導航
+      router.push(routes.home);
     } catch (error) {
       console.error("登出錯誤:", error);
     } finally {

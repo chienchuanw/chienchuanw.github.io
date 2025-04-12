@@ -24,16 +24,6 @@ export default function Blog() {
 
   return (
     <div className="container mx-auto py-10">
-      <div className="mb-8">
-        <Link
-          href="/"
-          className="inline-flex items-center text-neutral-600 hover:text-neutral-900"
-        >
-          <FontAwesomeIcon icon={faArrowLeft} className="w-4 h-4 mr-1" />{" "}
-          返回首頁
-        </Link>
-      </div>
-
       <h1 className="text-3xl font-bold mb-10">所有文章</h1>
 
       {posts.length === 0 ? (

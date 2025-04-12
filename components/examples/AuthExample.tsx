@@ -1,24 +1,31 @@
-'use client';
+"use client";
 
-import React from 'react';
-import { useCurrentUser } from '@/hooks/swr/useCurrentUser';
-import useAuthStore from '@/lib/store/useAuthStore';
-import { Button } from '@/components/ui/button';
+import React from "react";
+import { useRouter } from "next/navigation";
+import { useCurrentUser } from "@/hooks/swr/useCurrentUser";
+import useAuthStore from "@/lib/store/useAuthStore";
+import { Button } from "@/components/ui/button";
+import routes from "@/lib/routes";
 
 export function AuthExample() {
+  const router = useRouter();
   const { user, isLoading, error, mutate } = useCurrentUser();
   const logout = useAuthStore((state) => state.logout);
-  
+
   // 處理登出
   const handleLogout = async () => {
     await logout();
     // 登出後重新驗證用戶狀態
     mutate();
   };
-  
+
   // 如果正在加載
   if (isLoading) {
-    return <div className="p-4 bg-slate-100 dark:bg-slate-800 rounded-lg">載入用戶資料中...</div>;
+    return (
+      <div className="p-4 bg-slate-100 dark:bg-slate-800 rounded-lg">
+        載入用戶資料中...
+      </div>
+    );
   }
 
   // 如果發生錯誤
@@ -35,8 +42,8 @@ export function AuthExample() {
     return (
       <div className="p-4 bg-slate-100 dark:bg-slate-800 rounded-lg">
         <p>您尚未登入</p>
-        <Button className="mt-2">
-          <a href="/login">前往登入</a>
+        <Button className="mt-2" onClick={() => router.push(routes.login)}>
+          前往登入
         </Button>
       </div>
     );

@@ -44,7 +44,7 @@ export async function middleware(request: NextRequest) {
   }
 
   // 阻止訪問註冊頁面，重定向到登入頁面
-  if (pathname.startsWith(routes.register)) {
+  if (pathname.startsWith("/register")) {
     return NextResponse.redirect(new URL(routes.login, request.url));
   }
 
@@ -62,6 +62,6 @@ export const config = {
     routes.admin,
     // 公共認證頁面
     routes.login,
-    routes.register, // 保留以便重定向
+    "/register", // 保留以便重定向
   ],
 };

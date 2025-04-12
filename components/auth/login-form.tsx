@@ -3,6 +3,7 @@ import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
+import { useRouter } from "next/navigation";
 import { useAuth } from "@/lib/context/auth-context";
 import routes from "@/lib/routes";
 
@@ -15,6 +16,7 @@ const loginSchema = z.object({
 type LoginFormValues = z.infer<typeof loginSchema>;
 
 export function LoginForm() {
+  const router = useRouter();
   const { login } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -40,13 +42,9 @@ export function LoginForm() {
       // 這會自動更新 Zustand 狀態並顯示成功的 toast
       await login(data.identifier, data.password);
 
-      // 登入成功後，等待一小段時間再進行重定向
-      // 這會等待 Zustand 狀態更新和其他組件重新渲染
-      setTimeout(() => {
-        // 使用 window.location 而不是 router.push
-        // 這會強制頁面完全重新加載，避免狀態不一致的問題
-        window.location.href = routes.home;
-      }, 500);
+      // 登入成功後，使用 Next.js 路由器進行導航
+      // 不需要重新整理頁面，提供更流暢的用戶體驗
+      router.push(routes.home);
     } catch (err) {
       const errorMessage =
         err instanceof Error ? err.message : "登入失敗，請稍後再試";
