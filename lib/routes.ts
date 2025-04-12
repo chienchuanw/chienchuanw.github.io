@@ -9,7 +9,6 @@ type Routes = {
 
   // 用戶相關頁面
   profile: string;
-  profileEdit: string;
 
   // 管理員相關頁面
   admin: string;
@@ -38,7 +37,6 @@ const routes: Routes = {
 
   // 用戶相關頁面
   profile: "/profile",
-  profileEdit: "/profile/edit",
 
   // 管理員相關頁面
   admin: "/admin",

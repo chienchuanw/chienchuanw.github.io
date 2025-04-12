@@ -79,6 +79,7 @@ export default function ProfileForm() {
       toast({
         title: "Update Successful",
         description: "Your profile has been successfully updated",
+        variant: "success",
       });
     } catch (error) {
       toast({
