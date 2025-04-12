@@ -31,6 +31,7 @@ interface AuthContextType {
     fullName?: string;
   }) => Promise<void>;
   logout: () => Promise<void>;
+  updateProfile: (data: { email: string; fullName?: string }) => Promise<User>;
 }
 
 // 創建認證上下文
@@ -52,6 +53,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         if (response.ok) {
           const data = await response.json();
           setUser(data.user);
+      // 保存登入時間到 localStorage
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('lastLoginTime', Date.now().toString());
+      }
         } else {
           // 如果沒有登入或會話已過期則返回 null
           setUser(null);
@@ -136,6 +141,36 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   };
 
+  // 更新個人資料
+  const updateProfile = async (data: { email: string; fullName?: string }) => {
+    setLoading(true);
+    setError(null);
+
+    try {
+      const response = await fetch("/api/auth/update-profile", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+      });
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(result.error || "更新個人資料失敗");
+      }
+
+      setUser(result.user);
+      return result.user;
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "更新個人資料過程中發生錯誤");
+      throw err;
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <AuthContext.Provider
       value={{
@@ -145,6 +180,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         login,
         register,
         logout,
+        updateProfile,
       }}
     >
       {children}
