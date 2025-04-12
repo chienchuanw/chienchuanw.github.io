@@ -22,7 +22,7 @@ export default function ProfilePage() {
       // 重定向到首頁
       router.push(routes.home);
     } catch (error) {
-      console.error("登出失敗:", error);
+      console.error("Logout failed:", error);
     }
   };
 
@@ -30,7 +30,7 @@ export default function ProfilePage() {
     return (
       <div className="container py-10">
         <div className="flex justify-center items-center h-[60vh]">
-          <p className="text-lg">載入中...</p>
+          <p className="text-lg">Loading...</p>
         </div>
       </div>
     );
@@ -40,14 +40,10 @@ export default function ProfilePage() {
     <div className="container py-10">
       <div className="max-w-3xl mx-auto">
         <div className="flex items-center justify-between mb-6">
-          <h1 className="text-3xl font-bold">用戶資料</h1>
+          <h1 className="text-3xl font-bold">User Profile</h1>
           {user && (
-            <Button 
-              onClick={handleLogout}
-              variant="destructive"
-              size="sm"
-            >
-              登出
+            <Button onClick={handleLogout} variant="destructive" size="sm">
+              Logout
             </Button>
           )}
         </div>
@@ -64,22 +60,20 @@ export default function ProfilePage() {
                 <h2 className="text-xl font-semibold">
                   {user.fullName || user.username}
                 </h2>
-                <p className="text-gray-500 dark:text-gray-400">
-                  {user.email}
-                </p>
+                <p className="text-gray-500 dark:text-gray-400">{user.email}</p>
               </div>
             </div>
 
             <Tabs defaultValue="profile" className="w-full">
               <TabsList className="grid w-full grid-cols-2">
-                <TabsTrigger value="profile">個人資料</TabsTrigger>
-                <TabsTrigger value="password">修改密碼</TabsTrigger>
+                <TabsTrigger value="profile">Profile</TabsTrigger>
+                <TabsTrigger value="password">Change Password</TabsTrigger>
               </TabsList>
-              
+
               <TabsContent value="profile" className="mt-6">
                 <ProfileForm />
               </TabsContent>
-              
+
               <TabsContent value="password" className="mt-6">
                 <PasswordForm />
               </TabsContent>
@@ -87,9 +81,9 @@ export default function ProfilePage() {
           </div>
         ) : (
           <div className="text-center py-12">
-            <p className="text-lg mb-4">您尚未登入</p>
+            <p className="text-lg mb-4">You are not logged in</p>
             <Button onClick={() => router.push(routes.login)}>
-              前往登入
+              Go to Login
             </Button>
           </div>
         )}

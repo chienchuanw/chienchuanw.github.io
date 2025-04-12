@@ -46,8 +46,8 @@ export default function PostsPage() {
     } catch (error) {
       console.error("Failed to load posts", error);
       toast({
-        title: "載入文章失敗",
-        description: "請刷新頁面重試",
+        title: "Failed to Load Posts",
+        description: "Please refresh the page and try again",
         variant: "destructive",
       });
     } finally {
@@ -62,22 +62,22 @@ export default function PostsPage() {
       if (success) {
         setPosts(posts.filter((post) => post.id !== id));
         toast({
-          title: "文章已刪除",
-          description: "文章已成功刪除",
+          title: "Post Deleted",
+          description: "The post has been successfully deleted",
           variant: "success",
         });
       } else {
         toast({
-          title: "刪除失敗",
-          description: "無法刪除文章，請重試",
+          title: "Delete Failed",
+          description: "Unable to delete the post, please try again",
           variant: "destructive",
         });
       }
     } catch (error) {
       console.error("Delete post error", error);
       toast({
-        title: "刪除失敗",
-        description: "發生錯誤，請重試",
+        title: "Delete Failed",
+        description: "An error occurred, please try again",
         variant: "destructive",
       });
     }
@@ -86,7 +86,7 @@ export default function PostsPage() {
   // 格式化日期
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
-    return date.toLocaleDateString("zh-TW", {
+    return date.toLocaleDateString("en-US", {
       year: "numeric",
       month: "long",
       day: "numeric",
@@ -104,10 +104,10 @@ export default function PostsPage() {
           >
             <FontAwesomeIcon icon={faArrowLeft} className="h-4 w-4" />
           </Button>
-          <h1 className="text-2xl font-bold">文章管理</h1>
+          <h1 className="text-2xl font-bold">Post Management</h1>
         </div>
         <Button onClick={() => router.push("/admin/posts/new")}>
-          <FontAwesomeIcon icon={faPlus} className="h-4 w-4 mr-2" /> 新增文章
+          <FontAwesomeIcon icon={faPlus} className="h-4 w-4 mr-2" /> Add Post
         </Button>
       </div>
 
@@ -115,25 +115,25 @@ export default function PostsPage() {
         <CardContent className="p-0">
           {isLoading ? (
             <div className="flex justify-center items-center h-40">
-              <p>載入中...</p>
+              <p>Loading...</p>
             </div>
           ) : posts.length === 0 ? (
             <div className="flex flex-col justify-center items-center h-40">
-              <p className="text-muted-foreground mb-4">目前沒有文章</p>
+              <p className="text-muted-foreground mb-4">No posts available</p>
               <Button onClick={() => router.push("/admin/posts/new")}>
                 <FontAwesomeIcon icon={faPlus} className="h-4 w-4 mr-2" />{" "}
-                建立第一篇文章
+                Create First Post
               </Button>
             </div>
           ) : (
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead className="w-[300px]">標題</TableHead>
-                  <TableHead>狀態</TableHead>
-                  <TableHead>建立日期</TableHead>
-                  <TableHead>更新日期</TableHead>
-                  <TableHead className="text-right">操作</TableHead>
+                  <TableHead className="w-[300px]">Title</TableHead>
+                  <TableHead>Status</TableHead>
+                  <TableHead>Created Date</TableHead>
+                  <TableHead>Updated Date</TableHead>
+                  <TableHead className="text-right">Actions</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -142,7 +142,7 @@ export default function PostsPage() {
                     <TableCell className="font-medium">{post.title}</TableCell>
                     <TableCell>
                       <Badge variant={post.published ? "default" : "secondary"}>
-                        {post.published ? "已發布" : "草稿"}
+                        {post.published ? "Published" : "Draft"}
                       </Badge>
                     </TableCell>
                     <TableCell>{formatDate(post.createdAt)}</TableCell>
@@ -167,7 +167,7 @@ export default function PostsPage() {
                               icon={faEdit}
                               className="h-4 w-4 mr-2"
                             />
-                            編輯
+                            Edit
                           </DropdownMenuItem>
                           <DropdownMenuItem
                             onClick={() =>
@@ -178,7 +178,7 @@ export default function PostsPage() {
                               icon={faEye}
                               className="h-4 w-4 mr-2"
                             />
-                            查看
+                            View
                           </DropdownMenuItem>
                           <DropdownMenuItem
                             className="text-destructive"
@@ -188,7 +188,7 @@ export default function PostsPage() {
                               icon={faTrash}
                               className="h-4 w-4 mr-2"
                             />
-                            刪除
+                            Delete
                           </DropdownMenuItem>
                         </DropdownMenuContent>
                       </DropdownMenu>

@@ -5,13 +5,7 @@ import { useRouter, useParams } from "next/navigation";
 import { getPostById, updatePost, generateExcerpt } from "@/lib/posts";
 import MarkdownEditor from "@/components/admin/markdown-editor";
 import { useToast } from "@/components/ui/use-toast";
-import {
-  Card,
-  CardContent,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
@@ -19,7 +13,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faArrowLeft, faSave, faEye } from "@fortawesome/free-solid-svg-icons";
+import { faArrowLeft, faSave } from "@fortawesome/free-solid-svg-icons";
 import { Badge } from "@/components/ui/badge";
 
 export default function EditPostPage() {
@@ -52,8 +46,8 @@ export default function EditPostPage() {
         setIsLoading(false);
       } else {
         toast({
-          title: "文章不存在",
-          description: "找不到指定的文章",
+          title: "Article Not Found",
+          description: "The specified article could not be found",
           variant: "destructive",
         });
         router.push("/admin/posts");
@@ -77,8 +71,8 @@ export default function EditPostPage() {
       // 驗證必填欄位
       if (!title) {
         toast({
-          title: "標題不能為空",
-          description: "請填寫文章標題",
+          title: "Title Cannot Be Empty",
+          description: "Please enter a title for your article",
           variant: "destructive",
         });
         setIsSubmitting(false);
@@ -87,8 +81,8 @@ export default function EditPostPage() {
 
       if (!content) {
         toast({
-          title: "內容不能為空",
-          description: "請填寫文章內容",
+          title: "Content Cannot Be Empty",
+          description: "Please enter content for your article",
           variant: "destructive",
         });
         setIsSubmitting(false);
@@ -116,20 +110,22 @@ export default function EditPostPage() {
 
       if (updatedPost) {
         toast({
-          title: "文章已更新",
-          description: isPublished ? "文章已發布" : "文章已保存為草稿",
+          title: "Article Updated",
+          description: isPublished
+            ? "Article has been published"
+            : "Article has been saved as draft",
         });
 
         // 導航到文章列表
         router.push("/admin/posts");
       } else {
-        throw new Error("更新文章失敗");
+        throw new Error("Failed to update article");
       }
     } catch (error) {
       console.error("Submit error", error);
       toast({
-        title: "保存失敗",
-        description: "發生錯誤，請重試",
+        title: "Save Failed",
+        description: "An error occurred, please try again",
         variant: "destructive",
       });
     } finally {
@@ -141,7 +137,7 @@ export default function EditPostPage() {
     return (
       <div className="container mx-auto p-4 md:p-6">
         <div className="flex justify-center items-center h-96">
-          <p>載入中...</p>
+          <p>Loading...</p>
         </div>
       </div>
     );
@@ -157,10 +153,10 @@ export default function EditPostPage() {
         >
           <FontAwesomeIcon icon={faArrowLeft} className="h-4 w-4" />
         </Button>
-        <h1 className="text-2xl font-bold">編輯文章</h1>
+        <h1 className="text-2xl font-bold">Edit Article</h1>
         <div className="ml-auto flex items-center gap-2">
           <Badge variant={isPublished ? "default" : "secondary"}>
-            {isPublished ? "已發布" : "草稿"}
+            {isPublished ? "Published" : "Draft"}
           </Badge>
         </div>
       </div>
@@ -169,21 +165,21 @@ export default function EditPostPage() {
         <div className="grid gap-6 mb-6">
           <Card>
             <CardHeader>
-              <CardTitle>文章基本資訊</CardTitle>
+              <CardTitle>Article Basic Information</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="grid gap-2">
-                <Label htmlFor="title">標題</Label>
+                <Label htmlFor="title">Title</Label>
                 <Input
                   id="title"
-                  placeholder="輸入文章標題"
+                  placeholder="Enter article title"
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
                 />
               </div>
 
               <div className="grid gap-2">
-                <Label htmlFor="slug">網址別名</Label>
+                <Label htmlFor="slug">URL Slug</Label>
                 <Input
                   id="slug"
                   placeholder="url-friendly-name"
@@ -191,25 +187,25 @@ export default function EditPostPage() {
                   onChange={(e) => setSlug(e.target.value)}
                 />
                 <p className="text-sm text-muted-foreground">
-                  這將作為您文章的 URL 的一部分: /blog/{slug}
+                  This will be part of your article's URL: /blog/{slug}
                 </p>
               </div>
 
               <div className="grid gap-2">
                 <div className="flex justify-between items-center">
-                  <Label htmlFor="excerpt">摘要</Label>
+                  <Label htmlFor="excerpt">Excerpt</Label>
                   <Button
                     type="button"
                     variant="ghost"
                     size="sm"
                     onClick={handleGenerateExcerpt}
                   >
-                    自動生成
+                    Auto Generate
                   </Button>
                 </div>
                 <Textarea
                   id="excerpt"
-                  placeholder="簡短描述您的文章"
+                  placeholder="Brief description of your article"
                   value={excerpt}
                   onChange={(e) => setExcerpt(e.target.value)}
                   rows={3}
@@ -217,15 +213,15 @@ export default function EditPostPage() {
               </div>
 
               <div className="grid gap-2">
-                <Label htmlFor="tags">標籤</Label>
+                <Label htmlFor="tags">Tags</Label>
                 <Input
                   id="tags"
-                  placeholder="標籤1, 標籤2, 標籤3"
+                  placeholder="tag1, tag2, tag3"
                   value={tags}
                   onChange={(e) => setTags(e.target.value)}
                 />
                 <p className="text-sm text-muted-foreground">
-                  用逗號分隔多個標籤
+                  Separate multiple tags with commas
                 </p>
               </div>
 
@@ -235,21 +231,21 @@ export default function EditPostPage() {
                   checked={isPublished}
                   onCheckedChange={setIsPublished}
                 />
-                <Label htmlFor="published">發布文章</Label>
+                <Label htmlFor="published">Publish Article</Label>
               </div>
             </CardContent>
           </Card>
 
           <Card>
             <CardHeader>
-              <CardTitle>文章內容</CardTitle>
+              <CardTitle>Article Content</CardTitle>
             </CardHeader>
             <CardContent>
               <Tabs defaultValue="edit">
                 <div className="mb-4">
                   <TabsList>
-                    <TabsTrigger value="edit">編輯</TabsTrigger>
-                    <TabsTrigger value="preview">預覽</TabsTrigger>
+                    <TabsTrigger value="edit">Edit</TabsTrigger>
+                    <TabsTrigger value="preview">Preview</TabsTrigger>
                   </TabsList>
                 </div>
 
@@ -282,15 +278,15 @@ export default function EditPostPage() {
             onClick={() => router.push("/admin/posts")}
             disabled={isSubmitting}
           >
-            取消
+            Cancel
           </Button>
           <Button type="submit" disabled={isSubmitting}>
             {isSubmitting ? (
-              <>處理中...</>
+              <>Processing...</>
             ) : (
               <>
                 <FontAwesomeIcon icon={faSave} className="h-4 w-4 mr-2" />
-                保存{isPublished ? "並發布" : "為草稿"}
+                Save{isPublished ? " and Publish" : " as Draft"}
               </>
             )}
           </Button>

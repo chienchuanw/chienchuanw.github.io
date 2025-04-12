@@ -1,10 +1,10 @@
-'use client';
+"use client";
 
-import React from 'react';
-import { AuthExample } from '@/components/examples/AuthExample';
-import { BlogPostsExample } from '@/components/examples/BlogPostsExample';
-import { ThemeToggle } from '@/components/examples/ThemeToggle';
-import useUIStore from '@/lib/store/useUIStore';
+import React from "react";
+import { AuthExample } from "@/components/examples/AuthExample";
+import { BlogPostsExample } from "@/components/examples/BlogPostsExample";
+import { ThemeToggle } from "@/components/examples/ThemeToggle";
+import useUIStore from "@/lib/store/useUIStore";
 
 export default function ExamplesPage() {
   const isDarkMode = useUIStore((state) => state.isDarkMode);
@@ -12,23 +12,23 @@ export default function ExamplesPage() {
   const addToast = useUIStore((state) => state.addToast);
   const removeToast = useUIStore((state) => state.removeToast);
 
-  const handleAddToast = (type: 'success' | 'error' | 'info' | 'warning') => {
+  const handleAddToast = (type: "success" | "error" | "info" | "warning") => {
     const messages = {
-      success: '操作成功！',
-      error: '發生錯誤！',
-      info: '這是一條信息提示',
-      warning: '請注意！這是一個警告',
+      success: "Operation successful!",
+      error: "An error occurred!",
+      info: "This is an information message",
+      warning: "Attention! This is a warning",
     };
-    
+
     addToast(messages[type], type);
   };
 
   return (
-    <div className={`p-6 ${isDarkMode ? 'dark' : ''}`}>
+    <div className={`p-6 ${isDarkMode ? "dark" : ""}`}>
       <div className="max-w-4xl mx-auto">
         <header className="mb-8 flex justify-between items-center">
           <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
-            Zustand + SWR 示例
+            Zustand + SWR Examples
           </h1>
           <ThemeToggle />
         </header>
@@ -37,49 +37,49 @@ export default function ExamplesPage() {
           {/* 通知示例 */}
           <section className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md">
             <h2 className="text-xl font-semibold mb-4 text-gray-900 dark:text-white">
-              通知系統 (Zustand)
+              Notification System (Zustand)
             </h2>
             <div className="flex flex-wrap gap-2 mb-4">
               <button
-                onClick={() => handleAddToast('success')}
+                onClick={() => handleAddToast("success")}
                 className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600"
               >
-                成功通知
+                Success Notification
               </button>
               <button
-                onClick={() => handleAddToast('error')}
+                onClick={() => handleAddToast("error")}
                 className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600"
               >
-                錯誤通知
+                Error Notification
               </button>
               <button
-                onClick={() => handleAddToast('info')}
+                onClick={() => handleAddToast("info")}
                 className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
               >
-                信息通知
+                Info Notification
               </button>
               <button
-                onClick={() => handleAddToast('warning')}
+                onClick={() => handleAddToast("warning")}
                 className="px-4 py-2 bg-yellow-500 text-white rounded hover:bg-yellow-600"
               >
-                警告通知
+                Warning Notification
               </button>
             </div>
 
-            {/* 顯示所有通知 */}
+            {/* Display all notifications */}
             {toasts.length > 0 && (
               <div className="space-y-2">
                 {toasts.map((toast) => (
                   <div
                     key={toast.id}
                     className={`p-3 rounded-md flex justify-between items-start ${
-                      toast.type === 'success'
-                        ? 'bg-green-100 text-green-800'
-                        : toast.type === 'error'
-                        ? 'bg-red-100 text-red-800'
-                        : toast.type === 'warning'
-                        ? 'bg-yellow-100 text-yellow-800'
-                        : 'bg-blue-100 text-blue-800'
+                      toast.type === "success"
+                        ? "bg-green-100 text-green-800"
+                        : toast.type === "error"
+                        ? "bg-red-100 text-red-800"
+                        : toast.type === "warning"
+                        ? "bg-yellow-100 text-yellow-800"
+                        : "bg-blue-100 text-blue-800"
                     }`}
                   >
                     <span>{toast.message}</span>
@@ -95,18 +95,18 @@ export default function ExamplesPage() {
             )}
           </section>
 
-          {/* 認證示例 */}
+          {/* Authentication example */}
           <section className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md">
             <h2 className="text-xl font-semibold mb-4 text-gray-900 dark:text-white">
-              用戶認證 (Zustand + SWR)
+              User Authentication (Zustand + SWR)
             </h2>
             <AuthExample />
           </section>
 
-          {/* 博客文章示例 */}
+          {/* Blog posts example */}
           <section className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md">
             <h2 className="text-xl font-semibold mb-4 text-gray-900 dark:text-white">
-              部落格文章 (Zustand + SWR)
+              Blog Posts (Zustand + SWR)
             </h2>
             <BlogPostsExample />
           </section>
