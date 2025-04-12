@@ -4,14 +4,9 @@ import { SWRConfig as SWRConfigProvider } from 'swr';
 import React from 'react';
 import useUIStore from '@/lib/store/useUIStore';
 
-// 調試中間件，僅用於開發環境
+// 調試中間件，僅用於開發環境（已禁用日誌輸出）
 function middleware(useSWRNext) {
   return (key, fetcher, config) => {
-    // 在開發環境中，添加日誌
-    if (!process.env.NODE_ENV || process.env.NODE_ENV === 'development') {
-      console.log('SWR Request:', key);
-    }
-
     // 調用原始的 useSWR hook
     return useSWRNext(key, fetcher, config);
   };
@@ -43,12 +38,16 @@ export function SWRConfig({ children }) {
     // 全局重試配置
     shouldRetryOnError: false,
 
+    // 增加緩存時間，減少請求次數
+    dedupingInterval: 5000, // 5 秒內不重複請求
+    focusThrottleInterval: 5000, // 窗口聚焦時的請求限制
+
     // 全局錯誤處理
     onError: (error) => {
       console.error('SWR 全局錯誤:', error);
     },
 
-    // 開發環境啟用 SWR 調試
+    // 開發環境啟用 SWR 調試（已禁用日誌輸出）
     ...(!process.env.NODE_ENV || process.env.NODE_ENV === 'development'
       ? {
         use: [middleware],

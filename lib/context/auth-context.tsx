@@ -41,11 +41,11 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 // AuthProvider 組件
 export function AuthProvider({ children }: { children: ReactNode }) {
-const [user, setUser] = useState<User | null>(null);
-const [loading, setLoading] = useState(true);
-const [error, setError] = useState<string | null>(null);
-const { toast } = useToast();
-  
+  const [user, setUser] = useState<User | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const { toast } = useToast();
+
   // 獲取 Zustand store 的狀態設定函數
   const setZustandUser = useAuthStore((state) => state.setUser);
   const setZustandLoggedIn = useAuthStore((state) => state.setLoggedIn);
@@ -102,29 +102,29 @@ const { toast } = useToast();
       }
 
       setUser(data.user);
-      
+
       // 登入成功通知
       toast({
         title: "登入成功",
         description: "歡迎回來！",
         variant: "success",
       });
-      
-      // 保存登入時間到 localStorage
-      if (typeof window !== 'undefined') {
-        localStorage.setItem('lastLoginTime', Date.now().toString());
-      }
+
+      // 直接更新 Zustand 狀態以確保立即同步
+      setZustandUser(data.user);
+      setZustandLoggedIn(true);
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : "登入過程中發生錯誤";
+      const errorMessage =
+        err instanceof Error ? err.message : "登入過程中發生錯誤";
       setError(errorMessage);
-      
+
       // 登入失敗通知
       toast({
         title: "登入失敗",
         description: errorMessage,
         variant: "destructive",
       });
-      
+
       throw err;
     } finally {
       setLoading(false);
@@ -160,11 +160,11 @@ const { toast } = useToast();
 
       // 清除用戶狀態
       setUser(null);
-      
+
       // 直接更新 Zustand 狀態以確保立即同步
       setZustandUser(null);
       setZustandLoggedIn(false);
-      
+
       // 登出成功通知
       toast({
         title: "登出成功",
@@ -172,9 +172,10 @@ const { toast } = useToast();
         variant: "success",
       });
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : "登出過程中發生錯誤";
+      const errorMessage =
+        err instanceof Error ? err.message : "登出過程中發生錯誤";
       setError(errorMessage);
-      
+
       // 登出失敗通知
       toast({
         title: "登出失敗",
@@ -210,7 +211,9 @@ const { toast } = useToast();
       setUser(result.user);
       return result.user;
     } catch (err) {
-      setError(err instanceof Error ? err.message : "更新個人資料過程中發生錯誤");
+      setError(
+        err instanceof Error ? err.message : "更新個人資料過程中發生錯誤"
+      );
       throw err;
     } finally {
       setLoading(false);
