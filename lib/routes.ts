@@ -5,7 +5,7 @@ type Routes = {
 };
 
 const routes: Routes = {
-  home: "/blog",
+  home: "/",
   contact: "/contact",
   blog: "/blog",
 };
