@@ -58,6 +58,7 @@ export default function PostsPage() {
         toast({
           title: '文章已刪除',
           description: '文章已成功刪除',
+          variant: 'success',
         });
       } else {
         toast({

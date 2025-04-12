@@ -1,7 +1,6 @@
 'use client';
 
 import { useEffect, useState } from "react";
-import { Toaster } from "@/components/ui/toaster";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/lib/context/auth-context";
 import { checkAuthStatus } from "@/lib/auth/auth-utils";
@@ -46,7 +45,6 @@ export function AdminLayoutClient({
       <div className={isMounted ? "admin-page" : ""}>
         {children}
       </div>
-      <Toaster />
     </>
   );
 }
