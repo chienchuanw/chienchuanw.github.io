@@ -5,14 +5,15 @@ import { cookies } from 'next/headers';
 export async function POST(request: NextRequest) {
   try {
     // 獲取身份驗證令牌
-    const authToken = cookies().get('auth_token')?.value;
+    const cookieStore = await cookies();
+    const authToken = cookieStore.get('auth_token')?.value;
     
     if (authToken) {
       // 刪除會話
       await authService.logout(authToken);
       
       // 刪除 cookie
-      cookies().delete('auth_token');
+      cookieStore.delete('auth_token');
     }
     
     return NextResponse.json({ message: '登出成功' });

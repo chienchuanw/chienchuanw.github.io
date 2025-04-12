@@ -26,7 +26,8 @@ export async function POST(request: NextRequest) {
     }
     
     // 設置 HTTP-only 安全 cookie
-    cookies().set({
+    const cookieStore = await cookies();
+    cookieStore.set({
       name: 'auth_token',
       value: result.token,
       httpOnly: true,

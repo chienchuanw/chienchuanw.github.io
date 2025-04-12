@@ -1,6 +1,6 @@
 import { eq } from 'drizzle-orm';
 import db from '../db';
-import { sessions, NewSession, Session } from '../db/schema';
+import { sessions, users, NewSession, Session } from '../db/schema';
 import { userService } from './user-service';
 import crypto from 'crypto';
 
@@ -62,7 +62,7 @@ export const authService = {
     // 獲取用戶信息
     const user = await db.select()
       .from(sessions)
-      .innerJoin('users', eq(sessions.userId, sessions.id))
+      .innerJoin(users, eq(sessions.userId, users.id))
       .where(eq(sessions.token, token));
       
     if (!user || user.length === 0) return null;

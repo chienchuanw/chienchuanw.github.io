@@ -5,7 +5,8 @@ import { cookies } from 'next/headers';
 export async function GET(request: NextRequest) {
   try {
     // 獲取身份驗證令牌
-    const authToken = cookies().get('auth_token')?.value;
+    const cookieStore = await cookies();
+    const authToken = cookieStore.get('auth_token')?.value;
     
     if (!authToken) {
       return NextResponse.json(
@@ -19,7 +20,8 @@ export async function GET(request: NextRequest) {
     
     if (!user) {
       // 清除無效的 cookie
-      cookies().delete('auth_token');
+      const cookieStore = await cookies();
+      cookieStore.delete('auth_token');
       
       return NextResponse.json(
         { error: '會話已過期' }, 
