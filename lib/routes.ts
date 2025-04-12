@@ -6,7 +6,6 @@ type Routes = {
 
   // 認證相關頁面
   login: string;
-  register: string;
 
   // 用戶相關頁面
   profile: string;
@@ -23,7 +22,6 @@ type Routes = {
   apiAuthLogin: string;
   apiAuthLogout: string;
   apiAuthMe: string;
-  apiAuthRegister: string;
   apiAuthUpdateProfile: string;
   apiAuthCheckAuth: string;
 };
@@ -36,7 +34,6 @@ const routes: Routes = {
 
   // 認證相關頁面
   login: "/login",
-  register: "/register",
 
   // 用戶相關頁面
   profile: "/profile",
@@ -53,7 +50,6 @@ const routes: Routes = {
   apiAuthLogin: "/api/auth/login",
   apiAuthLogout: "/api/auth/logout",
   apiAuthMe: "/api/auth/me",
-  apiAuthRegister: "/api/auth/register",
   apiAuthUpdateProfile: "/api/auth/update-profile",
   apiAuthCheckAuth: "/api/auth/check-auth",
 };

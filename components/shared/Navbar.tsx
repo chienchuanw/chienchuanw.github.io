@@ -37,9 +37,6 @@ const Navbar = () => {
 
       // 重定向到首頁
       router.push(routes.home);
-
-      // 強制刷新頁面以確保狀態更新
-      router.refresh();
     } catch (error) {
       console.error("登出失敗:", error);
     }
