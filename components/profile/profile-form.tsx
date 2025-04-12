@@ -15,6 +15,16 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+  CardFooter,
+} from "@/components/ui/card";
+import { Label } from "@/components/ui/label";
+import { Skeleton } from "@/components/ui/skeleton";
 import { toast } from "@/components/ui/use-toast";
 
 // 表單驗證模式
@@ -30,7 +40,7 @@ const profileSchema = z.object({
 type ProfileFormValues = z.infer<typeof profileSchema>;
 
 export default function ProfileForm() {
-  const { user, updateProfile } = useAuth();
+  const { user, updateProfile, loading } = useAuth();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [lastLogin, setLastLogin] = useState<string | null>(null);
 
@@ -95,80 +105,143 @@ export default function ProfileForm() {
     }
   };
 
+  // Show skeleton UI while loading
+  if (loading) {
+    return (
+      <Card>
+        <CardHeader>
+          <Skeleton className="h-7 w-[250px] mb-2" />
+          <Skeleton className="h-5 w-[350px]" />
+        </CardHeader>
+        <CardContent className="space-y-6">
+          <div className="space-y-2">
+            <Skeleton className="h-5 w-[120px]" />
+            <Skeleton className="h-10 w-full" />
+          </div>
+          <div className="space-y-2">
+            <Skeleton className="h-5 w-[80px]" />
+            <Skeleton className="h-10 w-full" />
+          </div>
+          <div className="space-y-2">
+            <Skeleton className="h-5 w-[150px]" />
+            <Skeleton className="h-10 w-full" />
+          </div>
+          <div className="space-y-2">
+            <Skeleton className="h-5 w-[180px]" />
+            <Skeleton className="h-10 w-full" />
+          </div>
+        </CardContent>
+        <CardFooter>
+          <Skeleton className="h-10 w-[120px] ml-auto" />
+        </CardFooter>
+      </Card>
+    );
+  }
+
   if (!user) {
     return (
-      <div className="text-center py-12">
-        <p className="text-lg mb-4">You are not logged in</p>
-      </div>
+      <Card className="text-center py-12">
+        <CardContent className="pt-6">
+          <p className="text-lg mb-4">You are not logged in</p>
+        </CardContent>
+      </Card>
     );
   }
 
   return (
-    <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md">
-      <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-          {/* 用戶名 (唯讀) */}
-          <FormField
-            control={form.control}
-            name="username"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Username (Read-only)</FormLabel>
-                <FormControl>
-                  <Input {...field} disabled placeholder="Username" />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+    <Card>
+      <CardHeader>
+        <CardTitle>Personal Information</CardTitle>
+        <CardDescription>Update your profile and preferences</CardDescription>
+      </CardHeader>
+      <CardContent>
+        {/* 使用 Card 和其他 shadcn/ui 元件更改表單外觀 */}
+        {/* 使用結構化的 Card 組件來呈現表單，增加視覺層次和專業感 */}
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+            {/* 用戶名 (唯讀) */}
+            <FormField
+              control={form.control}
+              name="username"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Username (Read-only)</FormLabel>
+                  <FormControl>
+                    <Input
+                      {...field}
+                      disabled
+                      placeholder="Username"
+                      className="bg-muted"
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
-          {/* 電子郵件 */}
-          <FormField
-            control={form.control}
-            name="email"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Email</FormLabel>
-                <FormControl>
-                  <Input {...field} placeholder="your@email.com" />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+            {/* 電子郵件 */}
+            <FormField
+              control={form.control}
+              name="email"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Email</FormLabel>
+                  <FormControl>
+                    <Input {...field} placeholder="your@email.com" />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
-          {/* 姓名 (選填) */}
-          <FormField
-            control={form.control}
-            name="fullName"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Full Name (Optional)</FormLabel>
-                <FormControl>
-                  <Input {...field} placeholder="Your full name" />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+            {/* 姓名 (選填) */}
+            <FormField
+              control={form.control}
+              name="fullName"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Full Name (Optional)</FormLabel>
+                  <FormControl>
+                    <Input {...field} placeholder="Your full name" />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
-          {/* 上次登入時間 (唯讀) */}
-          {lastLogin && (
-            <div className="space-y-2">
-              <label className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
-                Last Login Time (Read-only)
-              </label>
-              <Input value={lastLogin} disabled placeholder="Unknown" />
-            </div>
+            {/* 上次登入時間 (唯讀) */}
+            {lastLogin && (
+              <div className="space-y-2">
+                <Label className="text-sm font-medium">
+                  Last Login Time (Read-only)
+                </Label>
+                <Input
+                  value={lastLogin}
+                  disabled
+                  placeholder="Unknown"
+                  className="bg-muted"
+                />
+              </div>
+            )}
+          </form>
+        </Form>
+      </CardContent>
+      <CardFooter className="flex justify-end">
+        <Button
+          onClick={form.handleSubmit(onSubmit)}
+          disabled={isSubmitting}
+          className="w-full sm:w-auto"
+        >
+          {isSubmitting ? (
+            <>
+              <span className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-background border-r-transparent"></span>
+              Saving...
+            </>
+          ) : (
+            "Save Changes"
           )}
-
-          <div className="flex justify-end pt-4">
-            <Button type="submit" disabled={isSubmitting}>
-              {isSubmitting ? "Saving..." : "Save Changes"}
-            </Button>
-          </div>
-        </form>
-      </Form>
-    </div>
+        </Button>
+      </CardFooter>
+    </Card>
   );
 }
