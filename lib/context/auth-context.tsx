@@ -8,6 +8,7 @@ import React, {
   ReactNode,
 } from "react";
 import { useToast } from "@/components/ui/use-toast";
+import useAuthStore from "@/lib/store/useAuthStore";
 
 // 用戶類型定義
 interface User {
@@ -40,10 +41,14 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 // AuthProvider 組件
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [user, setUser] = useState<User | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const { toast } = useToast();
+const [user, setUser] = useState<User | null>(null);
+const [loading, setLoading] = useState(true);
+const [error, setError] = useState<string | null>(null);
+const { toast } = useToast();
+  
+  // 獲取 Zustand store 的狀態設定函數
+  const setZustandUser = useAuthStore((state) => state.setUser);
+  const setZustandLoggedIn = useAuthStore((state) => state.setLoggedIn);
 
   // 獲取當前用戶
   useEffect(() => {
@@ -69,6 +74,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     fetchCurrentUser();
   }, []);
+
+  // 當 user 狀態改變時，同步更新 Zustand 狀態
+  useEffect(() => {
+    setZustandUser(user);
+    setZustandLoggedIn(!!user);
+  }, [user, setZustandUser, setZustandLoggedIn]);
 
   // 登入函數
   const login = async (identifier: string, password: string) => {
@@ -149,6 +160,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
       // 清除用戶狀態
       setUser(null);
+      
+      // 直接更新 Zustand 狀態以確保立即同步
+      setZustandUser(null);
+      setZustandLoggedIn(false);
       
       // 登出成功通知
       toast({
