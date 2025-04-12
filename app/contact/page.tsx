@@ -2,13 +2,10 @@ import Link from "next/link";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-// 移除 Lucide React 圖標
-// import { Github, Mail, Linkedin, ArrowRight } from "lucide-react";
-// 引入 Font Awesome 圖標
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faEnvelope } from '@fortawesome/free-solid-svg-icons';
-import { faGithub, faLinkedin } from '@fortawesome/free-brands-svg-icons';
-import { faArrowRight } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faEnvelope } from "@fortawesome/free-solid-svg-icons";
+import { faGithub, faLinkedin } from "@fortawesome/free-brands-svg-icons";
+import { faArrowRight } from "@fortawesome/free-solid-svg-icons";
 
 export default function Contact() {
   return (
@@ -20,14 +17,17 @@ export default function Contact() {
             <AvatarImage src="/images/avatar.jpg" alt="Chien Chuan" />
             <AvatarFallback>CC</AvatarFallback>
           </Avatar>
-          
+
           <div className="space-y-2">
-            <h1 className="text-3xl font-bold tracking-tight md:text-4xl">Chien Chuan W</h1>
+            <h1 className="text-3xl font-bold tracking-tight md:text-4xl">
+              Chien Chuan W
+            </h1>
             <p className="text-muted-foreground max-w-md">
-              Web Developer specializing in Python and TypeScript. Currently working with Ruby on Rails.
+              Web Developer specializing in Python and TypeScript. Currently
+              working with Ruby on Rails.
             </p>
           </div>
-          
+
           <div className="flex flex-wrap gap-2 justify-center md:justify-start">
             <Badge variant="secondary">TypeScript</Badge>
             <Badge variant="secondary">Python</Badge>
@@ -35,94 +35,127 @@ export default function Contact() {
             <Badge variant="secondary">Next.js</Badge>
           </div>
         </section>
-        
+
         {/* Contact Information */}
         <section className="space-y-4">
           <div className="h-px w-full bg-border" />
-          
+
           <div className="space-y-4">
             <h2 className="text-xl font-semibold">聯絡資訊</h2>
             <p className="text-muted-foreground">
               如果您對我的工作有興趣，或想討論合作機會，請透過以下方式與我聯繫。
             </p>
-            
+
             <div className="grid gap-4">
               <div className="flex items-center gap-2">
                 <FontAwesomeIcon icon={faEnvelope} className="h-5 w-5" />
-                <a href="mailto:contact@chienchuan.com" className="hover:underline">
+                <a
+                  href="mailto:contact@chienchuan.com"
+                  className="hover:underline"
+                >
                   contact@chienchuan.com
                 </a>
               </div>
-              
+
               <div className="flex items-center gap-2">
                 <FontAwesomeIcon icon={faGithub} className="h-5 w-5" />
-                <a href="https://github.com/chienchuanw" target="_blank" rel="noopener noreferrer" className="hover:underline">
+                <a
+                  href="https://github.com/chienchuanw"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="hover:underline"
+                >
                   github.com/chienchuanw
                 </a>
               </div>
-              
+
               <div className="flex items-center gap-2">
                 <FontAwesomeIcon icon={faLinkedin} className="h-5 w-5" />
-                <a href="https://linkedin.com/in/chienchuanw" target="_blank" rel="noopener noreferrer" className="hover:underline">
+                <a
+                  href="https://linkedin.com/in/chienchuanw"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="hover:underline"
+                >
                   linkedin.com/in/chienchuanw
                 </a>
               </div>
             </div>
           </div>
         </section>
-        
+
         {/* Main Links */}
         <section className="space-y-4">
           <div className="h-px w-full bg-border" />
-          
+
           <div className="grid gap-2">
             <Link href="/" className="group">
               <Button variant="ghost" className="w-full justify-between">
                 <span>首頁</span>
-                <FontAwesomeIcon icon={faArrowRight} className="h-4 w-4 opacity-0 transition-opacity group-hover:opacity-100" />
+                <FontAwesomeIcon
+                  icon={faArrowRight}
+                  className="h-4 w-4 opacity-0 transition-opacity group-hover:opacity-100"
+                />
               </Button>
             </Link>
-            
+
             <Link href="/blog" className="group">
               <Button variant="ghost" className="w-full justify-between">
                 <span>Blog</span>
-                <FontAwesomeIcon icon={faArrowRight} className="h-4 w-4 opacity-0 transition-opacity group-hover:opacity-100" />
+                <FontAwesomeIcon
+                  icon={faArrowRight}
+                  className="h-4 w-4 opacity-0 transition-opacity group-hover:opacity-100"
+                />
               </Button>
             </Link>
-            
+
             <Link href="/projects" className="group">
               <Button variant="ghost" className="w-full justify-between">
                 <span>Projects</span>
-                <FontAwesomeIcon icon={faArrowRight} className="h-4 w-4 opacity-0 transition-opacity group-hover:opacity-100" />
+                <FontAwesomeIcon
+                  icon={faArrowRight}
+                  className="h-4 w-4 opacity-0 transition-opacity group-hover:opacity-100"
+                />
               </Button>
             </Link>
-            
+
             <Link href="/about" className="group">
               <Button variant="ghost" className="w-full justify-between">
                 <span>About</span>
-                <FontAwesomeIcon icon={faArrowRight} className="h-4 w-4 opacity-0 transition-opacity group-hover:opacity-100" />
+                <FontAwesomeIcon
+                  icon={faArrowRight}
+                  className="h-4 w-4 opacity-0 transition-opacity group-hover:opacity-100"
+                />
               </Button>
             </Link>
           </div>
         </section>
-        
+
         {/* Social Links */}
         <section className="pt-4">
           <div className="flex justify-center gap-4 md:justify-start">
             <Button variant="outline" size="icon" asChild>
-              <a href="https://github.com/chienchuanw" target="_blank" rel="noopener noreferrer">
+              <a
+                href="https://github.com/chienchuanw"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
                 <FontAwesomeIcon icon={faGithub} className="h-5 w-5" />
                 <span className="sr-only">GitHub</span>
               </a>
             </Button>
-            
+
             <Button variant="outline" size="icon" asChild>
-              <a href="https://linkedin.com/in/chienchuanw" target="_blank" rel="noopener noreferrer">
+              <a
+                href="https://linkedin.com/in/chienchuanw"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
                 <FontAwesomeIcon icon={faLinkedin} className="h-5 w-5" />
                 <span className="sr-only">LinkedIn</span>
               </a>
             </Button>
-            
+
             <Button variant="outline" size="icon" asChild>
               <a href="mailto:contact@chienchuan.com">
                 <FontAwesomeIcon icon={faEnvelope} className="h-5 w-5" />
@@ -132,7 +165,7 @@ export default function Contact() {
           </div>
         </section>
       </main>
-      
+
       <footer className="mt-auto pt-8 pb-4 text-center text-sm text-muted-foreground">
         <p>© {new Date().getFullYear()} Chien Chuan W. All rights reserved.</p>
       </footer>
