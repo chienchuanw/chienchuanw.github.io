@@ -23,6 +23,7 @@ type Routes = {
   apiAuthLogout: string;
   apiAuthMe: string;
   apiAuthUpdateProfile: string;
+  apiAuthUpdatePassword: string;
   apiAuthCheckAuth: string;
 };
 
@@ -51,6 +52,7 @@ const routes: Routes = {
   apiAuthLogout: "/api/auth/logout",
   apiAuthMe: "/api/auth/me",
   apiAuthUpdateProfile: "/api/auth/update-profile",
+  apiAuthUpdatePassword: "/api/auth/update-password",
   apiAuthCheckAuth: "/api/auth/check-auth",
 };
 
