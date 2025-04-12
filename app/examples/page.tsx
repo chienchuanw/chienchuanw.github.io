@@ -1,0 +1,117 @@
+'use client';
+
+import React from 'react';
+import { AuthExample } from '@/components/examples/AuthExample';
+import { BlogPostsExample } from '@/components/examples/BlogPostsExample';
+import { ThemeToggle } from '@/components/examples/ThemeToggle';
+import useUIStore from '@/lib/store/useUIStore';
+
+export default function ExamplesPage() {
+  const isDarkMode = useUIStore((state) => state.isDarkMode);
+  const toasts = useUIStore((state) => state.toasts);
+  const addToast = useUIStore((state) => state.addToast);
+  const removeToast = useUIStore((state) => state.removeToast);
+
+  const handleAddToast = (type: 'success' | 'error' | 'info' | 'warning') => {
+    const messages = {
+      success: '操作成功！',
+      error: '發生錯誤！',
+      info: '這是一條信息提示',
+      warning: '請注意！這是一個警告',
+    };
+    
+    addToast(messages[type], type);
+  };
+
+  return (
+    <div className={`p-6 ${isDarkMode ? 'dark' : ''}`}>
+      <div className="max-w-4xl mx-auto">
+        <header className="mb-8 flex justify-between items-center">
+          <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
+            Zustand + SWR 示例
+          </h1>
+          <ThemeToggle />
+        </header>
+
+        <div className="grid gap-8">
+          {/* 通知示例 */}
+          <section className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md">
+            <h2 className="text-xl font-semibold mb-4 text-gray-900 dark:text-white">
+              通知系統 (Zustand)
+            </h2>
+            <div className="flex flex-wrap gap-2 mb-4">
+              <button
+                onClick={() => handleAddToast('success')}
+                className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600"
+              >
+                成功通知
+              </button>
+              <button
+                onClick={() => handleAddToast('error')}
+                className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600"
+              >
+                錯誤通知
+              </button>
+              <button
+                onClick={() => handleAddToast('info')}
+                className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+              >
+                信息通知
+              </button>
+              <button
+                onClick={() => handleAddToast('warning')}
+                className="px-4 py-2 bg-yellow-500 text-white rounded hover:bg-yellow-600"
+              >
+                警告通知
+              </button>
+            </div>
+
+            {/* 顯示所有通知 */}
+            {toasts.length > 0 && (
+              <div className="space-y-2">
+                {toasts.map((toast) => (
+                  <div
+                    key={toast.id}
+                    className={`p-3 rounded-md flex justify-between items-start ${
+                      toast.type === 'success'
+                        ? 'bg-green-100 text-green-800'
+                        : toast.type === 'error'
+                        ? 'bg-red-100 text-red-800'
+                        : toast.type === 'warning'
+                        ? 'bg-yellow-100 text-yellow-800'
+                        : 'bg-blue-100 text-blue-800'
+                    }`}
+                  >
+                    <span>{toast.message}</span>
+                    <button
+                      onClick={() => removeToast(toast.id)}
+                      className="ml-2 text-gray-500 hover:text-gray-700"
+                    >
+                      ✕
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
+          </section>
+
+          {/* 認證示例 */}
+          <section className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md">
+            <h2 className="text-xl font-semibold mb-4 text-gray-900 dark:text-white">
+              用戶認證 (Zustand + SWR)
+            </h2>
+            <AuthExample />
+          </section>
+
+          {/* 博客文章示例 */}
+          <section className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md">
+            <h2 className="text-xl font-semibold mb-4 text-gray-900 dark:text-white">
+              部落格文章 (Zustand + SWR)
+            </h2>
+            <BlogPostsExample />
+          </section>
+        </div>
+      </div>
+    </div>
+  );
+}
