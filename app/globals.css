@@ -78,13 +78,5 @@ body {
 }
 
 @layer components {
-  /* 管理頁面樣式 */
-  .admin-page {
-    min-height: 100vh;
-  }
-  
-  /* 直接閉跳過為管理頁面使用的 CSS */
-  body:has(.admin-page) #nav-container {
-    display: none !important;
-  }
+  /* 管理頁面相關樣式已移至 admin-globals.css */
 }

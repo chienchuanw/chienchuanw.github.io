@@ -1,7 +1,7 @@
 // 這是一個伺服器元件
 import type { Metadata } from "next";
 import "../globals.css";
-import { AdminLayoutClient } from "@/components/auth/admin-layout-client";
+import "./admin-globals.css";
 
 export const metadata: Metadata = {
   title: "Admin Dashboard",
@@ -13,9 +13,5 @@ export default function AdminLayout({
 }: {
   children: React.ReactNode;
 }) {
-  return (
-    <AdminLayoutClient>
-      {children}
-    </AdminLayoutClient>
-  );
+  return <div className="admin-layout">{children}</div>;
 }
