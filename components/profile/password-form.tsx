@@ -56,6 +56,7 @@ export default function PasswordForm() {
       newPassword: "",
       confirmPassword: "",
     },
+    mode: "onChange", // Enable real-time validation as user types
   });
 
   // Check if form values have been modified
@@ -170,6 +171,11 @@ export default function PasswordForm() {
                       type="password"
                       placeholder="Enter current password"
                       autoComplete="current-password"
+                      className={
+                        form.formState.errors.currentPassword
+                          ? "border-destructive focus-visible:ring-destructive"
+                          : ""
+                      }
                     />
                   </FormControl>
                   <FormMessage />
@@ -190,6 +196,11 @@ export default function PasswordForm() {
                       type="password"
                       placeholder="Enter new password"
                       autoComplete="new-password"
+                      className={
+                        form.formState.errors.newPassword
+                          ? "border-destructive focus-visible:ring-destructive"
+                          : ""
+                      }
                     />
                   </FormControl>
                   <FormMessage />
@@ -210,6 +221,11 @@ export default function PasswordForm() {
                       type="password"
                       placeholder="Re-enter new password"
                       autoComplete="new-password"
+                      className={
+                        form.formState.errors.confirmPassword
+                          ? "border-destructive focus-visible:ring-destructive"
+                          : ""
+                      }
                     />
                   </FormControl>
                   <FormMessage />
