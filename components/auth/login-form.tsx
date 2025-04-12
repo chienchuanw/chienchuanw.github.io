@@ -5,7 +5,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/lib/context/auth-context";
-import { useToast } from "@/components/ui/use-toast";
 import routes from "@/lib/routes";
 
 // 表單驗證模式
@@ -19,7 +18,6 @@ type LoginFormValues = z.infer<typeof loginSchema>;
 export function LoginForm() {
   const { login } = useAuth();
   const router = useRouter();
-  const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -40,29 +38,33 @@ export function LoginForm() {
       setIsLoading(true);
       setError(null);
 
+      // 使用 auth-context 中的 login 函數進行登入
+      // 這會自動更新 Zustand 狀態並顯示成功的 toast
       await login(data.identifier, data.password);
 
       // 取得用戶信息
       const response = await fetch("/api/auth/me");
       const userData = await response.json();
 
+      // 根據用戶角色選擇重定向目標
       if (response.ok && userData?.user) {
-        // 根據用戶角色選擇重定向目標
-        if (userData.user.role === 'admin') {
+        if (userData.user.role === "admin") {
           // 管理員導向到儀表板
-          router.push('/admin/dashboard');
+          router.push("/admin/dashboard");
         } else {
           // 普通用戶導向到首頁
           router.push(routes.home);
         }
-        router.refresh();
       } else {
         // 預設導向到首頁
         router.push(routes.home);
-        router.refresh();
       }
+
+      // 重新整理頁面
+      router.refresh();
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : "登入失敗，請稍後再試";
+      const errorMessage =
+        err instanceof Error ? err.message : "登入失敗，請稍後再試";
       setError(errorMessage);
     } finally {
       setIsLoading(false);
