@@ -4,6 +4,7 @@ import { useEffect, ReactNode, useState } from "react";
 import { useRouter } from "next/navigation";
 import { checkAuthStatus } from "@/lib/auth/auth-utils";
 import { useToast } from "@/components/ui/use-toast";
+import routes from "@/lib/routes";
 
 interface ProtectedRouteProps {
   children: ReactNode;
@@ -28,7 +29,7 @@ export function ProtectedRoute({ children }: ProtectedRouteProps) {
       });
 
       // 重定向到登入頁面
-      router.push("/login");
+      router.push(routes.login);
     }
 
     // 添加類名以隱藏導航元素

@@ -37,11 +37,18 @@ const Navbar = () => {
   return (
     <header className="w-full flex justify-center pt-10">
       <div className="container grid grid-cols-3 items-center">
-        <div className="">
-          <Avatar>
-            <AvatarImage src="/images/avatar.jpg" className="object-cover" />
-            <AvatarFallback>CN</AvatarFallback>
-          </Avatar>
+        <div>
+          {isLoggedIn && (
+            <Link href={routes.profile}>
+              <Avatar>
+                <AvatarImage
+                  src="/images/avatar.jpg"
+                  className="object-cover"
+                />
+                <AvatarFallback>CN</AvatarFallback>
+              </Avatar>
+            </Link>
+          )}
         </div>
         <section className="flex justify-center">
           <div className="max-w-[400px]">
