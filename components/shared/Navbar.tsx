@@ -10,20 +10,30 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 import { Button } from "@/components/ui/button";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import { useCurrentUser } from "@/hooks/swr/useCurrentUser";
 import useAuthStore from "@/lib/store/useAuthStore";
+import { useEffect } from "react";
 
 import Link from "next/link";
 import routes from "@/lib/routes";
 
 const Navbar = () => {
   const router = useRouter();
-  const { isLoggedIn } = useCurrentUser();
+  const pathname = usePathname();
+  const { isLoggedIn, mutate } = useCurrentUser();
   const logout = useAuthStore((state) => state.logout);
+  const setLoggedIn = useAuthStore((state) => state.setLoggedIn);
+
+  // 監聽路徑變化，自動檢查用戶狀態
+  useEffect(() => {
+    mutate();
+  }, [pathname, mutate]);
 
   const handleLogout = async () => {
     await logout();
+    // 登出後直接重新驗證用戶狀態
+    await mutate(undefined, { revalidate: true });
     router.push(routes.home);
   };
   return (
