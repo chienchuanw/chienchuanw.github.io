@@ -79,7 +79,7 @@ const Navbar = () => {
                     className="rounded-full bg-red-600 text-white hover:bg-red-700"
                     onClick={handleLogout}
                   >
-                    登出
+                    Logout
                   </Button>
                 )}
               </NavigationMenuItem>

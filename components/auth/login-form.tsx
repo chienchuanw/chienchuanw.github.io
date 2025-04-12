@@ -5,6 +5,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/lib/context/auth-context";
+import routes from "@/lib/routes";
 
 // 表單驗證模式
 const loginSchema = z.object({
@@ -40,7 +41,7 @@ export function LoginForm() {
       await login(data.email, data.password);
 
       // 登入成功後重定向到首頁
-      router.push("/");
+      router.push(routes.home);
       router.refresh();
     } catch (err) {
       setError(err instanceof Error ? err.message : "登入失敗，請稍後再試");
