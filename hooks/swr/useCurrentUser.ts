@@ -7,7 +7,13 @@ import * as React from "react";
 const fetcher = async (url: string) => {
   const res = await fetch(url);
 
-  // 如果響應不成功，拋出錯誤
+  // 如果是 401 錯誤，表示未登入，我們可以静默處理
+  if (res.status === 401) {
+    // 返回空的用戶數據，而不是拋出錯誤
+    return { user: null };
+  }
+
+  // 其他錯誤仍然拋出
   if (!res.ok) {
     const error = new Error("獲取用戶數據失敗");
     throw error;
@@ -23,22 +29,29 @@ export function useCurrentUser() {
   // 只在需要重新驗證時才使用 mutate 函數
   const swrKey = "/api/auth/me";
 
+  // 檢查是否已登入，如果已知未登入，則不發起請求
+  // 這會減少不必要的 401 請求
+  const shouldFetch =
+    typeof window !== "undefined" &&
+    (isLoggedIn || localStorage.getItem("auth-storage") !== null);
+
   // 使用 SWR 發起請求並管理數據
   const { data, error, isLoading, mutate } = useSWR<{ user: User }>(
-    swrKey,
+    // 只在應該發起請求時才提供 URL，否則返回 null 以避免請求
+    shouldFetch ? swrKey : null,
     fetcher,
     {
-      // 當組件首次掛載時執行驗證
-      revalidateOnMount: true,
+      // 當組件首次掛載時執行驗證，但只在可能已登入時
+      revalidateOnMount: shouldFetch,
       // 用戶切換回頁面時重新驗證，但限制频率
-      revalidateOnFocus: true,
-      focusThrottleInterval: 10000, // 10 秒內不重複驗證
+      revalidateOnFocus: shouldFetch,
+      focusThrottleInterval: 30000, // 增加為 30 秒，進一步減少請求
       // 禁用輪詢
       refreshInterval: 0,
       // 發生錯誤時不自動重試
       shouldRetryOnError: false,
       // 緩存時間（單位：毫秒）
-      dedupingInterval: 30000, // 增加為 30 秒，減少請求次數
+      dedupingInterval: 60000, // 增加為 60 秒，進一步減少請求次數
       // 當獲取成功時，同步更新 Zustand store
       onSuccess: (data) => {
         if (data?.user) {
@@ -50,7 +63,10 @@ export function useCurrentUser() {
         }
       },
       // 當獲取失敗時，確保登出狀態
-      onError: () => {
+      // 注意：由於我們在 fetcher 中已經處理了 401 錯誤，
+      // 所以這裡只會處理其他錯誤
+      onError: (err) => {
+        console.error("獲取用戶數據錯誤:", err);
         setUser(null);
         setLoggedIn(false);
       },
@@ -63,11 +79,12 @@ export function useCurrentUser() {
     const unsubscribe = useAuthStore.subscribe((state, prevState) => {
       // 當登入狀態從 true 變為 false 時，重新驗證
       if (prevState.isLoggedIn && !state.isLoggedIn) {
-        mutate();
+        // 立即重新驗證，不等待下一個渲染周期
+        mutate(undefined, { revalidate: true });
       }
       // 當登入狀態從 false 變為 true 時，也重新驗證
       if (!prevState.isLoggedIn && state.isLoggedIn) {
-        mutate();
+        mutate(undefined, { revalidate: true });
       }
     });
 

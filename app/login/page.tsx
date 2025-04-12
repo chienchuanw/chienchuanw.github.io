@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { LoginForm } from "@/components/auth/login-form";
-import { checkAuthStatus } from "@/lib/auth/auth-utils";
+// 不再需要 checkAuthStatus
 import { useAuth } from "@/lib/context/auth-context";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
@@ -12,22 +12,27 @@ import { faBell } from "@fortawesome/free-solid-svg-icons";
 
 export default function LoginPage() {
   const router = useRouter();
-  const { user } = useAuth();
+  const { user, loading } = useAuth();
   const { toast } = useToast();
   const [showTestToast, setShowTestToast] = useState(false);
 
   useEffect(() => {
-    // 如果是管理員且已經認證，重定向到儀表板
-    if (user?.role === "admin" && checkAuthStatus()) {
-      router.push("/admin/dashboard");
+    // 檢查是否已登入，使用更可靠的方法
+    // 如果用戶已登入，則重定向到適當的頁面
+    if (user && !loading) {
+      if (user.role === "admin") {
+        router.push("/admin/dashboard");
+      } else {
+        router.push("/");
+      }
     }
-  }, [router, user]);
+  }, [router, user, loading]);
 
   return (
     <div className="flex min-h-[70vh] flex-col items-center justify-center p-4 md:p-8 dark:bg-gray-900">
       <div className="w-full max-w-md space-y-8">
         <LoginForm />
-        
+
         {/* Toast 測試按鈕 */}
         {showTestToast && (
           <div className="mt-8 flex flex-col gap-2">
@@ -74,9 +79,9 @@ export default function LoginPage() {
             </div>
           </div>
         )}
-        
+
         <div className="mt-4 text-center">
-          <button 
+          <button
             className="text-sm text-blue-500 hover:underline"
             onClick={() => setShowTestToast(!showTestToast)}
           >
