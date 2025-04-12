@@ -122,6 +122,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         variant: "success",
       });
 
+      // 儲存登入時間到 localStorage
+      if (typeof window !== "undefined") {
+        localStorage.setItem("lastLoginTime", Date.now().toString());
+      }
+
       // 直接更新 Zustand 狀態以確保立即同步
       setZustandUser(data.user);
       setZustandLoggedIn(true);
