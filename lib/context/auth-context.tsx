@@ -29,6 +29,7 @@ interface AuthContextType {
   login: (identifier: string, password: string) => Promise<void>;
   logout: () => Promise<void>;
   updateProfile: (data: { email: string; fullName?: string }) => Promise<User>;
+  updatePassword: (currentPassword: string, newPassword: string) => Promise<void>;
 }
 
 // 創建認證上下文
@@ -217,6 +218,37 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   };
 
+  // 更新密碼
+  const updatePassword = async (currentPassword: string, newPassword: string) => {
+    setLoading(true);
+    setError(null);
+
+    try {
+      const response = await fetch(routes.apiAuthUpdatePassword, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ currentPassword, newPassword }),
+      });
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(result.error || "更新密碼失敗");
+      }
+
+      return;
+    } catch (err) {
+      setError(
+        err instanceof Error ? err.message : "更新密碼過程中發生錯誤"
+      );
+      throw err;
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <AuthContext.Provider
       value={{
@@ -226,6 +258,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         login,
         logout,
         updateProfile,
+        updatePassword,
       }}
     >
       {children}
