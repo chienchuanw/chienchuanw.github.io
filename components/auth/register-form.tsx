@@ -206,7 +206,7 @@ export function RegisterForm() {
 
       <div className="mt-4 text-center text-sm">
         已有帳戶?{" "}
-        <a className="text-blue-500 hover:text-blue-700" href="/login">
+        <a className="text-blue-500 hover:text-blue-700" href={routes.login}>
           登入
         </a>
       </div>
