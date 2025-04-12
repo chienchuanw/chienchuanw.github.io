@@ -1,16 +1,11 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
-import { useAuth } from "@/lib/context/auth-context";
-import { checkAuthStatus } from "@/lib/auth/auth-utils";
-import routes from "@/lib/routes";
+// 移除不需要的 import
 
 export function AdminLayoutClient({ children }: { children: React.ReactNode }) {
   // 使用客戶端對 hydration 進行處理
   const [isMounted, setIsMounted] = useState(false);
-  const router = useRouter();
-  const { user } = useAuth();
 
   useEffect(() => {
     // 標記客戶端已掛載
@@ -22,11 +17,7 @@ export function AdminLayoutClient({ children }: { children: React.ReactNode }) {
       navContainer.style.display = "none";
     }
 
-    // 檢查用戶是否為管理員且已登入
-    if (!user || user.role !== "admin" || !checkAuthStatus()) {
-      // 如果不是管理員或未登入，重定向到登入頁面
-      router.push(routes.login);
-    }
+    // 移除身份驗證檢查，允許任何人訪問管理頁面
 
     // 組件卸載時清理
     return () => {
@@ -34,7 +25,7 @@ export function AdminLayoutClient({ children }: { children: React.ReactNode }) {
         navContainer.style.display = "";
       }
     };
-  }, [router, user]);
+  }, []);
 
   // 初始渲染時不顯示任何特定樣式，避免 hydration 不匹配
   return (

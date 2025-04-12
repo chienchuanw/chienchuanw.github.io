@@ -3,7 +3,8 @@ import routes from "@/lib/routes";
 
 // 需要身份驗證的路徑
 // 使用 routes 對象中的路徑
-const AUTH_PATHS = [routes.admin, routes.profile];
+// 移除 admin 路徑，使其可以不需登入即可訪問
+const AUTH_PATHS = [routes.profile];
 
 // 不需要驗證的認證相關路徑
 const PUBLIC_AUTH_PATHS = [
@@ -55,7 +56,7 @@ export async function middleware(request: NextRequest) {
 export const config = {
   matcher: [
     // 需要身份驗證的路徑
-    `${routes.admin}/:path*`,
+    // 移除 admin 路徑，使其可以不需登入即可訪問
     `${routes.profile}/:path*`,
     // 公共認證頁面
     routes.login,
