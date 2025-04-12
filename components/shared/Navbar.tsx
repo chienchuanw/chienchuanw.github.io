@@ -1,3 +1,5 @@
+"use client";
+
 import {
   NavigationMenu,
   NavigationMenuItem,
@@ -8,11 +10,22 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 import { Button } from "@/components/ui/button";
+import { useRouter } from "next/navigation";
+import { useCurrentUser } from "@/hooks/swr/useCurrentUser";
+import useAuthStore from "@/lib/store/useAuthStore";
 
 import Link from "next/link";
 import routes from "@/lib/routes";
 
 const Navbar = () => {
+  const router = useRouter();
+  const { isLoggedIn } = useCurrentUser();
+  const logout = useAuthStore((state) => state.logout);
+
+  const handleLogout = async () => {
+    await logout();
+    router.push(routes.home);
+  };
   return (
     <header className="w-full flex justify-center pt-10">
       <div className="container grid grid-cols-3 items-center">
@@ -50,6 +63,15 @@ const Navbar = () => {
                 <Button asChild className="rounded-full">
                   <Link href={routes.contact}>Contact</Link>
                 </Button>
+                {isLoggedIn && (
+                  <Button
+                    variant="destructive"
+                    className="rounded-full bg-red-600 text-white hover:bg-red-700"
+                    onClick={handleLogout}
+                  >
+                    登出
+                  </Button>
+                )}
               </NavigationMenuItem>
             </NavigationMenuList>
           </NavigationMenu>
