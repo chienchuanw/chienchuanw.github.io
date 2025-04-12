@@ -9,7 +9,7 @@ import routes from "@/lib/routes";
 
 // 表單驗證模式
 const loginSchema = z.object({
-  email: z.string().email("請輸入有效的電子郵件地址"),
+  identifier: z.string().min(1, "請輸入電子郵件或用戶名"),
   password: z.string().min(6, "密碼至少需要6個字符"),
 });
 
@@ -28,7 +28,7 @@ export function LoginForm() {
   } = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
-      email: "",
+      identifier: "",
       password: "",
     },
   });
@@ -37,8 +37,9 @@ export function LoginForm() {
     try {
       setIsLoading(true);
       setError(null);
+      console.log('提交登入表單，資料:', { identifier: data.identifier });
 
-      await login(data.email, data.password);
+      await login(data.identifier, data.password);
 
       // 取得用戶信息
       const response = await fetch("/api/auth/me");
@@ -85,20 +86,20 @@ export function LoginForm() {
         <div className="space-y-2">
           <label
             className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-            htmlFor="email"
+            htmlFor="identifier"
           >
-            電子郵件
+            電子郵件或用戶名
           </label>
           <input
             className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-            id="email"
-            placeholder="name@example.com"
-            type="email"
+            id="identifier"
+            placeholder="name@example.com 或 username"
+            type="text"
             disabled={isLoading}
-            {...register("email")}
+            {...register("identifier")}
           />
-          {errors.email && (
-            <p className="text-sm text-red-500">{errors.email.message}</p>
+          {errors.identifier && (
+            <p className="text-sm text-red-500">{errors.identifier.message}</p>
           )}
         </div>
 
