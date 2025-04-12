@@ -40,9 +40,25 @@ export function LoginForm() {
 
       await login(data.email, data.password);
 
-      // 登入成功後重定向到首頁
-      router.push(routes.home);
-      router.refresh();
+      // 取得用戶信息
+      const response = await fetch("/api/auth/me");
+      const userData = await response.json();
+
+      if (response.ok && userData?.user) {
+        // 根據用戶角色選擇重定向目標
+        if (userData.user.role === 'admin') {
+          // 管理員導向到儀表板
+          router.push('/admin/dashboard');
+        } else {
+          // 普通用戶導向到首頁
+          router.push(routes.home);
+        }
+        router.refresh();
+      } else {
+        // 預設導向到首頁
+        router.push(routes.home);
+        router.refresh();
+      }
     } catch (err) {
       setError(err instanceof Error ? err.message : "登入失敗，請稍後再試");
     } finally {
