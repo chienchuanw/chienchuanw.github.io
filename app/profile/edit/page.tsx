@@ -16,7 +16,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { toast } from "@/hooks/use-toast";
+import { toast } from "@/components/ui/use-toast";
 import Link from "next/link";
 import routes from "@/lib/routes";
 
@@ -24,9 +24,9 @@ import routes from "@/lib/routes";
 const profileSchema = z.object({
   username: z
     .string()
-    .min(3, "用戶名至少需要3個字符")
-    .max(50, "用戶名不能超過50個字符"),
-  email: z.string().email("請輸入有效的電子郵件地址"),
+    .min(3, "Username must be at least 3 characters")
+    .max(50, "Username cannot exceed 50 characters"),
+  email: z.string().email("Please enter a valid email address"),
   fullName: z.string().optional(),
 });
 
@@ -71,7 +71,7 @@ export default function EditProfilePage() {
     return (
       <div className="container py-10">
         <div className="flex justify-center items-center h-[60vh]">
-          <p className="text-lg">載入中...</p>
+          <p className="text-lg">Loading...</p>
         </div>
       </div>
     );
@@ -98,17 +98,19 @@ export default function EditProfilePage() {
       await updateProfile(updateData);
 
       toast({
-        title: "更新成功",
-        description: "您的個人資料已成功更新",
+        title: "Update Successful",
+        description: "Your profile has been successfully updated",
       });
 
       // 重定向回個人資料頁面
       router.push(routes.profile);
     } catch (error) {
       toast({
-        title: "更新失敗",
+        title: "Update Failed",
         description:
-          error instanceof Error ? error.message : "更新個人資料時發生錯誤",
+          error instanceof Error
+            ? error.message
+            : "An error occurred while updating your profile",
         variant: "destructive",
       });
     } finally {
@@ -120,9 +122,9 @@ export default function EditProfilePage() {
     <div className="container py-10">
       <div className="max-w-3xl mx-auto">
         <div className="flex items-center justify-between mb-6">
-          <h1 className="text-3xl font-bold">編輯個人資料</h1>
+          <h1 className="text-3xl font-bold">Edit Profile</h1>
           <Button variant="outline" asChild>
-            <Link href="/profile">返回</Link>
+            <Link href="/profile">Back</Link>
           </Button>
         </div>
 
@@ -135,9 +137,9 @@ export default function EditProfilePage() {
                 name="username"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>用戶名 (唯讀)</FormLabel>
+                    <FormLabel>Username (Read-only)</FormLabel>
                     <FormControl>
-                      <Input {...field} disabled placeholder="用戶名" />
+                      <Input {...field} disabled placeholder="Username" />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -150,7 +152,7 @@ export default function EditProfilePage() {
                 name="email"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>電子郵件</FormLabel>
+                    <FormLabel>Email</FormLabel>
                     <FormControl>
                       <Input {...field} placeholder="your@email.com" />
                     </FormControl>
@@ -165,9 +167,9 @@ export default function EditProfilePage() {
                 name="fullName"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>姓名 (選填)</FormLabel>
+                    <FormLabel>Full Name (Optional)</FormLabel>
                     <FormControl>
-                      <Input {...field} placeholder="您的姓名" />
+                      <Input {...field} placeholder="Your full name" />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -178,15 +180,15 @@ export default function EditProfilePage() {
               {lastLogin && (
                 <div className="space-y-2">
                   <label className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
-                    最近一次登入時間 (唯讀)
+                    Last Login Time (Read-only)
                   </label>
-                  <Input value={lastLogin} disabled placeholder="未知" />
+                  <Input value={lastLogin} disabled placeholder="Unknown" />
                 </div>
               )}
 
               <div className="flex justify-end pt-4">
                 <Button type="submit" disabled={isSubmitting}>
-                  {isSubmitting ? "儲存中..." : "儲存變更"}
+                  {isSubmitting ? "Saving..." : "Save Changes"}
                 </Button>
               </div>
             </form>

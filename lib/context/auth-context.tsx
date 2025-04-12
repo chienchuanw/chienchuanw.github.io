@@ -29,7 +29,10 @@ interface AuthContextType {
   login: (identifier: string, password: string) => Promise<void>;
   logout: () => Promise<void>;
   updateProfile: (data: { email: string; fullName?: string }) => Promise<User>;
-  updatePassword: (currentPassword: string, newPassword: string) => Promise<void>;
+  updatePassword: (
+    currentPassword: string,
+    newPassword: string
+  ) => Promise<void>;
 }
 
 // 創建認證上下文
@@ -73,8 +76,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           setUser(null);
         }
       } catch (err) {
-        console.error("獲取當前用戶時出錯:", err);
-        setError("無法獲取用戶數據");
+        console.error("Error fetching current user:", err);
+        setError("Unable to fetch user data");
         setUser(null);
       } finally {
         setLoading(false);
@@ -107,15 +110,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.error || "登入失敗");
+        throw new Error(data.error || "Login failed");
       }
 
       setUser(data.user);
 
       // 登入成功通知
       toast({
-        title: "登入成功",
-        description: "歡迎回來！",
+        title: "Login Successful",
+        description: "Welcome back!",
         variant: "success",
       });
 
@@ -124,12 +127,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setZustandLoggedIn(true);
     } catch (err) {
       const errorMessage =
-        err instanceof Error ? err.message : "登入過程中發生錯誤";
+        err instanceof Error ? err.message : "An error occurred during login";
       setError(errorMessage);
 
       // 登入失敗通知
       toast({
-        title: "登入失敗",
+        title: "Login Failed",
         description: errorMessage,
         variant: "destructive",
       });
@@ -152,7 +155,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
       if (!response.ok) {
         const data = await response.json();
-        throw new Error(data.error || "登出失敗");
+        throw new Error(data.error || "Logout failed");
       }
 
       // 清除用戶狀態
@@ -165,18 +168,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
       // 登出成功通知
       toast({
-        title: "登出成功",
-        description: "您已安全登出",
+        title: "Logout Successful",
+        description: "You have been safely logged out",
         variant: "success",
       });
     } catch (err) {
       const errorMessage =
-        err instanceof Error ? err.message : "登出過程中發生錯誤";
+        err instanceof Error ? err.message : "An error occurred during logout";
       setError(errorMessage);
 
       // 登出失敗通知
       toast({
-        title: "登出失敗",
+        title: "Logout Failed",
         description: errorMessage,
         variant: "destructive",
       });
@@ -203,14 +206,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const result = await response.json();
 
       if (!response.ok) {
-        throw new Error(result.error || "更新個人資料失敗");
+        throw new Error(result.error || "Failed to update profile");
       }
 
       setUser(result.user);
       return result.user;
     } catch (err) {
       setError(
-        err instanceof Error ? err.message : "更新個人資料過程中發生錯誤"
+        err instanceof Error
+          ? err.message
+          : "An error occurred while updating profile"
       );
       throw err;
     } finally {
@@ -219,7 +224,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   // 更新密碼
-  const updatePassword = async (currentPassword: string, newPassword: string) => {
+  const updatePassword = async (
+    currentPassword: string,
+    newPassword: string
+  ) => {
     setLoading(true);
     setError(null);
 
@@ -235,13 +243,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const result = await response.json();
 
       if (!response.ok) {
-        throw new Error(result.error || "更新密碼失敗");
+        throw new Error(result.error || "Failed to update password");
       }
 
       return;
     } catch (err) {
       setError(
-        err instanceof Error ? err.message : "更新密碼過程中發生錯誤"
+        err instanceof Error
+          ? err.message
+          : "An error occurred while updating password"
       );
       throw err;
     } finally {
@@ -271,7 +281,7 @@ export function useAuth() {
   const context = useContext(AuthContext);
 
   if (context === undefined) {
-    throw new Error("useAuth 必須在 AuthProvider 內部使用");
+    throw new Error("useAuth must be used within an AuthProvider");
   }
 
   return context;
