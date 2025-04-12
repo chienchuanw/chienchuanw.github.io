@@ -3,7 +3,8 @@
 import React, { useEffect } from 'react';
 import useUIStore from '@/lib/store/useUIStore';
 import { Button } from '@/components/ui/button';
-import { SunIcon, MoonIcon } from 'lucide-react';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faSun, faMoon } from '@fortawesome/free-solid-svg-icons';
 
 export function ThemeToggle() {
   const { isDarkMode, toggleDarkMode } = useUIStore();
@@ -42,9 +43,9 @@ export function ThemeToggle() {
       aria-label={isDarkMode ? '切換到亮色模式' : '切換到暗色模式'}
     >
       {isDarkMode ? (
-        <SunIcon className="h-5 w-5" />
+        <FontAwesomeIcon icon={faSun} className="h-5 w-5" />
       ) : (
-        <MoonIcon className="h-5 w-5" />
+        <FontAwesomeIcon icon={faMoon} className="h-5 w-5" />
       )}
     </Button>
   );
