@@ -39,16 +39,8 @@ export function LoginForm() {
     try {
       setIsLoading(true);
       setError(null);
-      console.log('提交登入表單，資料:', { identifier: data.identifier });
 
       await login(data.identifier, data.password);
-      
-      // 成功登入通知
-      toast({
-        title: "登入成功",
-        description: "歡迎回來！",
-        variant: "success",
-      });
 
       // 取得用戶信息
       const response = await fetch("/api/auth/me");
@@ -72,11 +64,6 @@ export function LoginForm() {
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : "登入失敗，請稍後再試";
       setError(errorMessage);
-      toast({
-        title: "登入失敗",
-        description: errorMessage,
-        variant: "destructive",
-      });
     } finally {
       setIsLoading(false);
     }

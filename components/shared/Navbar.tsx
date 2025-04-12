@@ -9,8 +9,10 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 import { Button } from "@/components/ui/button";
 import { useRouter, usePathname } from "next/navigation";
+import { useAuth } from "@/lib/context/auth-context";
 import { useCurrentUser } from "@/hooks/swr/useCurrentUser";
 import useAuthStore from "@/lib/store/useAuthStore";
+import { useToast } from "@/components/ui/use-toast";
 import { useEffect } from "react";
 
 import Link from "next/link";
@@ -20,8 +22,8 @@ const Navbar = () => {
   const router = useRouter();
   const pathname = usePathname();
   const { isLoggedIn, mutate } = useCurrentUser();
-  const logout = useAuthStore((state) => state.logout);
-  const setLoggedIn = useAuthStore((state) => state.setLoggedIn);
+  const { logout } = useAuth();
+  const { toast } = useToast();
 
   // 監聽路徑變化，自動檢查用戶狀態
   useEffect(() => {
@@ -29,10 +31,15 @@ const Navbar = () => {
   }, [pathname, mutate]);
 
   const handleLogout = async () => {
-    await logout();
-    // 登出後直接重新驗證用戶狀態
-    await mutate(undefined, { revalidate: true });
-    router.push(routes.home);
+    try {
+      await logout();
+      // 登出後直接重新驗證用戶狀態
+      await mutate(undefined, { revalidate: true });
+      router.push(routes.home);
+      router.refresh();
+    } catch (error) {
+      console.error('登出失敗:', error);
+    }
   };
   return (
     <header className="w-full flex justify-center pt-10">
@@ -82,7 +89,7 @@ const Navbar = () => {
                     className="text-red-500 font-bold"
                     onClick={handleLogout}
                   >
-                    Logout
+                    登出
                   </Button>
                 )}
               </NavigationMenuItem>
