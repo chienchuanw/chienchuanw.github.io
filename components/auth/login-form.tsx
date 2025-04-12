@@ -5,6 +5,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/lib/context/auth-context";
+import { useToast } from "@/components/ui/use-toast";
 import routes from "@/lib/routes";
 
 // 表單驗證模式
@@ -18,6 +19,7 @@ type LoginFormValues = z.infer<typeof loginSchema>;
 export function LoginForm() {
   const { login } = useAuth();
   const router = useRouter();
+  const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -40,6 +42,13 @@ export function LoginForm() {
       console.log('提交登入表單，資料:', { identifier: data.identifier });
 
       await login(data.identifier, data.password);
+      
+      // 成功登入通知
+      toast({
+        title: "登入成功",
+        description: "歡迎回來！",
+        variant: "success",
+      });
 
       // 取得用戶信息
       const response = await fetch("/api/auth/me");
@@ -61,7 +70,13 @@ export function LoginForm() {
         router.refresh();
       }
     } catch (err) {
-      setError(err instanceof Error ? err.message : "登入失敗，請稍後再試");
+      const errorMessage = err instanceof Error ? err.message : "登入失敗，請稍後再試";
+      setError(errorMessage);
+      toast({
+        title: "登入失敗",
+        description: errorMessage,
+        variant: "destructive",
+      });
     } finally {
       setIsLoading(false);
     }

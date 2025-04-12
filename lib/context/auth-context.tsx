@@ -7,6 +7,7 @@ import React, {
   useEffect,
   ReactNode,
 } from "react";
+import { useToast } from "@/components/ui/use-toast";
 
 // 用戶類型定義
 interface User {
@@ -42,6 +43,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const { toast } = useToast();
 
   // 獲取當前用戶
   useEffect(() => {
@@ -133,8 +135,23 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
       // 清除用戶狀態
       setUser(null);
+      
+      // 登出成功通知
+      toast({
+        title: "登出成功",
+        description: "您已安全登出",
+        variant: "success",
+      });
     } catch (err) {
-      setError(err instanceof Error ? err.message : "登出過程中發生錯誤");
+      const errorMessage = err instanceof Error ? err.message : "登出過程中發生錯誤";
+      setError(errorMessage);
+      
+      // 登出失敗通知
+      toast({
+        title: "登出失敗",
+        description: errorMessage,
+        variant: "destructive",
+      });
       throw err;
     } finally {
       setLoading(false);
