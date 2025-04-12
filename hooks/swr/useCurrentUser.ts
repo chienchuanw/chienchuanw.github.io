@@ -2,6 +2,7 @@ import useSWR from "swr";
 import useAuthStore from "@/lib/store/useAuthStore";
 import { User } from "@/lib/store/useAuthStore";
 import * as React from "react";
+import routes from "@/lib/routes";
 
 // 自定義 fetcher 函數
 const fetcher = async (url: string) => {
@@ -27,7 +28,7 @@ export function useCurrentUser() {
 
   // 使用固定的 SWR 鍵值，避免過多的請求
   // 只在需要重新驗證時才使用 mutate 函數
-  const swrKey = "/api/auth/me";
+  const swrKey = routes.apiAuthMe;
 
   // 檢查是否已登入，如果已知未登入，則不發起請求
   // 這會減少不必要的 401 請求
