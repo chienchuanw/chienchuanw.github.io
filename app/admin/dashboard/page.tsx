@@ -12,26 +12,24 @@ import {
 import { Button } from "@/components/ui/button";
 import { ProtectedRoute } from "@/components/auth/protected-route";
 import { logout } from "@/lib/auth/auth-utils";
-// Toaster 已在 layout 中引入
-import { useToast } from "@/components/ui/use-toast";
 import routes from "@/lib/routes";
 
 export default function AdminDashboardPage() {
   const router = useRouter();
-  const { toast } = useToast();
   const [isLoggingOut, setIsLoggingOut] = useState(false);
 
   const handleLogout = async () => {
     setIsLoggingOut(true);
 
     try {
-      await logout();
-      // toast 會在 logout 函數中自動調用
-      
-      // 使用 Next.js 路由
-      router.push('/login'); // 使用直接的路徑，避免 routes 定義的問題
+      logout();
+      // 不需要 await，因為 logout 函數不返回 Promise
+
+      // 使用 window.location 而不是 router.push
+      // 這會強制頁面完全重新加載，避免狀態不一致的問題
+      window.location.href = routes.home;
     } catch (error) {
-      console.error('登出錯誤:', error);
+      console.error("登出錯誤:", error);
     } finally {
       setIsLoggingOut(false);
     }
