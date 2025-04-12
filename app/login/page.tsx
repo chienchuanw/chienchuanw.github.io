@@ -1,16 +1,25 @@
-import React from 'react';
-import { LoginForm } from '@/components/auth/login-form';
-import { Metadata } from 'next';
+"use client";
 
-export const metadata: Metadata = {
-  title: '登入 | 我的網站',
-  description: '登入到您的帳戶',
-};
+import React, { useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { LoginForm } from "@/components/auth/login-form";
+import { checkAuthStatus } from "@/lib/auth/auth-utils";
+import { useAuth } from "@/lib/context/auth-context";
 
 export default function LoginPage() {
+  const router = useRouter();
+  const { user } = useAuth();
+
+  useEffect(() => {
+    // 如果是管理員且已經認證，重定向到儀表板
+    if (user?.role === "admin" && checkAuthStatus()) {
+      router.push("/admin/dashboard");
+    }
+  }, [router, user]);
+
   return (
-    <div className="flex h-screen flex-col items-center justify-center">
-      <div className="mx-auto flex w-full flex-col justify-center space-y-6 sm:w-[350px]">
+    <div className="flex min-h-[70vh] flex-col items-center justify-center p-4 md:p-8 dark:bg-gray-900">
+      <div className="w-full max-w-md space-y-8">
         <LoginForm />
       </div>
     </div>
