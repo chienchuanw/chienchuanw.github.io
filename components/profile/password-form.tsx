@@ -58,6 +58,31 @@ export default function PasswordForm() {
     },
   });
 
+  // Check if form values have been modified
+  const hasFormChanged = () => {
+    const currentValues = form.getValues();
+    return (
+      currentValues.currentPassword !== "" ||
+      currentValues.newPassword !== "" ||
+      currentValues.confirmPassword !== ""
+    );
+  };
+
+  // Reset form to empty values
+  const handleReset = () => {
+    form.reset({
+      currentPassword: "",
+      newPassword: "",
+      confirmPassword: "",
+    });
+
+    toast({
+      title: "Changes Reset",
+      description: "Form has been reset",
+      variant: "default",
+    });
+  };
+
   // 處理表單提交
   const onSubmit = async (data: PasswordFormValues) => {
     try {
@@ -194,7 +219,17 @@ export default function PasswordForm() {
           </form>
         </Form>
       </CardContent>
-      <CardFooter className="flex justify-end p-4 sm:p-6">
+      <CardFooter className="flex justify-end gap-2 p-4 sm:p-6">
+        {hasFormChanged() && (
+          <Button
+            onClick={handleReset}
+            variant="outline"
+            disabled={isSubmitting}
+            className="w-full sm:w-auto"
+          >
+            Reset
+          </Button>
+        )}
         <Button
           onClick={form.handleSubmit(onSubmit)}
           disabled={isSubmitting}

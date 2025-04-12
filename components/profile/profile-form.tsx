@@ -35,7 +35,7 @@ const profileSchema = z.object({
     .min(3, "Username must be at least 3 characters")
     .max(50, "Username cannot exceed 50 characters"),
   email: z.string().email("Please enter a valid email address"),
-  fullName: z.string().optional(),
+  displayName: z.string().optional(),
 });
 
 type ProfileFormValues = z.infer<typeof profileSchema>;
@@ -44,6 +44,8 @@ export default function ProfileForm() {
   const { user, updateProfile, loading } = useAuth();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [lastLogin, setLastLogin] = useState<string | null>(null);
+  const [originalValues, setOriginalValues] =
+    useState<ProfileFormValues | null>(null);
 
   // 表單設置
   const form = useForm<ProfileFormValues>({
@@ -51,18 +53,24 @@ export default function ProfileForm() {
     defaultValues: {
       username: "",
       email: "",
-      fullName: "",
+      displayName: "",
     },
   });
 
   // 當用戶數據載入時，設置表單預設值
   useEffect(() => {
     if (user) {
-      form.reset({
+      const initialValues = {
         username: user.username,
         email: user.email,
-        fullName: user.fullName || "",
-      });
+        displayName: user.displayName || "",
+      };
+
+      // Set form values
+      form.reset(initialValues);
+
+      // Store original values for reset functionality
+      setOriginalValues(initialValues);
 
       // 嘗試從 localStorage 獲取上次登入時間
       const lastLoginTimestamp = localStorage.getItem("lastLoginTime");
@@ -73,6 +81,30 @@ export default function ProfileForm() {
     }
   }, [user, form]);
 
+  // Check if form values have been modified
+  const hasFormChanged = () => {
+    if (!originalValues) return false;
+
+    const currentValues = form.getValues();
+    return (
+      currentValues.email !== originalValues.email ||
+      currentValues.displayName !== originalValues.displayName
+    );
+  };
+
+  // Reset form to original values
+  const handleReset = () => {
+    if (originalValues) {
+      form.reset(originalValues);
+
+      toast({
+        title: "Changes Reset",
+        description: "Form has been reset to original values",
+        variant: "default",
+      });
+    }
+  };
+
   // 處理表單提交
   const onSubmit = async (data: ProfileFormValues) => {
     try {
@@ -81,11 +113,18 @@ export default function ProfileForm() {
       // 只允許更新電子郵件和姓名
       const updateData = {
         email: data.email,
-        fullName: data.fullName,
+        displayName: data.displayName,
       };
 
       // 使用 auth-context 的 updateProfile 方法
       await updateProfile(updateData);
+
+      // Update original values after successful update
+      setOriginalValues({
+        ...originalValues!,
+        email: data.email,
+        displayName: data.displayName,
+      });
 
       toast({
         title: "Update Successful",
@@ -200,10 +239,10 @@ export default function ProfileForm() {
             {/* Full Name (Optional) */}
             <FormField
               control={form.control}
-              name="fullName"
+              name="displayName"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Full Name (Optional)</FormLabel>
+                  <FormLabel>Display Name (Optional)</FormLabel>
                   <FormControl>
                     <Input {...field} placeholder="Your full name" />
                   </FormControl>
@@ -229,7 +268,17 @@ export default function ProfileForm() {
           </form>
         </Form>
       </CardContent>
-      <CardFooter className="flex justify-end p-4 sm:p-6">
+      <CardFooter className="flex justify-end gap-2 p-4 sm:p-6">
+        {hasFormChanged() && (
+          <Button
+            onClick={handleReset}
+            variant="outline"
+            disabled={isSubmitting}
+            className="w-full sm:w-auto"
+          >
+            Reset
+          </Button>
+        )}
         <Button
           onClick={form.handleSubmit(onSubmit)}
           disabled={isSubmitting}

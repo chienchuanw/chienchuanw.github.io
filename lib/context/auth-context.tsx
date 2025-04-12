@@ -16,7 +16,7 @@ interface User {
   id: number;
   email: string;
   username: string;
-  fullName?: string;
+  displayName?: string;
   role: string;
   isActive: boolean;
 }
@@ -28,7 +28,10 @@ interface AuthContextType {
   error: string | null;
   login: (identifier: string, password: string) => Promise<void>;
   logout: () => Promise<void>;
-  updateProfile: (data: { email: string; fullName?: string }) => Promise<User>;
+  updateProfile: (data: {
+    email: string;
+    displayName?: string;
+  }) => Promise<User>;
   updatePassword: (
     currentPassword: string,
     newPassword: string
@@ -195,7 +198,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   // 更新個人資料
-  const updateProfile = async (data: { email: string; fullName?: string }) => {
+  const updateProfile = async (data: {
+    email: string;
+    displayName?: string;
+  }) => {
     setLoading(true);
     setError(null);
 
