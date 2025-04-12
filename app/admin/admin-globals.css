@@ -1,1 +1,18 @@
-@import '../globals.css';
+/* 管理頁面特定樣式 */
+
+/* 隱藏導航元素 */
+.admin-layout ~ #nav-container,
+.admin-layout + #nav-container,
+body:has(.admin-layout) #nav-container {
+  display: none !important;
+}
+
+/* 管理頁面基本樣式 */
+.admin-layout {
+  min-height: 100vh;
+}
+
+/* 確保管理頁面使用全屏寬 */
+.admin-layout > * {
+  width: 100%;
+}
