@@ -29,7 +29,7 @@ export async function POST(request: NextRequest) {
     // 只允許更新這些字段
     const updateData = {
       email: data.email,
-      fullName: data.fullName,
+      displayName: data.displayName,
     };
 
     // 更新用戶信息

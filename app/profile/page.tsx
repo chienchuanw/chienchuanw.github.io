@@ -92,7 +92,7 @@ export default function ProfilePage() {
                 </Avatar>
                 <div>
                   <h2 className="text-xl font-semibold">
-                    {user.fullName || user.username}
+                    {user.displayName || user.username}
                   </h2>
                   <p className="text-muted-foreground break-all">
                     {user.email}

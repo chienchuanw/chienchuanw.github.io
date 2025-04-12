@@ -57,7 +57,7 @@ export function AuthExample() {
         <p>用戶名：{user.username}</p>
         <p>電子郵件：{user.email}</p>
         <p>角色：{user.role}</p>
-        {user.fullName && <p>全名：{user.fullName}</p>}
+        {user.displayName && <p>全名：{user.displayName}</p>}
       </div>
       <Button variant="destructive" className="mt-4" onClick={handleLogout}>
         登出
