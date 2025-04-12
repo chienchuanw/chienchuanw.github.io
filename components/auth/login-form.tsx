@@ -100,10 +100,7 @@ export function LoginForm() {
             >
               密碼
             </label>
-            <a
-              className="text-sm text-blue-500 hover:text-blue-700"
-              href="/forgot-password"
-            >
+            <a className="text-sm text-blue-500 hover:text-blue-700" href="#">
               忘記密碼?
             </a>
           </div>

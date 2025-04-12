@@ -9,6 +9,7 @@ import React, {
 } from "react";
 import { useToast } from "@/components/ui/use-toast";
 import useAuthStore from "@/lib/store/useAuthStore";
+import routes from "@/lib/routes";
 
 // 用戶類型定義
 interface User {
@@ -67,7 +68,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         }
 
         setLoading(true);
-        const response = await fetch("/api/auth/me");
+        const response = await fetch(routes.apiAuthMe);
 
         if (response.ok) {
           const data = await response.json();
@@ -100,7 +101,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setError(null);
 
     try {
-      const response = await fetch("/api/auth/login", {
+      const response = await fetch(routes.apiAuthLogin, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -162,7 +163,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setError(null);
 
     try {
-      const response = await fetch("/api/auth/logout", {
+      const response = await fetch(routes.apiAuthLogout, {
         method: "POST",
       });
 
@@ -208,7 +209,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setError(null);
 
     try {
-      const response = await fetch("/api/auth/update-profile", {
+      const response = await fetch(routes.apiAuthUpdateProfile, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

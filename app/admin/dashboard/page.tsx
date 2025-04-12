@@ -58,7 +58,7 @@ export default function AdminDashboardPage() {
             <CardContent>
               <Button
                 className="w-full"
-                onClick={() => router.push("/admin/posts")}
+                onClick={() => router.push(routes.adminPosts)}
               >
                 進入文章管理
               </Button>
