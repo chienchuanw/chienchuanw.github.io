@@ -14,6 +14,7 @@ import { ProtectedRoute } from "@/components/auth/protected-route";
 import { logout } from "@/lib/auth/auth-utils";
 // Toaster 已在 layout 中引入
 import { useToast } from "@/components/ui/use-toast";
+import routes from "@/lib/routes";
 
 export default function AdminDashboardPage() {
   const router = useRouter();
@@ -31,7 +32,7 @@ export default function AdminDashboardPage() {
         description: "您已成功登出管理員後台。",
       });
       // 使用 Next.js 路由
-      router.push("/login");
+      router.push(routes.login);
       setIsLoggingOut(false);
     }, 500);
   };
