@@ -3,7 +3,6 @@ import "./globals.css";
 import Navbar from "@/components/shared/Navbar";
 import Tags from "@/components/shared/Tags";
 import { AuthProvider } from "@/lib/context/auth-context";
-import { AuthStatusButton } from "@/components/auth/auth-status-button";
 
 export const metadata: Metadata = {
   title: "shadcn blog",
@@ -25,7 +24,7 @@ export default function RootLayout({
             <Tags />
           </div>
           <main className="max-w-screen-xl mx-auto px-4">{children}</main>
-          <AuthStatusButton />
+          {/* 移除登入狀態指示燈 */}
         </AuthProvider>
       </body>
     </html>

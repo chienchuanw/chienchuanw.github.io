@@ -10,7 +10,7 @@
         "deploy": "npm run build && npm run export && gh-pages -d out",
         "lint": "next lint",
         "db:generate": "drizzle-kit generate:pg",
-        "db:migrate": "node -r dotenv/config lib/db/migrate.js",
+        "db:migrate": "npx tsx lib/db/migrate.ts",
         "db:studio": "drizzle-kit studio"
     },
     "dependencies": {
