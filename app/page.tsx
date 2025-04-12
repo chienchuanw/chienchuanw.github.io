@@ -21,24 +21,6 @@ export default function Home() {
 
   return (
     <div className="min-h-screen flex flex-col">
-      {/* Header with nav links */}
-      <header className="border-b py-4">
-        <div className="container mx-auto flex justify-between items-center px-4">
-          <h1 className="text-2xl font-bold">Chien Chuan W</h1>
-          
-          <nav className="flex gap-6">
-            <Link href="/contact" className="hover:text-gray-600 transition-colors">
-              Contact
-            </Link>
-            <Link href="/projects" className="hover:text-gray-600 transition-colors">
-              Projects
-            </Link>
-            <Link href="/about" className="hover:text-gray-600 transition-colors">
-              About
-            </Link>
-          </nav>
-        </div>
-      </header>
 
       <main className="flex-grow">
         {posts.length === 0 ? (
