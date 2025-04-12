@@ -23,7 +23,8 @@ import {
   DropdownMenuTrigger 
 } from '@/components/ui/dropdown-menu';
 import { Badge } from '@/components/ui/badge';
-import { ChevronDown, Edit, Trash, Eye, Plus, ArrowLeft } from 'lucide-react';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faChevronDown, faEdit, faTrash, faEye, faPlus, faArrowLeft } from '@fortawesome/free-solid-svg-icons';
 
 export default function PostsPage() {
   const router = useRouter();
@@ -95,14 +96,14 @@ export default function PostsPage() {
               size="icon"
               onClick={() => router.push('/admin/dashboard')}
             >
-              <ArrowLeft className="h-4 w-4" />
+              <FontAwesomeIcon icon={faArrowLeft} className="h-4 w-4" />
             </Button>
             <h1 className="text-2xl font-bold">文章管理</h1>
           </div>
           <Button 
             onClick={() => router.push('/admin/posts/new')}
           >
-            <Plus className="h-4 w-4 mr-2" /> 新增文章
+            <FontAwesomeIcon icon={faPlus} className="h-4 w-4 mr-2" /> 新增文章
           </Button>
         </div>
 
@@ -116,7 +117,7 @@ export default function PostsPage() {
               <div className="flex flex-col justify-center items-center h-40">
                 <p className="text-muted-foreground mb-4">目前沒有文章</p>
                 <Button onClick={() => router.push('/admin/posts/new')}>
-                  <Plus className="h-4 w-4 mr-2" /> 建立第一篇文章
+                  <FontAwesomeIcon icon={faPlus} className="h-4 w-4 mr-2" /> 建立第一篇文章
                 </Button>
               </div>
             ) : (
@@ -145,23 +146,23 @@ export default function PostsPage() {
                         <DropdownMenu>
                           <DropdownMenuTrigger asChild>
                             <Button variant="ghost" size="icon">
-                              <ChevronDown className="h-4 w-4" />
+                              <FontAwesomeIcon icon={faChevronDown} className="h-4 w-4" />
                             </Button>
                           </DropdownMenuTrigger>
                           <DropdownMenuContent align="end">
                             <DropdownMenuItem onClick={() => router.push(`/admin/posts/edit/${post.id}`)}>
-                              <Edit className="h-4 w-4 mr-2" />
+                              <FontAwesomeIcon icon={faEdit} className="h-4 w-4 mr-2" />
                               編輯
                             </DropdownMenuItem>
                             <DropdownMenuItem onClick={() => window.open(`/blog/${post.slug}`, '_blank')}>
-                              <Eye className="h-4 w-4 mr-2" />
+                              <FontAwesomeIcon icon={faEye} className="h-4 w-4 mr-2" />
                               查看
                             </DropdownMenuItem>
                             <DropdownMenuItem 
                               className="text-destructive"
                               onClick={() => handleDelete(post.id)}
                             >
-                              <Trash className="h-4 w-4 mr-2" />
+                              <FontAwesomeIcon icon={faTrash} className="h-4 w-4 mr-2" />
                               刪除
                             </DropdownMenuItem>
                           </DropdownMenuContent>

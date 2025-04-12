@@ -19,7 +19,8 @@ import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Textarea } from '@/components/ui/textarea';
 import { Switch } from '@/components/ui/switch';
-import { ArrowLeft, Save, Eye } from 'lucide-react';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faArrowLeft, faSave, faEye } from '@fortawesome/free-solid-svg-icons';
 import { Badge } from '@/components/ui/badge';
 
 export default function EditPostPage() {
@@ -158,7 +159,7 @@ export default function EditPostPage() {
             size="icon"
             onClick={() => router.push('/admin/posts')}
           >
-            <ArrowLeft className="h-4 w-4" />
+            <FontAwesomeIcon icon={faArrowLeft} className="h-4 w-4" />
           </Button>
           <h1 className="text-2xl font-bold">編輯文章</h1>
           <div className="ml-auto flex items-center gap-2">
@@ -295,7 +296,7 @@ export default function EditPostPage() {
                 <>處理中...</>
               ) : (
                 <>
-                  <Save className="h-4 w-4 mr-2" />
+                  <FontAwesomeIcon icon={faSave} className="h-4 w-4 mr-2" />
                   保存{isPublished ? '並發布' : '為草稿'}
                 </>
               )}

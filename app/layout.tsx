@@ -6,8 +6,8 @@ import { AuthProvider } from "@/lib/context/auth-context";
 import { Providers } from "./providers";
 
 export const metadata: Metadata = {
-  title: "shadcn blog",
-  description: "a blog use Next.js and shadcn/ui",
+  title: "chienchuanw",
+  description: "My personal website",
 };
 
 export default function RootLayout({
