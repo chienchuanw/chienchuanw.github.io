@@ -92,11 +92,11 @@ export default function PasswordForm() {
   if (loading) {
     return (
       <Card>
-        <CardHeader>
-          <Skeleton className="h-7 w-[180px] mb-2" />
-          <Skeleton className="h-5 w-[300px]" />
+        <CardHeader className="p-4 sm:p-6">
+          <Skeleton className="h-7 w-[150px] sm:w-[180px] mb-2" />
+          <Skeleton className="h-5 w-[250px] sm:w-[300px]" />
         </CardHeader>
-        <CardContent className="space-y-6">
+        <CardContent className="space-y-4 sm:space-y-6 p-4 sm:p-6">
           <div className="space-y-2">
             <Skeleton className="h-5 w-[150px]" />
             <Skeleton className="h-10 w-full" />
@@ -110,8 +110,8 @@ export default function PasswordForm() {
             <Skeleton className="h-10 w-full" />
           </div>
         </CardContent>
-        <CardFooter>
-          <Skeleton className="h-10 w-[150px] ml-auto" />
+        <CardFooter className="p-4 sm:p-6">
+          <Skeleton className="h-10 w-full sm:w-[150px] ml-auto" />
         </CardFooter>
       </Card>
     );
@@ -119,18 +119,20 @@ export default function PasswordForm() {
 
   return (
     <Card>
-      <CardHeader>
+      <CardHeader className="p-4 sm:p-6">
         <CardTitle>Change Password</CardTitle>
         <CardDescription>
           Secure your account with a strong password
         </CardDescription>
       </CardHeader>
-      <CardContent>
-        {/* 使用 Card 和其他 shadcn/ui 元件更改密碼表單外觀 */}
-        {/* 為密碼表單使用一致的 Card 設計樣式，提供更好的用戶體驗 */}
+      <CardContent className="p-4 sm:p-6">
+        {/* Responsive password form layout */}
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-            {/* 當前密碼 */}
+          <form
+            onSubmit={form.handleSubmit(onSubmit)}
+            className="space-y-4 sm:space-y-6"
+          >
+            {/* Current Password */}
             <FormField
               control={form.control}
               name="currentPassword"
@@ -150,7 +152,7 @@ export default function PasswordForm() {
               )}
             />
 
-            {/* 新密碼 */}
+            {/* New Password */}
             <FormField
               control={form.control}
               name="newPassword"
@@ -170,7 +172,7 @@ export default function PasswordForm() {
               )}
             />
 
-            {/* 確認新密碼 */}
+            {/* Confirm New Password */}
             <FormField
               control={form.control}
               name="confirmPassword"
@@ -192,7 +194,7 @@ export default function PasswordForm() {
           </form>
         </Form>
       </CardContent>
-      <CardFooter className="flex justify-end">
+      <CardFooter className="flex justify-end p-4 sm:p-6">
         <Button
           onClick={form.handleSubmit(onSubmit)}
           disabled={isSubmitting}
