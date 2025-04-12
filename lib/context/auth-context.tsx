@@ -55,10 +55,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         if (response.ok) {
           const data = await response.json();
           setUser(data.user);
-      // 保存登入時間到 localStorage
-      if (typeof window !== 'undefined') {
-        localStorage.setItem('lastLoginTime', Date.now().toString());
-      }
         } else {
           // 如果沒有登入或會話已過期則返回 null
           setUser(null);
@@ -78,7 +74,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const login = async (identifier: string, password: string) => {
     setLoading(true);
     setError(null);
-    console.log('嘗試登入，識別碼:', identifier);
 
     try {
       const response = await fetch("/api/auth/login", {
@@ -89,17 +84,36 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         body: JSON.stringify({ identifier, password }),
       });
 
-      console.log('登入響應狀態:', response.status);
       const data = await response.json();
-      console.log('登入響應數據:', data);
 
       if (!response.ok) {
         throw new Error(data.error || "登入失敗");
       }
 
       setUser(data.user);
+      
+      // 登入成功通知
+      toast({
+        title: "登入成功",
+        description: "歡迎回來！",
+        variant: "success",
+      });
+      
+      // 保存登入時間到 localStorage
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('lastLoginTime', Date.now().toString());
+      }
     } catch (err) {
-      setError(err instanceof Error ? err.message : "登入過程中發生錯誤");
+      const errorMessage = err instanceof Error ? err.message : "登入過程中發生錯誤";
+      setError(errorMessage);
+      
+      // 登入失敗通知
+      toast({
+        title: "登入失敗",
+        description: errorMessage,
+        variant: "destructive",
+      });
+      
       throw err;
     } finally {
       setLoading(false);
