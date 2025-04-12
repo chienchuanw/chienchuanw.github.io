@@ -55,6 +55,7 @@ export default function ProfileForm() {
       email: "",
       displayName: "",
     },
+    mode: "onChange", // Enable real-time validation as user types
   });
 
   // 當用戶數據載入時，設置表單預設值
@@ -229,7 +230,15 @@ export default function ProfileForm() {
                 <FormItem>
                   <FormLabel>Email</FormLabel>
                   <FormControl>
-                    <Input {...field} placeholder="your@email.com" />
+                    <Input
+                      {...field}
+                      placeholder="your@email.com"
+                      className={
+                        form.formState.errors.email
+                          ? "border-destructive focus-visible:ring-destructive"
+                          : ""
+                      }
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -244,7 +253,15 @@ export default function ProfileForm() {
                 <FormItem>
                   <FormLabel>Display Name (Optional)</FormLabel>
                   <FormControl>
-                    <Input {...field} placeholder="Your full name" />
+                    <Input
+                      {...field}
+                      placeholder="Your full name"
+                      className={
+                        form.formState.errors.displayName
+                          ? "border-destructive focus-visible:ring-destructive"
+                          : ""
+                      }
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
