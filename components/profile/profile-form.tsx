@@ -5,6 +5,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useAuth } from "@/lib/context/auth-context";
+import { formatTaiwanDate } from "@/lib/utils";
 import {
   Form,
   FormControl,
@@ -66,8 +67,8 @@ export default function ProfileForm() {
       // 嘗試從 localStorage 獲取上次登入時間
       const lastLoginTimestamp = localStorage.getItem("lastLoginTime");
       if (lastLoginTimestamp) {
-        const date = new Date(parseInt(lastLoginTimestamp));
-        setLastLogin(date.toLocaleString());
+        // Format the date in Taiwan timezone
+        setLastLogin(formatTaiwanDate(parseInt(lastLoginTimestamp)));
       }
     }
   }, [user, form]);
