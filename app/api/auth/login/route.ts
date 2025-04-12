@@ -5,22 +5,25 @@ import { cookies } from 'next/headers';
 export async function POST(request: NextRequest) {
   try {
     // 解析請求數據
-    const { email, password } = await request.json();
+    const body = await request.json();
+    console.log('Login request body:', body);
+    
+    const { identifier, password } = body;
     
     // 必填欄位驗證
-    if (!email || !password) {
+    if (!identifier || !password) {
       return NextResponse.json(
-        { error: '電子郵件和密碼為必填項' }, 
+        { error: '用戶名/電子郵件和密碼為必填項' }, 
         { status: 400 }
       );
     }
     
     // 嘗試登入
-    const result = await authService.login(email, password);
+    const result = await authService.login(identifier, password);
     
     if (!result) {
       return NextResponse.json(
-        { error: '無效的電子郵件或密碼' }, 
+        { error: '無效的用戶名/電子郵件或密碼' }, 
         { status: 401 }
       );
     }

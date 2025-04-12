@@ -6,11 +6,20 @@ import crypto from 'crypto';
 
 export const authService = {
   /**
-   * 用戶登入
+   * 用戶登入 (支援電子郵件或用戶名)
    */
-  async login(email: string, password: string): Promise<{ user: any; token: string } | null> {
-    // 根據電子郵件獲取用戶
-    const user = await userService.getByEmail(email);
+  async login(identifier: string, password: string): Promise<{ user: any; token: string } | null> {
+    console.log('嘗試登入，識別碼:', identifier);
+    
+    // 根據電子郵件或用戶名獲取用戶
+    let user = await userService.getByEmail(identifier);
+    console.log('透過電子郵件查詢結果:', user ? '找到用戶' : '未找到用戶');
+    
+    if (!user) {
+      // 如果根據電子郵件找不到，嘗試用戶名
+      user = await userService.getByUsername(identifier);
+      console.log('透過用戶名查詢結果:', user ? '找到用戶' : '未找到用戶');
+    }
     if (!user) return null;
     
     // 驗證密碼
