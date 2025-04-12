@@ -109,11 +109,11 @@ export default function ProfileForm() {
   if (loading) {
     return (
       <Card>
-        <CardHeader>
-          <Skeleton className="h-7 w-[250px] mb-2" />
-          <Skeleton className="h-5 w-[350px]" />
+        <CardHeader className="p-4 sm:p-6">
+          <Skeleton className="h-7 w-[200px] sm:w-[250px] mb-2" />
+          <Skeleton className="h-5 w-[280px] sm:w-[350px]" />
         </CardHeader>
-        <CardContent className="space-y-6">
+        <CardContent className="space-y-4 sm:space-y-6 p-4 sm:p-6">
           <div className="space-y-2">
             <Skeleton className="h-5 w-[120px]" />
             <Skeleton className="h-10 w-full" />
@@ -131,8 +131,8 @@ export default function ProfileForm() {
             <Skeleton className="h-10 w-full" />
           </div>
         </CardContent>
-        <CardFooter>
-          <Skeleton className="h-10 w-[120px] ml-auto" />
+        <CardFooter className="p-4 sm:p-6">
+          <Skeleton className="h-10 w-full sm:w-[120px] ml-auto" />
         </CardFooter>
       </Card>
     );
@@ -140,8 +140,8 @@ export default function ProfileForm() {
 
   if (!user) {
     return (
-      <Card className="text-center py-12">
-        <CardContent className="pt-6">
+      <Card className="text-center py-8 sm:py-12">
+        <CardContent className="pt-4 sm:pt-6">
           <p className="text-lg mb-4">You are not logged in</p>
         </CardContent>
       </Card>
@@ -150,16 +150,18 @@ export default function ProfileForm() {
 
   return (
     <Card>
-      <CardHeader>
+      <CardHeader className="p-4 sm:p-6">
         <CardTitle>Personal Information</CardTitle>
         <CardDescription>Update your profile and preferences</CardDescription>
       </CardHeader>
-      <CardContent>
-        {/* 使用 Card 和其他 shadcn/ui 元件更改表單外觀 */}
-        {/* 使用結構化的 Card 組件來呈現表單，增加視覺層次和專業感 */}
+      <CardContent className="p-4 sm:p-6">
+        {/* Responsive form layout */}
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-            {/* 用戶名 (唯讀) */}
+          <form
+            onSubmit={form.handleSubmit(onSubmit)}
+            className="space-y-4 sm:space-y-6"
+          >
+            {/* Username (Read-only) */}
             <FormField
               control={form.control}
               name="username"
@@ -179,7 +181,7 @@ export default function ProfileForm() {
               )}
             />
 
-            {/* 電子郵件 */}
+            {/* Email */}
             <FormField
               control={form.control}
               name="email"
@@ -194,7 +196,7 @@ export default function ProfileForm() {
               )}
             />
 
-            {/* 姓名 (選填) */}
+            {/* Full Name (Optional) */}
             <FormField
               control={form.control}
               name="fullName"
@@ -209,7 +211,7 @@ export default function ProfileForm() {
               )}
             />
 
-            {/* 上次登入時間 (唯讀) */}
+            {/* Last Login Time (Read-only) */}
             {lastLogin && (
               <div className="space-y-2">
                 <Label className="text-sm font-medium">
@@ -219,14 +221,14 @@ export default function ProfileForm() {
                   value={lastLogin}
                   disabled
                   placeholder="Unknown"
-                  className="bg-muted"
+                  className="bg-muted text-sm overflow-x-auto"
                 />
               </div>
             )}
           </form>
         </Form>
       </CardContent>
-      <CardFooter className="flex justify-end">
+      <CardFooter className="flex justify-end p-4 sm:p-6">
         <Button
           onClick={form.handleSubmit(onSubmit)}
           disabled={isSubmitting}
