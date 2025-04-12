@@ -39,14 +39,6 @@ export default function ProfilePage() {
   return (
     <div className="container py-10">
       <div className="max-w-3xl mx-auto">
-        <div className="flex items-center justify-between mb-6">
-          <h1 className="text-3xl font-bold">User Profile</h1>
-          {user && (
-            <Button onClick={handleLogout} variant="destructive" size="sm">
-              Logout
-            </Button>
-          )}
-        </div>
 
         {user ? (
           <div className="space-y-6">
