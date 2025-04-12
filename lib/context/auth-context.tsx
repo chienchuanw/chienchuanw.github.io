@@ -27,12 +27,6 @@ interface AuthContextType {
   loading: boolean;
   error: string | null;
   login: (identifier: string, password: string) => Promise<void>;
-  register: (userData: {
-    email: string;
-    username: string;
-    password: string;
-    fullName?: string;
-  }) => Promise<void>;
   logout: () => Promise<void>;
   updateProfile: (data: { email: string; fullName?: string }) => Promise<User>;
 }
@@ -145,18 +139,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  // 註冊函數 (已停用)
-  const register = async (userData: {
-    email: string;
-    username: string;
-    password: string;
-    fullName?: string;
-  }) => {
-    setLoading(false);
-    setError("註冊功能已被停用，請聯絡管理員創建帳戶");
-    throw new Error("註冊功能已被停用，請聯絡管理員創建帳戶");
-  };
-
   // 登出函數
   const logout = async () => {
     setLoading(true);
@@ -242,7 +224,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         loading,
         error,
         login,
-        register,
         logout,
         updateProfile,
       }}
