@@ -90,12 +90,7 @@ export default function ProfilePage() {
         ) : (
           <div className="text-center py-12">
             <p className="text-lg mb-4">您尚未登入</p>
-            <button
-              onClick={() => router.push('/login')}
-              className="px-4 py-2 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-md shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-            >
-              前往登入
-            </button>
+            {/* 移除前往登入按鈕 */}
           </div>
         )}
       </div>

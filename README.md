@@ -52,11 +52,26 @@ Open [http://localhost:3000](http://localhost:3000) with your browser to see the
 
 ## Authentication
 
-This project uses custom authentication with PostgreSQL and Drizzle ORM. Authentication endpoints:
+This project uses custom authentication with PostgreSQL and Drizzle ORM.
 
-- **Login**: `/login`
-- **Register**: `/register`
-- **Profile**: `/profile`
+### Important Note on Authentication
+
+For security reasons, user registration has been disabled. Only administrators can create new user accounts through database operations. To access the system:
+
+- **Login URL**: `/login` (must be accessed directly via URL, e.g., `http://localhost:3000/login` or `https://yourdomain.com/login`)
+- **Profile**: `/profile` (only accessible after login)
+
+There are no login buttons or indicators on the website interface. All authentication must be performed by visiting the login URL directly.
+
+### Creating New Users
+
+Administrators can create new users using the script provided in the `scripts` directory:
+
+```bash
+npx tsx scripts/create-user.ts
+```
+
+Follow the prompts to create a new user account. See `scripts/README.md` for more details.
 
 ## Learn More
 

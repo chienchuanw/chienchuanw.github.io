@@ -121,11 +121,8 @@ export function LoginForm() {
         </button>
       </form>
 
-      <div className="mt-4 text-center text-sm">
-        還沒有帳戶?{" "}
-        <a className="text-blue-500 hover:text-blue-700" href="/register">
-          註冊
-        </a>
+      <div className="mt-4 text-center text-sm text-gray-500">
+        需要帳戶? 請與管理員聯絡以創建新帳戶。
       </div>
     </div>
   );

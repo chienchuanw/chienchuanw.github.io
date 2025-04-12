@@ -96,39 +96,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  // 註冊函數
+  // 註冊函數 (已停用)
   const register = async (userData: {
     email: string;
     username: string;
     password: string;
     fullName?: string;
   }) => {
-    setLoading(true);
-    setError(null);
-
-    try {
-      const response = await fetch("/api/auth/register", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(userData),
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.error || "註冊失敗");
-      }
-
-      // 註冊成功後不自動登入，需要用戶手動登入
-      setUser(null);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "註冊過程中發生錯誤");
-      throw err;
-    } finally {
-      setLoading(false);
-    }
+    setLoading(false);
+    setError("註冊功能已被停用，請聯絡管理員創建帳戶");
+    throw new Error("註冊功能已被停用，請聯絡管理員創建帳戶");
   };
 
   // 登出函數
