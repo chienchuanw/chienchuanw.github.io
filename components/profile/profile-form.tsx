@@ -21,9 +21,9 @@ import { toast } from "@/components/ui/use-toast";
 const profileSchema = z.object({
   username: z
     .string()
-    .min(3, "用戶名至少需要3個字符")
-    .max(50, "用戶名不能超過50個字符"),
-  email: z.string().email("請輸入有效的電子郵件地址"),
+    .min(3, "Username must be at least 3 characters")
+    .max(50, "Username cannot exceed 50 characters"),
+  email: z.string().email("Please enter a valid email address"),
   fullName: z.string().optional(),
 });
 
@@ -77,14 +77,16 @@ export default function ProfileForm() {
       await updateProfile(updateData);
 
       toast({
-        title: "更新成功",
-        description: "您的個人資料已成功更新",
+        title: "Update Successful",
+        description: "Your profile has been successfully updated",
       });
     } catch (error) {
       toast({
-        title: "更新失敗",
+        title: "Update Failed",
         description:
-          error instanceof Error ? error.message : "更新個人資料時發生錯誤",
+          error instanceof Error
+            ? error.message
+            : "An error occurred while updating your profile",
         variant: "destructive",
       });
     } finally {
@@ -95,7 +97,7 @@ export default function ProfileForm() {
   if (!user) {
     return (
       <div className="text-center py-12">
-        <p className="text-lg mb-4">您尚未登入</p>
+        <p className="text-lg mb-4">You are not logged in</p>
       </div>
     );
   }
@@ -110,9 +112,9 @@ export default function ProfileForm() {
             name="username"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>用戶名 (唯讀)</FormLabel>
+                <FormLabel>Username (Read-only)</FormLabel>
                 <FormControl>
-                  <Input {...field} disabled placeholder="用戶名" />
+                  <Input {...field} disabled placeholder="Username" />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -125,7 +127,7 @@ export default function ProfileForm() {
             name="email"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>電子郵件</FormLabel>
+                <FormLabel>Email</FormLabel>
                 <FormControl>
                   <Input {...field} placeholder="your@email.com" />
                 </FormControl>
@@ -140,9 +142,9 @@ export default function ProfileForm() {
             name="fullName"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>姓名 (選填)</FormLabel>
+                <FormLabel>Full Name (Optional)</FormLabel>
                 <FormControl>
-                  <Input {...field} placeholder="您的姓名" />
+                  <Input {...field} placeholder="Your full name" />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -153,15 +155,15 @@ export default function ProfileForm() {
           {lastLogin && (
             <div className="space-y-2">
               <label className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
-                最近一次登入時間 (唯讀)
+                Last Login Time (Read-only)
               </label>
-              <Input value={lastLogin} disabled placeholder="未知" />
+              <Input value={lastLogin} disabled placeholder="Unknown" />
             </div>
           )}
 
           <div className="flex justify-end pt-4">
             <Button type="submit" disabled={isSubmitting}>
-              {isSubmitting ? "儲存中..." : "儲存變更"}
+              {isSubmitting ? "Saving..." : "Save Changes"}
             </Button>
           </div>
         </form>
