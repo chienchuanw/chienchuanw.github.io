@@ -22,12 +22,27 @@ const Navbar = () => {
   const router = useRouter();
   const pathname = usePathname();
   const { isLoggedIn, mutate } = useCurrentUser();
+  const loggedInFromStore = useAuthStore((state) => state.isLoggedIn);
   const { logout } = useAuth();
   const { toast } = useToast();
 
-  // 監聽路徑變化，自動檢查用戶狀態
+  // 監聽路徑變化和登出等事件，自動檢查用戶狀態
   useEffect(() => {
+    // 建立監聽器來偵測登出事件
+    const checkAuthStatus = () => {
+      mutate();
+    };
+
+    // 初始檢查
     mutate();
+
+    // 設置監聽 localStorage 的變化
+    window.addEventListener("storage", checkAuthStatus);
+
+    // 清除監聽器
+    return () => {
+      window.removeEventListener("storage", checkAuthStatus);
+    };
   }, [pathname, mutate]);
 
   const handleLogout = async () => {
@@ -35,10 +50,17 @@ const Navbar = () => {
       await logout();
       // 登出後直接重新驗證用戶狀態
       await mutate(undefined, { revalidate: true });
+
+      // 觸發 localStorage 事件以確保其他組件也能收到通知
+      if (typeof window !== "undefined") {
+        // 通過更新一個跟踪登出狀態的款項來觸發 storage 事件
+        localStorage.setItem("lastAuthChange", Date.now().toString());
+      }
+
       router.push(routes.home);
       router.refresh();
     } catch (error) {
-      console.error('登出失敗:', error);
+      console.error("登出失敗:", error);
     }
   };
   return (
@@ -46,15 +68,15 @@ const Navbar = () => {
       <div className="container grid grid-cols-3 items-center">
         <div>
           {isLoggedIn && (
-            <Link href={routes.profile}>
-              <Avatar>
+            <Avatar>
+              <Link href={routes.profile}>
                 <AvatarImage
                   src="/images/avatar.jpg"
                   className="object-cover"
                 />
                 <AvatarFallback>CN</AvatarFallback>
-              </Avatar>
-            </Link>
+              </Link>
+            </Avatar>
           )}
         </div>
         <section className="flex justify-center">
@@ -89,7 +111,7 @@ const Navbar = () => {
                     className="text-red-500 font-bold"
                     onClick={handleLogout}
                   >
-                    登出
+                    Logout
                   </Button>
                 )}
               </NavigationMenuItem>
