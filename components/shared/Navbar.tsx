@@ -8,54 +8,28 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 import { Button } from "@/components/ui/button";
-import { useRouter, usePathname } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { useAuth } from "@/lib/context/auth-context";
 import { useCurrentUser } from "@/hooks/swr/useCurrentUser";
-import useAuthStore from "@/lib/store/useAuthStore";
-import { useToast } from "@/components/ui/use-toast";
-import { useEffect } from "react";
 
 import Link from "next/link";
 import routes from "@/lib/routes";
 
 const Navbar = () => {
   const router = useRouter();
-  const pathname = usePathname();
   const { isLoggedIn, mutate } = useCurrentUser();
-  const loggedInFromStore = useAuthStore((state) => state.isLoggedIn);
   const { logout } = useAuth();
-  const { toast } = useToast();
 
-  // 監聽路徑變化和登出等事件，自動檢查用戶狀態
-  useEffect(() => {
-    // 建立監聽器來偵測登出事件
-    const checkAuthStatus = () => {
-      mutate();
-    };
-
-    // 初始檢查
-    mutate();
-
-    // 設置監聽 localStorage 的變化
-    window.addEventListener("storage", checkAuthStatus);
-
-    // 清除監聽器
-    return () => {
-      window.removeEventListener("storage", checkAuthStatus);
-    };
-  }, [pathname, mutate]);
+  // 不再需要監聽 localStorage 事件，因為我們現在使用 Zustand 來管理狀態
 
   const handleLogout = async () => {
     try {
+      // 使用 Zustand store 的 logout 方法
+      // 這會自動觸發 store 變化，進而觸發所有訂閱的組件重新渲染
       await logout();
-      // 登出後直接重新驗證用戶狀態
-      await mutate(undefined, { revalidate: true });
-
-      // 觸發 localStorage 事件以確保其他組件也能收到通知
-      if (typeof window !== "undefined") {
-        // 通過更新一個跟踪登出狀態的款項來觸發 storage 事件
-        localStorage.setItem("lastAuthChange", Date.now().toString());
-      }
+      
+      // 手動重新驗證當前用戶狀態
+      await mutate();
 
       router.push(routes.home);
       router.refresh();
@@ -63,6 +37,7 @@ const Navbar = () => {
       console.error("登出失敗:", error);
     }
   };
+  
   return (
     <header className="w-full flex justify-center pt-10">
       <div className="container grid grid-cols-3 items-center">
