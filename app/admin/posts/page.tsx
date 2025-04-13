@@ -267,7 +267,7 @@ export default function PostsPage() {
                 placeholder="Search posts..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-9"
+                className="pl-9 h-9"
               />
             </div>
             <div className="flex gap-2">
@@ -275,11 +275,11 @@ export default function PostsPage() {
                 <DropdownMenuTrigger asChild>
                   <Button
                     variant="outline"
-                    className="w-[130px] relative pl-11"
+                    className="w-[130px] relative pl-11 h-9"
                   >
                     <FontAwesomeIcon
                       icon={faFilter}
-                      className="absolute left-4 h-4 w-4"
+                      className="absolute left-4 top-1/2 transform -translate-y-1/2 h-4 w-4"
                     />
                     <span className="truncate">
                       {statusFilter === "all"
