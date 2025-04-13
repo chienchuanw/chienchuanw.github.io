@@ -73,8 +73,7 @@ export default function PostsPage() {
   const [statusFilter, setStatusFilter] = useState<
     "all" | "published" | "draft"
   >("all");
-
-  const postsPerPage = 5;
+  const [postsPerPage, setPostsPerPage] = useState<number>(10);
 
   // Load all posts
   useEffect(() => {
@@ -301,6 +300,65 @@ export default function PostsPage() {
                   </DropdownMenuItem>
                   <DropdownMenuItem onClick={() => setStatusFilter("draft")}>
                     Draft
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button
+                    variant="outline"
+                    className="w-[130px] relative pl-11 h-9"
+                  >
+                    <FontAwesomeIcon
+                      icon={faSort}
+                      className="absolute left-4 top-1/2 transform -translate-y-1/2 h-4 w-4"
+                    />
+                    <span className="truncate">{postsPerPage} per page</span>
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                  <DropdownMenuItem
+                    onClick={() => {
+                      setPostsPerPage(10);
+                      // Adjust current page to maintain position
+                      const newTotalPages = Math.ceil(
+                        filteredAndSortedPosts.length / 10
+                      );
+                      if (currentPage > newTotalPages) {
+                        setCurrentPage(newTotalPages || 1);
+                      }
+                    }}
+                  >
+                    10 per page
+                  </DropdownMenuItem>
+                  <DropdownMenuItem
+                    onClick={() => {
+                      setPostsPerPage(20);
+                      // Adjust current page to maintain position
+                      const newTotalPages = Math.ceil(
+                        filteredAndSortedPosts.length / 20
+                      );
+                      if (currentPage > newTotalPages) {
+                        setCurrentPage(newTotalPages || 1);
+                      }
+                    }}
+                  >
+                    20 per page
+                  </DropdownMenuItem>
+                  <DropdownMenuItem
+                    onClick={() => {
+                      setPostsPerPage(50);
+                      // Adjust current page to maintain position
+                      const newTotalPages = Math.ceil(
+                        filteredAndSortedPosts.length / 50
+                      );
+                      if (currentPage > newTotalPages) {
+                        setCurrentPage(newTotalPages || 1);
+                      }
+                    }}
+                  >
+                    50 per page
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
