@@ -9,6 +9,7 @@ type Routes = {
 
   // 用戶相關頁面
   profile: string;
+  profileEdit: string;
 
   // 管理員相關頁面
   admin: string;
@@ -24,6 +25,15 @@ type Routes = {
   apiAuthUpdateProfile: string;
   apiAuthUpdatePassword: string;
   apiAuthCheckAuth: string;
+
+  // 文章 API 路徑
+  apiPosts: string;
+  apiPostBySlug: string;
+  apiPostById: string;
+
+  // 媒體 API 路徑
+  apiMedia: string;
+  apiMediaById: string;
 };
 
 const routes: Routes = {
@@ -37,6 +47,7 @@ const routes: Routes = {
 
   // 用戶相關頁面
   profile: "/profile",
+  profileEdit: "/profile/edit",
 
   // 管理員相關頁面
   admin: "/admin",
@@ -52,6 +63,15 @@ const routes: Routes = {
   apiAuthUpdateProfile: "/api/auth/update-profile",
   apiAuthUpdatePassword: "/api/auth/update-password",
   apiAuthCheckAuth: "/api/auth/check-auth",
+
+  // 文章 API 路徑
+  apiPosts: "/api/posts",
+  apiPostBySlug: "/api/posts/:slug",
+  apiPostById: "/api/posts/id/:id",
+
+  // 媒體 API 路徑
+  apiMedia: "/api/media",
+  apiMediaById: "/api/media/:id",
 };
 
 export default routes;
