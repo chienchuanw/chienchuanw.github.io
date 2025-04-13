@@ -46,7 +46,6 @@ import {
 // Icons
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
-  faChevronDown,
   faEdit,
   faTrash,
   faEye,
@@ -58,6 +57,9 @@ import {
   faSortUp,
   faSortDown,
 } from "@fortawesome/free-solid-svg-icons";
+
+// Lucide Icons
+import { MoreHorizontal } from "lucide-react";
 
 export default function PostsPage() {
   const router = useRouter();
@@ -363,12 +365,14 @@ export default function PostsPage() {
                         <TableCell className="text-right">
                           <DropdownMenu>
                             <DropdownMenuTrigger asChild>
-                              <Button variant="ghost" size="icon">
-                                <FontAwesomeIcon
-                                  icon={faChevronDown}
-                                  className="h-4 w-4"
-                                />
-                              </Button>
+                              <div
+                                className="inline-flex items-center justify-center h-9 w-9 rounded-md text-sm transition-colors hover:bg-accent cursor-pointer"
+                                style={{
+                                  WebkitTapHighlightColor: "transparent",
+                                }}
+                              >
+                                <MoreHorizontal className="h-4 w-4" />
+                              </div>
                             </DropdownMenuTrigger>
                             <DropdownMenuContent align="end">
                               <DropdownMenuItem
