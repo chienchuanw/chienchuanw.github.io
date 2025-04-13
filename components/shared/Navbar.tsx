@@ -13,6 +13,7 @@ import {
   NavigationMenuTrigger,
   NavigationMenuLink,
 } from "@/components/ui/navigation-menu";
+
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 
@@ -55,7 +56,7 @@ const Navbar = () => {
   return (
     <header className="w-full flex justify-center pt-6 lg:pt-10">
       <div className="container px-4 lg:px-0">
-        {/* 
+        {/*
           註釋：使用不同的網格配置來適應不同螢幕尺寸
           - 小和中等螢幕：兩欄布局（logo + 漢堡選單）
           - 大螢幕：三欄布局
@@ -76,7 +77,7 @@ const Navbar = () => {
               </Avatar>
             )}
           </div>
-          
+
           {/* 中間 Logo - 在所有尺寸下居中 */}
           <section className="flex lg:col-span-6 md:justify-center">
             <div className="max-w-[400px]">
@@ -94,10 +95,10 @@ const Navbar = () => {
               </div>
             </div>
           </section>
-          
+
           {/* 右側導航 - 大螢幕版與中小螢幕版 */}
           <div className="flex justify-end items-center lg:col-span-3">
-            {/* 
+            {/*
               註釋：大螢幕導航菜單 - 僅在 1024px 以上顯示
             */}
             <div className="hidden lg:block">
@@ -110,7 +111,7 @@ const Navbar = () => {
                       </NavigationMenuLink>
                     </Link>
                   </NavigationMenuItem>
-                  
+
                   <NavigationMenuItem>
                     <Link href={routes.contact} legacyBehavior passHref>
                       <NavigationMenuLink className="px-4 py-2 hover:text-primary">
@@ -118,21 +119,29 @@ const Navbar = () => {
                       </NavigationMenuLink>
                     </Link>
                   </NavigationMenuItem>
-                  
+
                   {/* Admin 選單與子選單 */}
                   {currentLoggedIn && (
                     <NavigationMenuItem>
-                      <NavigationMenuTrigger className="px-4 py-2">Admin</NavigationMenuTrigger>
+                      <NavigationMenuTrigger className="px-4 py-2">
+                        Admin
+                      </NavigationMenuTrigger>
                       <NavigationMenuContent>
                         <ul className="grid w-[200px] gap-3 p-4">
                           <li className="row-span-1">
-                            <Link href={routes.adminDashboard} legacyBehavior passHref>
+                            <Link
+                              href={routes.adminDashboard}
+                              legacyBehavior
+                              passHref
+                            >
                               <NavigationMenuLink
                                 className={cn(
                                   "block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
                                 )}
                               >
-                                <div className="text-sm font-medium leading-none">Dashboard</div>
+                                <div className="text-sm font-medium leading-none">
+                                  Dashboard
+                                </div>
                                 <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
                                   查看網站總覽和數據統計
                                 </p>
@@ -140,13 +149,19 @@ const Navbar = () => {
                             </Link>
                           </li>
                           <li className="row-span-1">
-                            <Link href={routes.adminPosts} legacyBehavior passHref>
+                            <Link
+                              href={routes.adminPosts}
+                              legacyBehavior
+                              passHref
+                            >
                               <NavigationMenuLink
                                 className={cn(
                                   "block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
                                 )}
                               >
-                                <div className="text-sm font-medium leading-none">Post Management</div>
+                                <div className="text-sm font-medium leading-none">
+                                  Post Management
+                                </div>
                                 <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
                                   管理和編輯部落格文章
                                 </p>
@@ -157,7 +172,7 @@ const Navbar = () => {
                       </NavigationMenuContent>
                     </NavigationMenuItem>
                   )}
-                  
+
                   {/* 登出按鈕 */}
                   {currentLoggedIn && (
                     <NavigationMenuItem>
@@ -173,26 +188,20 @@ const Navbar = () => {
                 </NavigationMenuList>
               </NavigationMenu>
             </div>
-            
+
             {/* 漢堡選單按鈕 - 在小和中等螢幕顯示 (小於 1024px) */}
             <div className="lg:hidden">
               <NavigationMenu>
                 <NavigationMenuList>
                   <NavigationMenuItem>
                     {/* Custom hamburger button without dropdown arrow */}
-                    <Button 
-                      variant="ghost" 
-                      size="icon" 
-                      className="p-2 h-8 w-8"
-                      asChild
+                    <NavigationMenuTrigger
+                      className="p-2 h-8 w-8 bg-transparent hover:bg-transparent data-[state=open]:bg-transparent"
+                      hideArrow={true}
                     >
-                      <NavigationMenuTrigger className="bg-transparent hover:bg-transparent data-[state=open]:bg-transparent p-0 h-auto w-auto">
-                        <Menu className="h-5 w-5" />
-                        <span className="sr-only">Menu</span>
-                        {/* This empty span helps hide the dropdown icon */}
-                        <span className="hidden">x</span>
-                      </NavigationMenuTrigger>
-                    </Button>
+                      <Menu className="h-5 w-5" />
+                      <span className="sr-only">Menu</span>
+                    </NavigationMenuTrigger>
                     <NavigationMenuContent>
                       <ul className="grid w-[200px] gap-2 p-4">
                         <li>
@@ -217,13 +226,19 @@ const Navbar = () => {
                             </NavigationMenuLink>
                           </Link>
                         </li>
-                        
+
                         {/* 漢堡選單中的 Admin 選項 */}
                         {currentLoggedIn && (
                           <>
-                            <li className="mt-2 font-medium border-t pt-2">Admin</li>
+                            <li className="mt-2 font-medium border-t pt-2">
+                              Admin
+                            </li>
                             <li>
-                              <Link href={routes.adminDashboard} legacyBehavior passHref>
+                              <Link
+                                href={routes.adminDashboard}
+                                legacyBehavior
+                                passHref
+                              >
                                 <NavigationMenuLink
                                   className={cn(
                                     "block select-none rounded-md p-2 pl-4 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
@@ -234,7 +249,11 @@ const Navbar = () => {
                               </Link>
                             </li>
                             <li>
-                              <Link href={routes.adminPosts} legacyBehavior passHref>
+                              <Link
+                                href={routes.adminPosts}
+                                legacyBehavior
+                                passHref
+                              >
                                 <NavigationMenuLink
                                   className={cn(
                                     "block select-none rounded-md p-2 pl-4 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
@@ -244,7 +263,7 @@ const Navbar = () => {
                                 </NavigationMenuLink>
                               </Link>
                             </li>
-                            
+
                             {/* 漢堡選單中的登出按鈕 */}
                             <li className="mt-2">
                               <button
