@@ -14,13 +14,13 @@ import {
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faImage, faCircleInfo } from "@fortawesome/free-solid-svg-icons";
 
-// 動態導入 MD 編輯器以避免 SSR 問題
+// Dynamically import MD editor to avoid SSR issues
 const MDEditor = dynamic(
   () => import("@uiw/react-md-editor").then((mod) => mod.default),
   { ssr: false }
 );
 
-// 動態導入 MD 預覽組件
+// Dynamically import MD preview component
 const MDPreview = dynamic(
   () => import("@uiw/react-md-editor").then((mod) => mod.default.Markdown),
   { ssr: false }
@@ -41,23 +41,14 @@ export default function MarkdownEditor({
   preview = "live",
   postId,
 }: MarkdownEditorProps) {
-  // 使用數據 URL 作為本地圖片預覽
-  const handleImageUpload = async (file: File): Promise<string> => {
-    return new Promise((resolve) => {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        resolve(reader.result as string);
-      };
-      reader.readAsDataURL(file);
-    });
-  };
+  // We've removed the handleImageUpload function as it's no longer needed
 
-  // 插入媒體內容
+  // Insert media content into the editor
   const handleMediaSelect = (
     mediaUrl: string,
     api?: { replaceSelection: (text: string) => void }
   ) => {
-    // 根據 URL 判斷媒體類型
+    // Determine media type based on URL
     const isImage = /\.(jpg|jpeg|png|gif|webp|svg)$/i.test(mediaUrl);
     const isVideo = /\.(mp4|webm|ogg)$/i.test(mediaUrl);
     const isPdf = /\.pdf$/i.test(mediaUrl);
@@ -77,7 +68,7 @@ export default function MarkdownEditor({
     if (api) {
       api.replaceSelection(markdownText);
     } else {
-      // 直接插入到編輯器的當前位置
+      // Insert directly at the current position in the editor
       onChange(value + "\n" + markdownText + "\n");
     }
   };
@@ -88,92 +79,10 @@ export default function MarkdownEditor({
     return text.replace(/!\[(.*?)\]\(\s*\)/g, "[$1]()");
   };
 
-  // 自定義工具欄命令 - 圖片上傳
-  const imageUploadCommand = {
-    name: "image-upload",
-    keyCommand: "image-upload",
-    buttonProps: { "aria-label": "上傳圖片" },
-    icon: (
-      <svg viewBox="0 0 24 24" width="12" height="12">
-        <path
-          fill="currentColor"
-          d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"
-        />
-      </svg>
-    ),
-    execute: (
-      _state: { text: string; selection: unknown },
-      api: { replaceSelection: (text: string) => void }
-    ) => {
-      const input = document.createElement("input");
-      input.type = "file";
-      input.accept = "image/*";
-      input.click();
+  // We've removed the custom toolbar commands (imageUploadCommand and mediaGalleryCommand)
+  // to simplify the editor interface and rely on the Insert Media button below
 
-      input.onchange = async (e) => {
-        const file = (e.target as HTMLInputElement).files?.[0];
-        if (file) {
-          // 使用本地預覽作為臨時顯示
-          const imageUrl = await handleImageUpload(file);
-          api.replaceSelection(`![${file.name}](${imageUrl})`);
-
-          // 如果有 postId，則上傳到服務器
-          if (postId) {
-            try {
-              const formData = new FormData();
-              formData.append("file", file);
-              formData.append("postId", postId.toString());
-
-              const response = await fetch("/api/media", {
-                method: "POST",
-                body: formData,
-              });
-
-              if (response.ok) {
-                const data = await response.json();
-                // 替換臨時 URL 為服務器 URL
-                const serverUrl = data.media.url;
-                const currentContent = value;
-                onChange(
-                  validateMarkdown(currentContent.replace(imageUrl, serverUrl))
-                );
-              }
-            } catch (error) {
-              console.error("Error uploading image:", error);
-            }
-          }
-        }
-      };
-    },
-  };
-
-  // 自定義工具欄命令 - 媒體庫
-  const mediaGalleryCommand = {
-    name: "media-gallery",
-    keyCommand: "media-gallery",
-    buttonProps: { "aria-label": "媒體庫" },
-    icon: <FontAwesomeIcon icon={faImage} />,
-    execute: (
-      _state: { text: string; selection: unknown },
-      api: { replaceSelection: (text: string) => void }
-    ) => {
-      // 在選擇媒體後插入到編輯器
-      const mediaGalleryButton = document.getElementById(
-        "media-gallery-button"
-      );
-      if (mediaGalleryButton) {
-        mediaGalleryButton.click();
-        // 將 api 存儲起來，以便在選擇媒體後使用
-        (
-          window as {
-            __mdEditorApi?: { replaceSelection: (text: string) => void };
-          }
-        ).__mdEditorApi = api;
-      }
-    },
-  };
-
-  // 暗色模式
+  // Dark mode detection
   const [darkMode] = useState<"dark" | "light">(() => {
     if (typeof window !== "undefined") {
       return window.matchMedia?.("(prefers-color-scheme: dark)").matches
@@ -191,7 +100,7 @@ export default function MarkdownEditor({
           onChange={(val = "") => onChange(validateMarkdown(val))}
           height={height}
           preview={preview}
-          extraCommands={[imageUploadCommand, mediaGalleryCommand]}
+          extraCommands={[]}
           previewOptions={{
             rehypePlugins: [],
             remarkPlugins: [],
@@ -232,6 +141,7 @@ export default function MarkdownEditor({
               <MediaGallery
                 postId={postId}
                 onSelect={(url) => {
+                  // Get the editor API if it exists (for cursor position insertion)
                   const api = (
                     window as {
                       __mdEditorApi?: {
@@ -239,8 +149,11 @@ export default function MarkdownEditor({
                       };
                     }
                   ).__mdEditorApi;
+
                   if (api) {
+                    // Insert at cursor position if API is available
                     handleMediaSelect(url, api);
+                    // Clean up the API reference
                     delete (
                       window as {
                         __mdEditorApi?: {
@@ -249,6 +162,7 @@ export default function MarkdownEditor({
                       }
                     ).__mdEditorApi;
                   } else {
+                    // Otherwise insert at the end
                     handleMediaSelect(url);
                   }
                 }}
@@ -259,6 +173,48 @@ export default function MarkdownEditor({
               variant="outline"
               size="sm"
               onClick={() => {
+                // Store the current editor API for use after media selection
+                // This is needed to insert content at the cursor position
+                const editorElement = document.querySelector(
+                  ".w-md-editor-text-input"
+                );
+                if (editorElement) {
+                  // Store the editor's selection API in a global variable
+                  // so it can be accessed after media selection
+                  (
+                    window as {
+                      __mdEditorApi?: {
+                        replaceSelection: (text: string) => void;
+                      };
+                    }
+                  ).__mdEditorApi = {
+                    replaceSelection: (text: string) => {
+                      // Get the current selection
+                      const textarea = editorElement as HTMLTextAreaElement;
+                      const start = textarea.selectionStart;
+                      const end = textarea.selectionEnd;
+                      const currentValue = textarea.value;
+
+                      // Insert the text at the cursor position
+                      const newValue =
+                        currentValue.substring(0, start) +
+                        text +
+                        currentValue.substring(end);
+                      onChange(validateMarkdown(newValue));
+
+                      // Set the cursor position after the inserted text
+                      setTimeout(() => {
+                        textarea.focus();
+                        textarea.setSelectionRange(
+                          start + text.length,
+                          start + text.length
+                        );
+                      }, 0);
+                    },
+                  };
+                }
+
+                // Trigger the media gallery dialog
                 const button = document.getElementById("media-gallery-button");
                 if (button) {
                   const clickEvent = new MouseEvent("click", {
@@ -280,7 +236,7 @@ export default function MarkdownEditor({
   );
 }
 
-// 純展示 Markdown 內容的元件
+// Component for displaying Markdown content without editing capabilities
 export function MarkdownPreview({ content }: { content: string }) {
   const [darkMode] = useState<"dark" | "light">(() => {
     if (typeof window !== "undefined") {
