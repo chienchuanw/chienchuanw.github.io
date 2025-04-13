@@ -136,7 +136,7 @@ const Navbar = () => {
                 <NavigationMenuList>
                   <NavigationMenuItem>
                     <Link href={routes.blog} legacyBehavior passHref>
-                      <NavigationMenuLink className="px-4 py-2 hover:text-primary">
+                      <NavigationMenuLink className="px-4 py-2 text-sm font-medium rounded-md transition-colors hover:bg-accent hover:text-accent-foreground">
                         Blog
                       </NavigationMenuLink>
                     </Link>
@@ -144,7 +144,7 @@ const Navbar = () => {
 
                   <NavigationMenuItem>
                     <Link href={routes.contact} legacyBehavior passHref>
-                      <NavigationMenuLink className="px-4 py-2 hover:text-primary">
+                      <NavigationMenuLink className="px-4 py-2 text-sm font-medium rounded-md transition-colors hover:bg-accent hover:text-accent-foreground">
                         Contact
                       </NavigationMenuLink>
                     </Link>
@@ -153,7 +153,7 @@ const Navbar = () => {
                   {/* Admin 選單與子選單 */}
                   {currentLoggedIn && (
                     <NavigationMenuItem>
-                      <NavigationMenuTrigger className="px-4 py-2">
+                      <NavigationMenuTrigger className="px-4 py-2 text-sm font-medium rounded-md">
                         Admin
                       </NavigationMenuTrigger>
                       <NavigationMenuContent>
@@ -208,7 +208,7 @@ const Navbar = () => {
                     <NavigationMenuItem>
                       <Button
                         variant="ghost"
-                        className="text-red-500 font-medium hover:text-red-600 hover:bg-red-50"
+                        className="text-red-500 text-sm font-medium hover:text-red-600 hover:bg-red-50 px-4 py-2"
                         onClick={handleLogout}
                       >
                         Logout
