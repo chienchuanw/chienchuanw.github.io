@@ -47,7 +47,7 @@ export async function createPost(postData: Partial<Post>): Promise<Post> {
  */
 export async function getAllPosts(): Promise<Post[]> {
   try {
-    const { posts } = await clientPosts.fetchPosts({ limit: 100 });
+    const { posts } = await clientPosts.fetchPosts({ limit: 1000 });
     return posts;
   } catch (error) {
     console.error("Failed to fetch posts:", error);
