@@ -2,7 +2,11 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Menu } from "lucide-react";
+import { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+
+// Custom components
+import AnimatedBurger from "./AnimatedBurger";
 
 // shadcn/ui components
 import {
@@ -13,7 +17,6 @@ import {
   NavigationMenuTrigger,
   NavigationMenuLink,
 } from "@/components/ui/navigation-menu";
-
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 
@@ -28,6 +31,9 @@ import { cn } from "@/lib/utils";
 
 const Navbar = () => {
   const router = useRouter();
+  // State for mobile menu
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
   // 直接使用 useAuthStore 來訂閱登入狀態
   // 註釋：使用 Zustand store 來獲取登入狀態，以便在客戶端渲染時有即時的狀態
   const isLoggedInFromStore = useAuthStore((state) => state.isLoggedIn);
@@ -189,97 +195,131 @@ const Navbar = () => {
               </NavigationMenu>
             </div>
 
-            {/* 漢堡選單按鈕 - 在小和中等螢幕顯示 (小於 1024px) */}
+            {/* Mobile menu button - shown on small and medium screens (less than 1024px) */}
             <div className="lg:hidden">
-              <NavigationMenu>
-                <NavigationMenuList>
-                  <NavigationMenuItem>
-                    {/* Custom hamburger button without dropdown arrow */}
-                    <NavigationMenuTrigger
-                      className="p-2 h-8 w-8 bg-transparent hover:bg-transparent data-[state=open]:bg-transparent"
-                      hideArrow={true}
-                    >
-                      <Menu className="h-5 w-5" />
-                      <span className="sr-only">Menu</span>
-                    </NavigationMenuTrigger>
-                    <NavigationMenuContent>
-                      <ul className="grid w-[200px] gap-2 p-4">
-                        <li>
-                          <Link href={routes.blog} legacyBehavior passHref>
-                            <NavigationMenuLink
-                              className={cn(
-                                "block select-none rounded-md p-2 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
-                              )}
-                            >
-                              Blog
-                            </NavigationMenuLink>
-                          </Link>
-                        </li>
-                        <li>
-                          <Link href={routes.contact} legacyBehavior passHref>
-                            <NavigationMenuLink
-                              className={cn(
-                                "block select-none rounded-md p-2 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
-                              )}
-                            >
-                              Contact
-                            </NavigationMenuLink>
-                          </Link>
-                        </li>
+              <div className="relative">
+                {/* Custom burger button with animation */}
+                <button
+                  onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+                  className="p-2 rounded-md focus:outline-none"
+                  aria-label="Toggle menu"
+                >
+                  <AnimatedBurger isOpen={isMobileMenuOpen} />
+                </button>
 
-                        {/* 漢堡選單中的 Admin 選項 */}
+                {/* Animated mobile menu */}
+                <AnimatePresence>
+                  {isMobileMenuOpen && (
+                    <motion.div
+                      initial={{ opacity: 0, y: -20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -20 }}
+                      transition={{ duration: 0.2 }}
+                      className="absolute right-0 mt-2 w-[220px] rounded-md shadow-lg bg-background border z-50"
+                    >
+                      <motion.ul
+                        className="py-2 px-3 space-y-1"
+                        initial="closed"
+                        animate="open"
+                        variants={{
+                          open: {
+                            transition: {
+                              staggerChildren: 0.05,
+                              delayChildren: 0.1,
+                            },
+                          },
+                          closed: {},
+                        }}
+                      >
+                        <motion.li
+                          variants={{
+                            open: { opacity: 1, y: 0 },
+                            closed: { opacity: 0, y: -10 },
+                          }}
+                        >
+                          <Link href={routes.blog}>
+                            <span className="block px-3 py-2 rounded-md hover:bg-accent transition-colors duration-200">
+                              Blog
+                            </span>
+                          </Link>
+                        </motion.li>
+
+                        <motion.li
+                          variants={{
+                            open: { opacity: 1, y: 0 },
+                            closed: { opacity: 0, y: -10 },
+                          }}
+                        >
+                          <Link href={routes.contact}>
+                            <span className="block px-3 py-2 rounded-md hover:bg-accent transition-colors duration-200">
+                              Contact
+                            </span>
+                          </Link>
+                        </motion.li>
+
+                        {/* Admin options in mobile menu */}
                         {currentLoggedIn && (
                           <>
-                            <li className="mt-2 font-medium border-t pt-2">
-                              Admin
-                            </li>
-                            <li>
-                              <Link
-                                href={routes.adminDashboard}
-                                legacyBehavior
-                                passHref
-                              >
-                                <NavigationMenuLink
-                                  className={cn(
-                                    "block select-none rounded-md p-2 pl-4 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
-                                  )}
-                                >
-                                  Dashboard
-                                </NavigationMenuLink>
-                              </Link>
-                            </li>
-                            <li>
-                              <Link
-                                href={routes.adminPosts}
-                                legacyBehavior
-                                passHref
-                              >
-                                <NavigationMenuLink
-                                  className={cn(
-                                    "block select-none rounded-md p-2 pl-4 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
-                                  )}
-                                >
-                                  Post Management
-                                </NavigationMenuLink>
-                              </Link>
-                            </li>
+                            <motion.li
+                              className="mt-3 pt-3 border-t"
+                              variants={{
+                                open: { opacity: 1, y: 0 },
+                                closed: { opacity: 0, y: -10 },
+                              }}
+                            >
+                              <span className="block px-3 py-1 font-medium">
+                                Admin
+                              </span>
+                            </motion.li>
 
-                            {/* 漢堡選單中的登出按鈕 */}
-                            <li className="mt-2">
+                            <motion.li
+                              variants={{
+                                open: { opacity: 1, y: 0 },
+                                closed: { opacity: 0, y: -10 },
+                              }}
+                            >
+                              <Link href={routes.adminDashboard}>
+                                <span className="block px-3 py-2 pl-5 rounded-md hover:bg-accent transition-colors duration-200">
+                                  Dashboard
+                                </span>
+                              </Link>
+                            </motion.li>
+
+                            <motion.li
+                              variants={{
+                                open: { opacity: 1, y: 0 },
+                                closed: { opacity: 0, y: -10 },
+                              }}
+                            >
+                              <Link href={routes.adminPosts}>
+                                <span className="block px-3 py-2 pl-5 rounded-md hover:bg-accent transition-colors duration-200">
+                                  Post Management
+                                </span>
+                              </Link>
+                            </motion.li>
+
+                            {/* Logout button in mobile menu */}
+                            <motion.li
+                              className="mt-2"
+                              variants={{
+                                open: { opacity: 1, y: 0 },
+                                closed: { opacity: 0, y: -10 },
+                              }}
+                            >
                               <button
                                 onClick={handleLogout}
-                                className="w-full text-left text-red-500 font-medium p-2 rounded-md hover:bg-red-50"
+                                className="w-full text-left text-red-500 font-medium px-3 py-2 rounded-md hover:bg-red-50 transition-colors duration-200"
                               >
                                 Logout
                               </button>
-                            </li>
+                            </motion.li>
                           </>
                         )}
-                      </ul>
-                    </NavigationMenuContent>
-                  </NavigationMenuItem>
-                </NavigationMenuList>
-              </NavigationMenu>
+                      </motion.ul>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
             </div>
           </div>
         </div>
