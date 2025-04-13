@@ -11,11 +11,4 @@ const DATABASE_URL =
 const queryClient = postgres(DATABASE_URL, { max: 1 });
 const db = drizzle(queryClient, { schema });
 
-console.log(
-  "Database connection established with:",
-  DATABASE_URL.includes("@")
-    ? DATABASE_URL.split("@")[1]
-    : "(hidden connection string)"
-);
-
 export default db;

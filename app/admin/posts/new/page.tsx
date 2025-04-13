@@ -83,15 +83,6 @@ export default function NewPostPage() {
       const finalExcerpt = excerpt || generateExcerpt(content);
 
       try {
-        console.log("Creating post with data:", {
-          title,
-          slug,
-          content: content.substring(0, 100) + "...",
-          excerpt: finalExcerpt,
-          tags: tagArray,
-          published: isPublished,
-        });
-
         // Create post
         const newPost = await createPost({
           title,
