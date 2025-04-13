@@ -5,21 +5,13 @@ import dynamic from "next/dynamic";
 import "@uiw/react-md-editor/markdown-editor.css";
 import "@uiw/react-markdown-preview/markdown.css";
 import MediaGallery from "./media-gallery";
-import MediaUploader from "./media-uploader";
 import { Button } from "@/components/ui/button";
 import {
   Tooltip,
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faImage, faCircleInfo } from "@fortawesome/free-solid-svg-icons";
 
@@ -165,6 +157,7 @@ export default function MarkdownEditor({
                   ).__mdEditorApi;
                 }
               }}
+              // The Dialog component automatically handles Escape key and outside clicks
             >
               <DialogTrigger asChild>
                 <Button
@@ -221,103 +214,34 @@ export default function MarkdownEditor({
                 </Button>
               </DialogTrigger>
               <DialogContent className="max-w-3xl">
-                <DialogHeader>
-                  <DialogTitle>Media Gallery</DialogTitle>
-                </DialogHeader>
-                <Tabs defaultValue="upload">
-                  <TabsList className="grid w-full grid-cols-3">
-                    <TabsTrigger value="upload">Upload New</TabsTrigger>
-                    {postId && (
-                      <TabsTrigger value="post">Post Media</TabsTrigger>
-                    )}
-                    <TabsTrigger value="all">All Media</TabsTrigger>
-                  </TabsList>
+                <MediaGallery
+                  postId={postId}
+                  noDialog={true}
+                  isOpen={isDialogOpen}
+                  onOpenChange={setIsDialogOpen}
+                  onSelect={(url: string) => {
+                    // Get the editor API if it exists (for cursor position insertion)
+                    const api = (
+                      window as {
+                        __mdEditorApi?: {
+                          replaceSelection: (text: string) => void;
+                        };
+                      }
+                    ).__mdEditorApi;
 
-                  <TabsContent value="upload" className="py-4">
-                    <MediaUploader
-                      postId={postId}
-                      onUploadComplete={(url: string) => {
-                        // Get the editor API if it exists (for cursor position insertion)
-                        const api = (
-                          window as {
-                            __mdEditorApi?: {
-                              replaceSelection: (text: string) => void;
-                            };
-                          }
-                        ).__mdEditorApi;
-
-                        if (api) {
-                          // Insert at cursor position if API is available
-                          handleMediaSelect(url, api);
-                          // Close the dialog after insertion
-                          setIsDialogOpen(false);
-                        } else {
-                          // Otherwise insert at the end
-                          handleMediaSelect(url);
-                          // Close the dialog
-                          setIsDialogOpen(false);
-                        }
-                      }}
-                    />
-                  </TabsContent>
-
-                  {postId && (
-                    <TabsContent value="post" className="py-4">
-                      <MediaGallery
-                        postId={postId}
-                        onSelect={(url) => {
-                          // Get the editor API if it exists (for cursor position insertion)
-                          const api = (
-                            window as {
-                              __mdEditorApi?: {
-                                replaceSelection: (text: string) => void;
-                              };
-                            }
-                          ).__mdEditorApi;
-
-                          if (api) {
-                            // Insert at cursor position if API is available
-                            handleMediaSelect(url, api);
-                            // Close the dialog after insertion
-                            setIsDialogOpen(false);
-                          } else {
-                            // Otherwise insert at the end
-                            handleMediaSelect(url);
-                            // Close the dialog
-                            setIsDialogOpen(false);
-                          }
-                        }}
-                      />
-                    </TabsContent>
-                  )}
-
-                  <TabsContent value="all" className="py-4">
-                    <MediaGallery
-                      onSelect={(url) => {
-                        // Get the editor API if it exists (for cursor position insertion)
-                        const api = (
-                          window as {
-                            __mdEditorApi?: {
-                              replaceSelection: (text: string) => void;
-                            };
-                          }
-                        ).__mdEditorApi;
-
-                        if (api) {
-                          // Insert at cursor position if API is available
-                          handleMediaSelect(url, api);
-                          // Close the dialog after insertion
-                          setIsDialogOpen(false);
-                        } else {
-                          // Otherwise insert at the end
-                          handleMediaSelect(url);
-                          // Close the dialog
-                          setIsDialogOpen(false);
-                        }
-                      }}
-                    />
-                  </TabsContent>
-                </Tabs>
+                    if (api) {
+                      // Insert at cursor position if API is available
+                      handleMediaSelect(url, api);
+                      // Close the dialog after insertion
+                      setIsDialogOpen(false);
+                    } else {
+                      // Otherwise insert at the end
+                      handleMediaSelect(url);
+                      // Close the dialog
+                      setIsDialogOpen(false);
+                    }
+                  }}
+                />
               </DialogContent>
             </Dialog>
           </div>
