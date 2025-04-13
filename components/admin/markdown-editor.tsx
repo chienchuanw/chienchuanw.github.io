@@ -21,9 +21,12 @@ const MDEditor = dynamic(
   { ssr: false }
 );
 
-// Dynamically import MD preview component
-const MDPreview = dynamic(
-  () => import("@uiw/react-md-editor").then((mod) => mod.default.Markdown),
+// Dynamically import ReactMarkdown for preview
+const ReactMarkdown = dynamic(() => import("react-markdown"), { ssr: false });
+
+// Import remark-gfm plugin for GitHub Flavored Markdown
+const remarkGfm = dynamic(
+  () => import("remark-gfm").then((mod) => mod.default),
   { ssr: false }
 );
 
@@ -263,8 +266,85 @@ export function MarkdownPreview({ content }: { content: string }) {
   });
 
   return (
-    <div data-color-mode={darkMode} className="w-full">
-      <MDPreview source={content} />
+    <div
+      className={`w-full markdown-body ${
+        darkMode === "dark" ? "dark-mode" : ""
+      }`}
+    >
+      <ReactMarkdown
+        // @ts-ignore - Type issues with remarkPlugins
+        remarkPlugins={[remarkGfm]}
+        components={{
+          // Custom rendering for images
+          img: ({ ...props }) => {
+            return (
+              <span className="inline-block relative">
+                <img
+                  src={props.src || ""}
+                  alt={props.alt || ""}
+                  className="max-w-full h-auto rounded-md"
+                />
+              </span>
+            );
+          },
+          // Custom rendering for links
+          a: ({ ...props }) => {
+            return (
+              <a
+                href={props.href}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-blue-600 hover:underline"
+              >
+                {props.children}
+              </a>
+            );
+          },
+          // Custom rendering for code blocks
+          code: ({ className, children, ...props }: any) => {
+            const match = /language-(\w+)/.exec(className || "");
+            const isInline = !match && (props.inline || false);
+
+            if (isInline) {
+              return (
+                <code
+                  className="bg-gray-100 dark:bg-gray-800 px-1 py-0.5 rounded text-sm"
+                  {...props}
+                >
+                  {children}
+                </code>
+              );
+            }
+            return (
+              <pre className="bg-gray-100 dark:bg-gray-800 p-4 rounded-md overflow-auto">
+                <code className="text-sm" {...props}>
+                  {children}
+                </code>
+              </pre>
+            );
+          },
+          // Handle HTML in markdown, including videos
+          p: ({ children, ...props }) => {
+            // Check if the paragraph contains a video element
+            const childrenArray = React.Children.toArray(children);
+            const hasVideo = childrenArray.some(
+              (child) => typeof child === "string" && child.includes("<video")
+            );
+
+            if (hasVideo) {
+              // Extract video HTML and render it
+              const videoHtml = childrenArray
+                .map((child) => (typeof child === "string" ? child : ""))
+                .join("");
+              return <div dangerouslySetInnerHTML={{ __html: videoHtml }} />;
+            }
+
+            return <p {...props}>{children}</p>;
+          },
+        }}
+      >
+        {content}
+      </ReactMarkdown>
     </div>
   );
 }
