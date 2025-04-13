@@ -139,7 +139,7 @@ export default function NewPostPage() {
         </Button>
         <h1 className="text-2xl font-bold">Add New Article</h1>
         <div className="ml-auto flex items-center gap-2">
-          <Badge variant={isPublished ? "default" : "secondary"}>
+          <Badge variant={isPublished ? "success" : "secondary"}>
             {isPublished ? "Ready to Publish" : "Draft"}
           </Badge>
         </div>
