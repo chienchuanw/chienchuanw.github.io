@@ -1,18 +1,22 @@
 /* 管理頁面特定樣式 */
 
-/* 隱藏導航元素 */
-.admin-layout ~ #nav-container,
-.admin-layout + #nav-container,
-body:has(.admin-layout) #nav-container {
-  display: none !important;
-}
-
 /* 管理頁面基本樣式 */
 .admin-layout {
   min-height: 100vh;
+  padding-top: 1rem;
 }
 
 /* 確保管理頁面使用全屏寬 */
 .admin-layout > * {
   width: 100%;
+}
+
+/* 隱藏 Tags 元素，但保留 Navbar */
+body:has(.admin-layout) #nav-container > *:not(:first-child) {
+  display: none !important;
+}
+
+/* 為管理頁面添加額外的頂部間距 */
+.admin-layout > div:last-child {
+  padding-top: 1rem;
 }

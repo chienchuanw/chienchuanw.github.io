@@ -22,7 +22,7 @@ export default function RootLayout({
       <body className="min-h-screen bg-background font-sans antialiased root-body">
         <Providers>
           <AuthProvider>
-            <div id="nav-container" data-hide-on-admin="true">
+            <div id="nav-container">
               <Navbar />
               <Tags />
             </div>

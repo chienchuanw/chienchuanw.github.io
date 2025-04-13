@@ -5,7 +5,7 @@ import "./admin-globals.css";
 
 export const metadata: Metadata = {
   title: "Admin Dashboard",
-  description: "管理員後台介面",
+  description: "Admin Interface",
 };
 
 export default function AdminLayout({
@@ -13,5 +13,9 @@ export default function AdminLayout({
 }: {
   children: React.ReactNode;
 }) {
-  return <div className="admin-layout">{children}</div>;
+  return (
+    <div className="admin-layout">
+      <div className="pt-8">{children}</div>
+    </div>
+  );
 }
