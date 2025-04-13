@@ -274,7 +274,7 @@ export default function PostsPage() {
                 <DropdownMenuTrigger asChild>
                   <Button
                     variant="outline"
-                    className="w-[130px] relative pl-11 h-9"
+                    className="w-[130px] relative pl-11 h-9 border-none shadow-none"
                   >
                     <FontAwesomeIcon
                       icon={faFilter}
@@ -437,7 +437,7 @@ export default function PostsPage() {
                     <DropdownMenuTrigger asChild>
                       <Button
                         variant="outline"
-                        className="w-1/10 relative pl-11 h-9"
+                        className="w-1/10 relative pl-11 h-9 border-none shadow-none"
                       >
                         <FontAwesomeIcon
                           icon={faSort}
