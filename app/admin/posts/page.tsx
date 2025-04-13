@@ -1,12 +1,20 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { getAllPosts, deletePost, Post } from "@/lib/posts";
+import routes from "@/lib/routes";
 
+// UI Components
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
-import { Card, CardContent } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+} from "@/components/ui/card";
 import {
   Table,
   TableBody,
@@ -20,8 +28,22 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
+  DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
 import { Badge } from "@/components/ui/badge";
+import { Input } from "@/components/ui/input";
+import { Skeleton } from "@/components/ui/skeleton";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination";
+// Command component not used in this implementation
+
+// Icons
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faChevronDown,
@@ -30,6 +52,11 @@ import {
   faEye,
   faPlus,
   faArrowLeft,
+  faSearch,
+  faFilter,
+  faSort,
+  faSortUp,
+  faSortDown,
 } from "@fortawesome/free-solid-svg-icons";
 
 export default function PostsPage() {
@@ -37,8 +64,17 @@ export default function PostsPage() {
   const { toast } = useToast();
   const [posts, setPosts] = useState<Post[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const [sortField, setSortField] = useState<keyof Post | null>("updatedAt");
+  const [sortDirection, setSortDirection] = useState<"asc" | "desc">("desc");
+  const [statusFilter, setStatusFilter] = useState<
+    "all" | "published" | "draft"
+  >("all");
 
-  // 加載所有文章
+  const postsPerPage = 5;
+
+  // Load all posts
   useEffect(() => {
     try {
       const allPosts = getAllPosts();
@@ -55,7 +91,7 @@ export default function PostsPage() {
     }
   }, [toast]);
 
-  // 刪除文章
+  // Handle post deletion
   const handleDelete = (id: string) => {
     try {
       const success = deletePost(id);
@@ -64,7 +100,6 @@ export default function PostsPage() {
         toast({
           title: "Post Deleted",
           description: "The post has been successfully deleted",
-          variant: "success",
         });
       } else {
         toast({
@@ -83,7 +118,7 @@ export default function PostsPage() {
     }
   };
 
-  // 格式化日期
+  // Format date
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
     return date.toLocaleDateString("en-US", {
@@ -93,110 +128,322 @@ export default function PostsPage() {
     });
   };
 
+  // Handle sorting
+  const handleSort = (field: keyof Post) => {
+    if (sortField === field) {
+      setSortDirection(sortDirection === "asc" ? "desc" : "asc");
+    } else {
+      setSortField(field);
+      setSortDirection("asc");
+    }
+  };
+
+  // Filter and sort posts
+  const filteredAndSortedPosts = useMemo(() => {
+    // First filter by search term and status
+    let filtered = [...posts];
+
+    if (searchTerm) {
+      const lowerSearchTerm = searchTerm.toLowerCase();
+      filtered = filtered.filter(
+        (post) =>
+          post.title.toLowerCase().includes(lowerSearchTerm) ||
+          post.content.toLowerCase().includes(lowerSearchTerm) ||
+          post.tags.some((tag) => tag.toLowerCase().includes(lowerSearchTerm))
+      );
+    }
+
+    if (statusFilter !== "all") {
+      filtered = filtered.filter((post) =>
+        statusFilter === "published" ? post.published : !post.published
+      );
+    }
+
+    // Then sort
+    if (sortField) {
+      filtered.sort((a, b) => {
+        const aValue = a[sortField];
+        const bValue = b[sortField];
+
+        if (typeof aValue === "string" && typeof bValue === "string") {
+          if (sortDirection === "asc") {
+            return aValue.localeCompare(bValue);
+          } else {
+            return bValue.localeCompare(aValue);
+          }
+        }
+
+        return 0;
+      });
+    }
+
+    return filtered;
+  }, [posts, searchTerm, sortField, sortDirection, statusFilter]);
+
+  // Paginate posts
+  const paginatedPosts = useMemo(() => {
+    const startIndex = (currentPage - 1) * postsPerPage;
+    return filteredAndSortedPosts.slice(startIndex, startIndex + postsPerPage);
+  }, [filteredAndSortedPosts, currentPage, postsPerPage]);
+
+  // Calculate total pages
+  const totalPages = Math.ceil(filteredAndSortedPosts.length / postsPerPage);
+
+  // Generate pagination items
+  const paginationItems = [];
+  for (let i = 1; i <= totalPages; i++) {
+    paginationItems.push(
+      <PaginationItem key={i}>
+        <PaginationLink
+          isActive={currentPage === i}
+          onClick={() => setCurrentPage(i)}
+        >
+          {i}
+        </PaginationLink>
+      </PaginationItem>
+    );
+  }
+
+  // Render sort icon
+  const renderSortIcon = (field: keyof Post) => {
+    if (sortField !== field)
+      return (
+        <FontAwesomeIcon
+          icon={faSort}
+          className="ml-1 h-3 w-3 text-muted-foreground"
+        />
+      );
+    return sortDirection === "asc" ? (
+      <FontAwesomeIcon icon={faSortUp} className="ml-1 h-3 w-3" />
+    ) : (
+      <FontAwesomeIcon icon={faSortDown} className="ml-1 h-3 w-3" />
+    );
+  };
+
   return (
     <div className="container mx-auto p-4 md:p-6">
-      <div className="flex justify-between items-center mb-6">
+      <div className="flex flex-col space-y-4 md:flex-row md:justify-between md:items-center md:space-y-0 mb-6">
         <div className="flex items-center gap-4">
           <Button
             variant="outline"
             size="icon"
-            onClick={() => router.push("/admin/dashboard")}
+            onClick={() => router.push(routes.adminDashboard)}
           >
             <FontAwesomeIcon icon={faArrowLeft} className="h-4 w-4" />
           </Button>
           <h1 className="text-2xl font-bold">Post Management</h1>
         </div>
-        <Button onClick={() => router.push("/admin/posts/new")}>
+        <Button onClick={() => router.push(routes.adminPosts + "/new")}>
           <FontAwesomeIcon icon={faPlus} className="h-4 w-4 mr-2" /> Add Post
         </Button>
       </div>
 
-      <Card>
-        <CardContent className="p-0">
-          {isLoading ? (
-            <div className="flex justify-center items-center h-40">
-              <p>Loading...</p>
+      <Card className="mb-6">
+        <CardHeader>
+          <CardTitle>Posts</CardTitle>
+          <CardDescription>
+            Manage your blog posts, articles, and content
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="flex flex-col md:flex-row gap-4 mb-4">
+            <div className="relative flex-1">
+              <FontAwesomeIcon
+                icon={faSearch}
+                className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4"
+              />
+              <Input
+                placeholder="Search posts..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="pl-9"
+              />
             </div>
-          ) : posts.length === 0 ? (
-            <div className="flex flex-col justify-center items-center h-40">
+            <div className="flex gap-2">
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="outline" className="w-[130px]">
+                    <FontAwesomeIcon icon={faFilter} className="mr-2 h-4 w-4" />
+                    {statusFilter === "all"
+                      ? "All Status"
+                      : statusFilter === "published"
+                      ? "Published"
+                      : "Draft"}
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                  <DropdownMenuItem onClick={() => setStatusFilter("all")}>
+                    All Status
+                  </DropdownMenuItem>
+                  <DropdownMenuItem
+                    onClick={() => setStatusFilter("published")}
+                  >
+                    Published
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => setStatusFilter("draft")}>
+                    Draft
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </div>
+          </div>
+
+          {isLoading ? (
+            <div className="space-y-4">
+              {Array.from({ length: 3 }).map((_, index) => (
+                <div key={index} className="flex items-center space-x-4">
+                  <Skeleton className="h-12 w-[300px]" />
+                  <Skeleton className="h-12 w-24" />
+                  <Skeleton className="h-12 w-32" />
+                  <Skeleton className="h-12 w-32" />
+                  <Skeleton className="h-12 w-16 ml-auto" />
+                </div>
+              ))}
+            </div>
+          ) : filteredAndSortedPosts.length === 0 ? (
+            <div className="flex flex-col justify-center items-center py-12">
               <p className="text-muted-foreground mb-4">No posts available</p>
-              <Button onClick={() => router.push("/admin/posts/new")}>
-                <FontAwesomeIcon icon={faPlus} className="h-4 w-4 mr-2" />{" "}
+              <Button onClick={() => router.push(routes.adminPosts + "/new")}>
+                <FontAwesomeIcon icon={faPlus} className="h-4 w-4 mr-2" />
                 Create First Post
               </Button>
             </div>
           ) : (
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead className="w-[300px]">Title</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead>Created Date</TableHead>
-                  <TableHead>Updated Date</TableHead>
-                  <TableHead className="text-right">Actions</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {posts.map((post) => (
-                  <TableRow key={post.id}>
-                    <TableCell className="font-medium">{post.title}</TableCell>
-                    <TableCell>
-                      <Badge variant={post.published ? "default" : "secondary"}>
-                        {post.published ? "Published" : "Draft"}
-                      </Badge>
-                    </TableCell>
-                    <TableCell>{formatDate(post.createdAt)}</TableCell>
-                    <TableCell>{formatDate(post.updatedAt)}</TableCell>
-                    <TableCell className="text-right">
-                      <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                          <Button variant="ghost" size="icon">
-                            <FontAwesomeIcon
-                              icon={faChevronDown}
-                              className="h-4 w-4"
-                            />
-                          </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end">
-                          <DropdownMenuItem
-                            onClick={() =>
-                              router.push(`/admin/posts/edit/${post.id}`)
+            <>
+              <div className="rounded-md border">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead
+                        className="w-[300px] cursor-pointer"
+                        onClick={() => handleSort("title")}
+                      >
+                        Title {renderSortIcon("title")}
+                      </TableHead>
+                      <TableHead>Status</TableHead>
+                      <TableHead
+                        className="cursor-pointer"
+                        onClick={() => handleSort("createdAt")}
+                      >
+                        Created Date {renderSortIcon("createdAt")}
+                      </TableHead>
+                      <TableHead
+                        className="cursor-pointer"
+                        onClick={() => handleSort("updatedAt")}
+                      >
+                        Updated Date {renderSortIcon("updatedAt")}
+                      </TableHead>
+                      <TableHead className="text-right">Actions</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {paginatedPosts.map((post) => (
+                      <TableRow key={post.id}>
+                        <TableCell className="font-medium">
+                          {post.title}
+                        </TableCell>
+                        <TableCell>
+                          <Badge
+                            variant={post.published ? "default" : "secondary"}
+                          >
+                            {post.published ? "Published" : "Draft"}
+                          </Badge>
+                        </TableCell>
+                        <TableCell>{formatDate(post.createdAt)}</TableCell>
+                        <TableCell>{formatDate(post.updatedAt)}</TableCell>
+                        <TableCell className="text-right">
+                          <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                              <Button variant="ghost" size="icon">
+                                <FontAwesomeIcon
+                                  icon={faChevronDown}
+                                  className="h-4 w-4"
+                                />
+                              </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="end">
+                              <DropdownMenuItem
+                                onClick={() =>
+                                  router.push(`/admin/posts/edit/${post.id}`)
+                                }
+                              >
+                                <FontAwesomeIcon
+                                  icon={faEdit}
+                                  className="h-4 w-4 mr-2"
+                                />
+                                Edit
+                              </DropdownMenuItem>
+                              <DropdownMenuItem
+                                onClick={() =>
+                                  window.open(`/blog/${post.slug}`, "_blank")
+                                }
+                              >
+                                <FontAwesomeIcon
+                                  icon={faEye}
+                                  className="h-4 w-4 mr-2"
+                                />
+                                View
+                              </DropdownMenuItem>
+                              <DropdownMenuSeparator />
+                              <DropdownMenuItem
+                                className="text-destructive"
+                                onClick={() => handleDelete(post.id)}
+                              >
+                                <FontAwesomeIcon
+                                  icon={faTrash}
+                                  className="h-4 w-4 mr-2"
+                                />
+                                Delete
+                              </DropdownMenuItem>
+                            </DropdownMenuContent>
+                          </DropdownMenu>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
+
+              {totalPages > 1 && (
+                <div className="mt-4 flex justify-center">
+                  <Pagination>
+                    <PaginationContent>
+                      <PaginationItem>
+                        <PaginationPrevious
+                          onClick={() => {
+                            if (currentPage > 1) {
+                              setCurrentPage((prev) => prev - 1);
                             }
-                          >
-                            <FontAwesomeIcon
-                              icon={faEdit}
-                              className="h-4 w-4 mr-2"
-                            />
-                            Edit
-                          </DropdownMenuItem>
-                          <DropdownMenuItem
-                            onClick={() =>
-                              window.open(`/blog/${post.slug}`, "_blank")
+                          }}
+                          className={
+                            currentPage === 1
+                              ? "pointer-events-none opacity-50"
+                              : ""
+                          }
+                        />
+                      </PaginationItem>
+
+                      {paginationItems}
+
+                      <PaginationItem>
+                        <PaginationNext
+                          onClick={() => {
+                            if (currentPage < totalPages) {
+                              setCurrentPage((prev) => prev + 1);
                             }
-                          >
-                            <FontAwesomeIcon
-                              icon={faEye}
-                              className="h-4 w-4 mr-2"
-                            />
-                            View
-                          </DropdownMenuItem>
-                          <DropdownMenuItem
-                            className="text-destructive"
-                            onClick={() => handleDelete(post.id)}
-                          >
-                            <FontAwesomeIcon
-                              icon={faTrash}
-                              className="h-4 w-4 mr-2"
-                            />
-                            Delete
-                          </DropdownMenuItem>
-                        </DropdownMenuContent>
-                      </DropdownMenu>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
+                          }}
+                          className={
+                            currentPage === totalPages
+                              ? "pointer-events-none opacity-50"
+                              : ""
+                          }
+                        />
+                      </PaginationItem>
+                    </PaginationContent>
+                  </Pagination>
+                </div>
+              )}
+            </>
           )}
         </CardContent>
       </Card>
