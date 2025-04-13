@@ -351,7 +351,14 @@ export default function PostsPage() {
                     {paginatedPosts.map((post) => (
                       <TableRow key={post.id}>
                         <TableCell className="font-medium">
-                          {post.title}
+                          <a
+                            href={`/blog/${post.slug}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="hover:underline cursor-pointer"
+                          >
+                            {post.title}
+                          </a>
                         </TableCell>
                         <TableCell>
                           <Badge
