@@ -6,8 +6,13 @@ import "@uiw/react-md-editor/markdown-editor.css";
 import "@uiw/react-markdown-preview/markdown.css";
 import MediaGallery from "./media-gallery";
 import { Button } from "@/components/ui/button";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faImage } from "@fortawesome/free-solid-svg-icons";
+import { faImage, faCircleInfo } from "@fortawesome/free-solid-svg-icons";
 
 // 動態導入 MD 編輯器以避免 SSR 問題
 const MDEditor = dynamic(
@@ -193,11 +198,34 @@ export default function MarkdownEditor({
           }}
         />
         <div className="flex justify-between items-center">
-          <div className="text-xs text-muted-foreground">
-            <span className="font-medium">Tips:</span> Use{" "}
-            <code className="bg-muted px-1 rounded">[text](url)</code> for links
-            and <code className="bg-muted px-1 rounded">![alt](image_url)</code>{" "}
-            for images.
+          <div>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button variant="ghost" size="icon" className="h-8 w-8 p-0">
+                  <FontAwesomeIcon
+                    icon={faCircleInfo}
+                    className="h-4 w-4 text-muted-foreground"
+                  />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent className="max-w-xs bg-muted text-muted-foreground">
+                <div className="text-xs">
+                  <span className="font-medium">Markdown Tips:</span>
+                  <br />
+                  Use{" "}
+                  <code className="bg-background px-1 rounded">
+                    [text](url)
+                  </code>{" "}
+                  for links
+                  <br />
+                  Use{" "}
+                  <code className="bg-background px-1 rounded">
+                    ![alt](image_url)
+                  </code>{" "}
+                  for images
+                </div>
+              </TooltipContent>
+            </Tooltip>
           </div>
           <div>
             <span id="media-gallery-button" className="hidden">
