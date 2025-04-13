@@ -12,14 +12,24 @@ export default function Blog() {
 
   useEffect(() => {
     // 獲取所有已發布的文章並按更新日期排序
-    const fetchedPosts = getAllPosts()
-      .filter((post) => post.published)
-      .sort(
-        (a, b) =>
-          new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
-      );
+    async function fetchPosts() {
+      try {
+        const fetchedPosts = await getAllPosts();
+        // Filter published posts and sort by update date
+        const filteredAndSortedPosts = fetchedPosts
+          .filter((post) => post.published)
+          .sort(
+            (a, b) =>
+              new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
+          );
 
-    setPosts(fetchedPosts);
+        setPosts(filteredAndSortedPosts);
+      } catch (error) {
+        console.error("Failed to fetch posts:", error);
+      }
+    }
+
+    fetchPosts();
   }, []);
 
   return (

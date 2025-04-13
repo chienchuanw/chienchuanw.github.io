@@ -20,7 +20,7 @@ export default function NewPostPage() {
   const router = useRouter();
   const { toast } = useToast();
 
-  // 表單狀態
+  // Form state
   const [title, setTitle] = useState("");
   const [slug, setSlug] = useState("");
   const [content, setContent] = useState(
@@ -30,28 +30,29 @@ export default function NewPostPage() {
   const [tags, setTags] = useState("");
   const [isPublished, setIsPublished] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [postId, setPostId] = useState<number | undefined>(undefined);
 
-  // 自動生成 slug
+  // Auto-generate slug
   const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newTitle = e.target.value;
     setTitle(newTitle);
     setSlug(generateSlug(newTitle));
   };
 
-  // 自動生成摘要
+  // Auto-generate excerpt
   const handleGenerateExcerpt = () => {
     if (content) {
       setExcerpt(generateExcerpt(content));
     }
   };
 
-  // 處理表單提交
+  // Handle form submission
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
 
     try {
-      // 驗證必填欄位
+      // Validate required fields
       if (!title) {
         toast({
           title: "Title Cannot Be Empty",
@@ -72,34 +73,57 @@ export default function NewPostPage() {
         return;
       }
 
-      // 準備標籤
+      // Prepare tags
       const tagArray = tags
         .split(",")
         .map((tag) => tag.trim())
         .filter((tag) => tag);
 
-      // 準備摘要
+      // Prepare excerpt
       const finalExcerpt = excerpt || generateExcerpt(content);
 
-      // 創建文章
-      createPost({
-        title,
-        slug,
-        content,
-        excerpt: finalExcerpt,
-        tags: tagArray,
-        published: isPublished,
-      });
+      try {
+        console.log("Creating post with data:", {
+          title,
+          slug,
+          content: content.substring(0, 100) + "...",
+          excerpt: finalExcerpt,
+          tags: tagArray,
+          published: isPublished,
+        });
 
-      toast({
-        title: "Article Saved",
-        description: isPublished
-          ? "Article has been published"
-          : "Article has been saved as draft",
-      });
+        // Create post
+        const newPost = await createPost({
+          title,
+          slug,
+          content,
+          excerpt: finalExcerpt,
+          tags: tagArray,
+          published: isPublished,
+        });
 
-      // 導航到文章列表
-      router.push("/admin/posts");
+        if (newPost) {
+          setPostId(newPost.id);
+
+          toast({
+            title: "Article Saved",
+            description: isPublished
+              ? "Article has been published"
+              : "Article has been saved as draft",
+          });
+
+          // Navigate to post list
+          router.push("/admin/posts");
+        }
+      } catch (postError) {
+        console.error("Error creating post:", postError);
+        toast({
+          title: "Save Failed",
+          description:
+            "Failed to create post. Please check your login status and try again.",
+          variant: "destructive",
+        });
+      }
     } catch (error) {
       console.error("Submit error", error);
       toast({
@@ -156,7 +180,7 @@ export default function NewPostPage() {
                   onChange={(e) => setSlug(e.target.value)}
                 />
                 <p className="text-sm text-muted-foreground">
-                  This will be part of your article's URL: /blog/{slug}
+                  This will be part of your article&apos;s URL: /blog/{slug}
                 </p>
               </div>
 
@@ -224,6 +248,7 @@ export default function NewPostPage() {
                     onChange={setContent}
                     height={500}
                     preview="edit"
+                    postId={postId}
                   />
                 </TabsContent>
 
@@ -233,6 +258,7 @@ export default function NewPostPage() {
                     onChange={setContent}
                     height={500}
                     preview="preview"
+                    postId={postId}
                   />
                 </TabsContent>
               </Tabs>

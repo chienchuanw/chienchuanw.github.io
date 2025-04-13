@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
-import { getAllPosts, Post } from "@/lib/posts";
+import { getPostBySlug, Post } from "@/lib/posts";
 import Link from "next/link";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowLeft } from "@fortawesome/free-solid-svg-icons";
@@ -25,17 +25,25 @@ export default function BlogPost() {
       return;
     }
 
-    // 從本地儲存中獲取文章
-    const posts = getAllPosts();
-    const foundPost = posts.find((p) => p.slug === slug && p.published);
+    // 從數據庫獲取文章
+    async function fetchPost() {
+      try {
+        const foundPost = await getPostBySlug(slug);
 
-    if (foundPost) {
-      setPost(foundPost);
-    } else {
-      setError("找不到文章");
+        if (foundPost && foundPost.published) {
+          setPost(foundPost);
+        } else {
+          setError("找不到文章");
+        }
+      } catch (error) {
+        console.error(`Failed to fetch post with slug ${slug}:`, error);
+        setError("加載文章時發生錯誤");
+      } finally {
+        setLoading(false);
+      }
     }
 
-    setLoading(false);
+    fetchPost();
   }, [slug]);
 
   if (loading) {
