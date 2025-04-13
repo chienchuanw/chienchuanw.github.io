@@ -355,7 +355,7 @@ export default function PostsPage() {
                         </TableCell>
                         <TableCell>
                           <Badge
-                            variant={post.published ? "default" : "secondary"}
+                            variant={post.published ? "success" : "secondary"}
                           >
                             {post.published ? "Published" : "Draft"}
                           </Badge>

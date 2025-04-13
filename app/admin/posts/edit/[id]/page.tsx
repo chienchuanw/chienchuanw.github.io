@@ -180,7 +180,7 @@ export default function EditPostPage() {
         </Button>
         <h1 className="text-2xl font-bold">Edit Article</h1>
         <div className="ml-auto flex items-center gap-2">
-          <Badge variant={isPublished ? "default" : "secondary"}>
+          <Badge variant={isPublished ? "success" : "secondary"}>
             {isPublished ? "Published" : "Draft"}
           </Badge>
         </div>
