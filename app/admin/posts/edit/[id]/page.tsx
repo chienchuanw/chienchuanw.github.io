@@ -3,13 +3,14 @@
 import { useState, useEffect } from "react";
 import { useRouter, useParams } from "next/navigation";
 import { getPostById, updatePost, generateExcerpt } from "@/lib/posts";
-import MarkdownEditor from "@/components/admin/markdown-editor";
+import MarkdownEditor, {
+  MarkdownPreview,
+} from "@/components/admin/markdown-editor";
 import { useToast } from "@/components/ui/use-toast";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -266,15 +267,9 @@ export default function EditPostPage() {
               <CardTitle>Article Content</CardTitle>
             </CardHeader>
             <CardContent>
-              <Tabs defaultValue="edit">
-                <div className="mb-4">
-                  <TabsList>
-                    <TabsTrigger value="edit">Edit</TabsTrigger>
-                    <TabsTrigger value="preview">Preview</TabsTrigger>
-                  </TabsList>
-                </div>
-
-                <TabsContent value="edit">
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                <div className="w-full">
+                  <div className="mb-2 font-medium">Edit</div>
                   <MarkdownEditor
                     value={content}
                     onChange={setContent}
@@ -282,18 +277,14 @@ export default function EditPostPage() {
                     preview="edit"
                     postId={postId}
                   />
-                </TabsContent>
-
-                <TabsContent value="preview">
-                  <MarkdownEditor
-                    value={content}
-                    onChange={setContent}
-                    height={500}
-                    preview="preview"
-                    postId={postId}
-                  />
-                </TabsContent>
-              </Tabs>
+                </div>
+                <div className="w-full">
+                  <div className="mb-2 font-medium">Preview</div>
+                  <div className="border rounded-md p-4 h-[500px] overflow-auto">
+                    <MarkdownPreview content={content} />
+                  </div>
+                </div>
+              </div>
             </CardContent>
           </Card>
         </div>
