@@ -234,7 +234,16 @@ export default function PostsPage() {
     <div className="container mx-auto p-4 md:p-6">
       <div className="flex flex-col space-y-4 md:flex-row md:justify-between md:items-center md:space-y-0 mb-6">
         <div className="flex items-center gap-4">
-          <h1 className="text-2xl font-bold">Post Management</h1>
+          <Button
+            variant="outline"
+            size="icon"
+            onClick={() => router.push(routes.adminDashboard)}
+            className="md:mr-2"
+            aria-label="Back to Dashboard"
+          >
+            <FontAwesomeIcon icon={faArrowLeft} className="h-4 w-4" />
+          </Button>
+          <h1 className="text-xl md:text-2xl font-bold">Post Management</h1>
         </div>
         <Button onClick={() => router.push(routes.adminPosts + "/new")}>
           <FontAwesomeIcon icon={faPlus} className="h-4 w-4 mr-2" /> Add Post
@@ -321,7 +330,8 @@ export default function PostsPage() {
             </div>
           ) : (
             <>
-              <div className="rounded-md border">
+              {/* Desktop view - Table */}
+              <div className="rounded-md border hidden md:block">
                 <Table>
                   <TableHeader>
                     <TableRow>
@@ -333,7 +343,7 @@ export default function PostsPage() {
                       </TableHead>
                       <TableHead>Status</TableHead>
                       <TableHead
-                        className="cursor-pointer"
+                        className="cursor-pointer hidden lg:table-cell"
                         onClick={() => handleSort("createdAt")}
                       >
                         Created Date {renderSortIcon("createdAt")}
@@ -367,7 +377,9 @@ export default function PostsPage() {
                             {post.published ? "Published" : "Draft"}
                           </Badge>
                         </TableCell>
-                        <TableCell>{formatDate(post.createdAt)}</TableCell>
+                        <TableCell className="hidden lg:table-cell">
+                          {formatDate(post.createdAt)}
+                        </TableCell>
                         <TableCell>{formatDate(post.updatedAt)}</TableCell>
                         <TableCell className="text-right">
                           <DropdownMenu>
@@ -424,13 +436,94 @@ export default function PostsPage() {
                 </Table>
               </div>
 
-              <div className="mt-4 flex flex-col md:flex-row justify-between items-center gap-4">
-                <div className="flex items-center">
+              {/* Mobile view - Card layout */}
+              <div className="space-y-4 md:hidden">
+                {paginatedPosts.map((post) => (
+                  <Card key={post.id} className="overflow-hidden">
+                    <CardContent className="p-0">
+                      <div className="p-4 flex flex-col space-y-3">
+                        <div className="flex justify-between items-start">
+                          <a
+                            href={`/blog/${post.slug}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="font-medium hover:underline cursor-pointer text-base"
+                          >
+                            {post.title}
+                          </a>
+                          <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                              <div
+                                className="inline-flex items-center justify-center h-8 w-8 rounded-md text-sm transition-colors hover:bg-accent cursor-pointer"
+                                style={{
+                                  WebkitTapHighlightColor: "transparent",
+                                }}
+                              >
+                                <MoreHorizontal className="h-4 w-4" />
+                              </div>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="end">
+                              <DropdownMenuItem
+                                onClick={() =>
+                                  router.push(`/admin/posts/edit/${post.id}`)
+                                }
+                              >
+                                <FontAwesomeIcon
+                                  icon={faEdit}
+                                  className="h-4 w-4 mr-2"
+                                />
+                                Edit
+                              </DropdownMenuItem>
+                              <DropdownMenuItem
+                                onClick={() =>
+                                  window.open(`/blog/${post.slug}`, "_blank")
+                                }
+                              >
+                                <FontAwesomeIcon
+                                  icon={faEye}
+                                  className="h-4 w-4 mr-2"
+                                />
+                                View
+                              </DropdownMenuItem>
+                              <DropdownMenuSeparator />
+                              <DropdownMenuItem
+                                className="text-destructive"
+                                onClick={() => handleDelete(post.id)}
+                              >
+                                <FontAwesomeIcon
+                                  icon={faTrash}
+                                  className="h-4 w-4 mr-2"
+                                />
+                                Delete
+                              </DropdownMenuItem>
+                            </DropdownMenuContent>
+                          </DropdownMenu>
+                        </div>
+
+                        <div className="flex justify-between items-center text-sm">
+                          <Badge
+                            variant={post.published ? "success" : "secondary"}
+                            className="mr-2"
+                          >
+                            {post.published ? "Published" : "Draft"}
+                          </Badge>
+                          <span className="text-muted-foreground text-xs">
+                            Updated: {formatDate(post.updatedAt)}
+                          </span>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+
+              <div className="mt-6 flex flex-col md:flex-row justify-between items-center gap-4">
+                <div className="flex items-center w-full md:w-auto order-2 md:order-1 mt-4 md:mt-0">
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
                       <Button
                         variant="outline"
-                        className="w-1/10 relative pl-11 h-9 border-none shadow-none"
+                        className="w-full md:w-[130px] relative pl-11 h-9 border-none shadow-none"
                       >
                         <FontAwesomeIcon
                           icon={faSort}
@@ -486,44 +579,101 @@ export default function PostsPage() {
                       </DropdownMenuItem>
                     </DropdownMenuContent>
                   </DropdownMenu>
+                  <div className="text-sm text-muted-foreground ml-4 hidden md:block">
+                    Showing{" "}
+                    {Math.min(
+                      filteredAndSortedPosts.length,
+                      (currentPage - 1) * postsPerPage + 1
+                    )}
+                    -
+                    {Math.min(
+                      filteredAndSortedPosts.length,
+                      currentPage * postsPerPage
+                    )}{" "}
+                    of {filteredAndSortedPosts.length}
+                  </div>
                 </div>
 
                 {totalPages > 1 && (
-                  <Pagination>
-                    <PaginationContent>
-                      <PaginationItem>
-                        <PaginationPrevious
-                          onClick={() => {
-                            if (currentPage > 1) {
-                              setCurrentPage((prev) => prev - 1);
+                  <div className="w-full md:w-auto order-1 md:order-2">
+                    <Pagination>
+                      <PaginationContent className="flex-wrap justify-center">
+                        <PaginationItem>
+                          <PaginationPrevious
+                            onClick={() => {
+                              if (currentPage > 1) {
+                                setCurrentPage((prev) => prev - 1);
+                              }
+                            }}
+                            className={
+                              currentPage === 1
+                                ? "pointer-events-none opacity-50"
+                                : ""
                             }
-                          }}
-                          className={
-                            currentPage === 1
-                              ? "pointer-events-none opacity-50"
-                              : ""
-                          }
-                        />
-                      </PaginationItem>
+                          />
+                        </PaginationItem>
 
-                      {paginationItems}
+                        {/* Show limited pagination items on mobile */}
+                        {paginationItems.length > 5 ? (
+                          <>
+                            {/* Always show first page */}
+                            {paginationItems[0]}
 
-                      <PaginationItem>
-                        <PaginationNext
-                          onClick={() => {
-                            if (currentPage < totalPages) {
-                              setCurrentPage((prev) => prev + 1);
+                            {/* Show ellipsis if not near the start */}
+                            {currentPage > 3 && (
+                              <PaginationItem className="hidden sm:inline-block">
+                                <span className="px-4 py-2">...</span>
+                              </PaginationItem>
+                            )}
+
+                            {/* Show current page and neighbors */}
+                            {paginationItems
+                              .filter((_, i) => {
+                                // On mobile, show fewer items
+                                if (window.innerWidth < 640) {
+                                  return i + 1 === currentPage;
+                                }
+                                // On larger screens, show current and neighbors
+                                return (
+                                  i + 1 >= currentPage - 1 &&
+                                  i + 1 <= currentPage + 1 &&
+                                  i + 1 > 1 &&
+                                  i + 1 < paginationItems.length
+                                );
+                              })
+                              .map((item) => item)}
+
+                            {/* Show ellipsis if not near the end */}
+                            {currentPage < paginationItems.length - 2 && (
+                              <PaginationItem className="hidden sm:inline-block">
+                                <span className="px-4 py-2">...</span>
+                              </PaginationItem>
+                            )}
+
+                            {/* Always show last page */}
+                            {paginationItems[paginationItems.length - 1]}
+                          </>
+                        ) : (
+                          paginationItems
+                        )}
+
+                        <PaginationItem>
+                          <PaginationNext
+                            onClick={() => {
+                              if (currentPage < totalPages) {
+                                setCurrentPage((prev) => prev + 1);
+                              }
+                            }}
+                            className={
+                              currentPage === totalPages
+                                ? "pointer-events-none opacity-50"
+                                : ""
                             }
-                          }}
-                          className={
-                            currentPage === totalPages
-                              ? "pointer-events-none opacity-50"
-                              : ""
-                          }
-                        />
-                      </PaginationItem>
-                    </PaginationContent>
-                  </Pagination>
+                          />
+                        </PaginationItem>
+                      </PaginationContent>
+                    </Pagination>
+                  </div>
                 )}
               </div>
             </>
