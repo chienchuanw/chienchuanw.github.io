@@ -1,16 +1,19 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import { getPostBySlug, Post } from "@/lib/posts";
 import Link from "next/link";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowLeft } from "@fortawesome/free-solid-svg-icons";
+import dynamic from "next/dynamic";
 
-// 可選：引入 Markdown 渲染庫
-// 這裡假設您使用 react-markdown，您需要安裝此套件：
-// npm install react-markdown
-// import ReactMarkdown from 'react-markdown';
+// Dynamically import ReactMarkdown for rendering
+const ReactMarkdown = dynamic(() => import("react-markdown"), { ssr: false });
+const RemarkGfm = dynamic(
+  () => import("remark-gfm").then((mod) => mod.default),
+  { ssr: false }
+);
 
 export default function BlogPost() {
   const { slug } = useParams();
@@ -111,11 +114,81 @@ export default function BlogPost() {
         </header>
 
         <div className="prose prose-lg max-w-none">
-          {/* 如果使用 ReactMarkdown，可以替換下面的 pre 標籤 */}
-          {/* <ReactMarkdown>{post.content}</ReactMarkdown> */}
-          <pre style={{ whiteSpace: "pre-wrap", fontFamily: "inherit" }}>
+          <ReactMarkdown
+            // @ts-expect-error - Type issues with remarkPlugins
+            remarkPlugins={[RemarkGfm]}
+            components={{
+              // Custom rendering for images
+              img: ({ ...props }) => {
+                return (
+                  <img
+                    src={props.src || ""}
+                    alt={props.alt || ""}
+                    className="max-w-full h-auto rounded-md"
+                  />
+                );
+              },
+              // Custom rendering for links
+              a: ({ ...props }) => {
+                return (
+                  <a
+                    href={props.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-blue-600 hover:underline"
+                  >
+                    {props.children}
+                  </a>
+                );
+              },
+              // Custom rendering for code blocks
+              code: ({ className, children, ...props }: any) => {
+                const match = /language-(\w+)/.exec(className || "");
+                const isInline = !match && (props.inline || false);
+
+                if (isInline) {
+                  return (
+                    <code
+                      className="bg-gray-100 dark:bg-gray-800 px-1 py-0.5 rounded text-sm"
+                      {...props}
+                    >
+                      {children}
+                    </code>
+                  );
+                }
+                return (
+                  <pre className="bg-gray-100 dark:bg-gray-800 p-4 rounded-md overflow-auto">
+                    <code className="text-sm" {...props}>
+                      {children}
+                    </code>
+                  </pre>
+                );
+              },
+              // Handle HTML in markdown, including videos
+              p: ({ children, ...props }) => {
+                // Check if the paragraph contains a video element
+                const childrenArray = React.Children.toArray(children);
+                const hasVideo = childrenArray.some(
+                  (child) =>
+                    typeof child === "string" && child.includes("<video")
+                );
+
+                if (hasVideo) {
+                  // Extract video HTML and render it
+                  const videoHtml = childrenArray
+                    .map((child) => (typeof child === "string" ? child : ""))
+                    .join("");
+                  return (
+                    <div dangerouslySetInnerHTML={{ __html: videoHtml }} />
+                  );
+                }
+
+                return <p {...props}>{children}</p>;
+              },
+            }}
+          >
             {post.content}
-          </pre>
+          </ReactMarkdown>
         </div>
       </article>
     </div>
