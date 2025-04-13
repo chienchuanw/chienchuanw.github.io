@@ -7,7 +7,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 export function Providers({ children }: { children: React.ReactNode }) {
   return (
     <SWRConfig>
-      <TooltipProvider>{children}</TooltipProvider>
+      <TooltipProvider delayDuration={50}>{children}</TooltipProvider>
     </SWRConfig>
   );
 }

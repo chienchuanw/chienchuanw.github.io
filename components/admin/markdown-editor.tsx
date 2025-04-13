@@ -201,12 +201,12 @@ export default function MarkdownEditor({
           <div>
             <Tooltip>
               <TooltipTrigger asChild>
-                <Button variant="ghost" size="icon" className="h-8 w-8 p-0">
+                <span className="cursor-help">
                   <FontAwesomeIcon
                     icon={faCircleInfo}
                     className="h-4 w-4 text-muted-foreground"
                   />
-                </Button>
+                </span>
               </TooltipTrigger>
               <TooltipContent className="max-w-xs bg-muted text-muted-foreground">
                 <div className="text-xs">
