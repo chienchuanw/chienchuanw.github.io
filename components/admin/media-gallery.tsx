@@ -18,6 +18,7 @@ import {
   faSpinner,
   faTrash,
   faCheck,
+  faPlay,
 } from "@fortawesome/free-solid-svg-icons";
 import MediaUploader from "./media-uploader";
 
@@ -162,6 +163,90 @@ export default function MediaGallery({
   const isVideo = (mimeType: string) => mimeType.startsWith("video/");
   const isPdf = (mimeType: string) => mimeType === "application/pdf";
 
+  // State for video thumbnails and loading status
+  const [videoThumbnails, setVideoThumbnails] = useState<
+    Record<number, string>
+  >({});
+  const [failedThumbnails, setFailedThumbnails] = useState<
+    Record<number, boolean>
+  >({});
+
+  // Function to generate video thumbnail
+  const generateVideoThumbnail = (videoUrl: string, videoId: number) => {
+    // Check if we already have a thumbnail for this video
+    if (videoThumbnails[videoId]) return;
+
+    const video = document.createElement("video");
+    video.crossOrigin = "anonymous";
+    video.src = videoUrl;
+    video.muted = true;
+    video.currentTime = 1; // Seek to 1 second to avoid black frames
+
+    // When video metadata is loaded, we can seek
+    video.onloadedmetadata = () => {
+      // Seek to 25% of the video duration for a representative frame
+      video.currentTime = video.duration * 0.25;
+    };
+
+    // When the video is seeked, capture the frame
+    video.onseeked = () => {
+      const canvas = document.createElement("canvas");
+      canvas.width = video.videoWidth;
+      canvas.height = video.videoHeight;
+      const ctx = canvas.getContext("2d");
+
+      if (ctx) {
+        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+        const thumbnailUrl = canvas.toDataURL("image/jpeg");
+
+        // Update the thumbnails state
+        setVideoThumbnails((prev) => ({
+          ...prev,
+          [videoId]: thumbnailUrl,
+        }));
+      }
+    };
+
+    // Handle errors
+    video.onerror = () => {
+      console.error("Error generating thumbnail for video:", videoUrl);
+      setFailedThumbnails((prev) => ({
+        ...prev,
+        [videoId]: true,
+      }));
+    };
+
+    // Set a timeout to mark as failed if it takes too long
+    const timeoutId = setTimeout(() => {
+      if (!videoThumbnails[videoId]) {
+        setFailedThumbnails((prev) => ({
+          ...prev,
+          [videoId]: true,
+        }));
+      }
+    }, 5000); // 5 seconds timeout
+
+    // Load the video
+    video.load();
+
+    // Return a cleanup function (this will be used by useEffect if needed)
+    return () => clearTimeout(timeoutId);
+  };
+
+  // Generate thumbnails for videos when media list changes
+  useEffect(() => {
+    media.forEach((item) => {
+      if (
+        isVideo(item.mimeType) &&
+        !videoThumbnails[item.id] &&
+        !failedThumbnails[item.id]
+      ) {
+        generateVideoThumbnail(item.url, item.id);
+      }
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [media, videoThumbnails, failedThumbnails]);
+
   const renderMediaItem = (item: Media) => (
     <Card key={item.id} className="overflow-hidden group relative">
       <CardContent className="p-0">
@@ -172,10 +257,43 @@ export default function MediaGallery({
             className="w-full h-32 object-cover"
           />
         ) : isVideo(item.mimeType) ? (
-          <div className="w-full h-32 bg-muted flex items-center justify-center">
-            <span className="text-xs text-center p-2">
-              Video: {item.filename}
-            </span>
+          <div className="w-full h-32 bg-muted relative">
+            {videoThumbnails[item.id] ? (
+              <>
+                <img
+                  src={videoThumbnails[item.id]}
+                  alt={`Thumbnail for ${item.filename}`}
+                  className="w-full h-full object-cover"
+                />
+                {/* Play icon overlay */}
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <div className="bg-black/40 rounded-full p-2">
+                    <FontAwesomeIcon
+                      icon={faPlay}
+                      className="h-6 w-6 text-white"
+                    />
+                  </div>
+                </div>
+              </>
+            ) : failedThumbnails[item.id] ? (
+              <div className="flex flex-col items-center justify-center h-full bg-gray-800">
+                <FontAwesomeIcon
+                  icon={faPlay}
+                  className="h-8 w-8 text-white mb-2"
+                />
+                <span className="text-xs text-white">Video</span>
+              </div>
+            ) : (
+              <div className="flex items-center justify-center h-full">
+                <FontAwesomeIcon
+                  icon={faSpinner}
+                  className="h-6 w-6 animate-spin text-muted-foreground"
+                />
+              </div>
+            )}
+            <div className="absolute bottom-0 left-0 right-0 bg-black/60 text-white text-xs p-1 truncate">
+              {item.filename}
+            </div>
           </div>
         ) : isPdf(item.mimeType) ? (
           <div className="w-full h-32 bg-muted flex items-center justify-center">
@@ -220,8 +338,8 @@ export default function MediaGallery({
       <Tabs defaultValue="upload">
         <TabsList className="grid w-full grid-cols-3">
           <TabsTrigger value="upload">Upload New</TabsTrigger>
-          {postId && <TabsTrigger value="post">Post Media</TabsTrigger>}
-          <TabsTrigger value="all">All Media</TabsTrigger>
+          <TabsTrigger value="images">Images</TabsTrigger>
+          <TabsTrigger value="videos">Videos</TabsTrigger>
         </TabsList>
 
         <TabsContent value="upload" className="py-4">
@@ -231,28 +349,7 @@ export default function MediaGallery({
           />
         </TabsContent>
 
-        {postId && (
-          <TabsContent value="post" className="py-4">
-            {isLoading ? (
-              <div className="flex justify-center py-8">
-                <FontAwesomeIcon
-                  icon={faSpinner}
-                  className="h-8 w-8 animate-spin"
-                />
-              </div>
-            ) : postMedia.length === 0 ? (
-              <p className="text-center py-8 text-muted-foreground">
-                No media attached to this post yet
-              </p>
-            ) : (
-              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                {postMedia.map(renderMediaItem)}
-              </div>
-            )}
-          </TabsContent>
-        )}
-
-        <TabsContent value="all" className="py-4">
+        <TabsContent value="images" className="py-4">
           {isLoading ? (
             <div className="flex justify-center py-8">
               <FontAwesomeIcon
@@ -260,14 +357,53 @@ export default function MediaGallery({
                 className="h-8 w-8 animate-spin"
               />
             </div>
-          ) : media.length === 0 ? (
-            <p className="text-center py-8 text-muted-foreground">
-              No media found
-            </p>
           ) : (
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-              {media.map(renderMediaItem)}
+            <>
+              {/* Filter media to only show images */}
+              {(() => {
+                const imageMedia = media.filter((item) =>
+                  isImage(item.mimeType)
+                );
+                return imageMedia.length === 0 ? (
+                  <p className="text-center py-8 text-muted-foreground">
+                    No images found
+                  </p>
+                ) : (
+                  <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                    {imageMedia.map(renderMediaItem)}
+                  </div>
+                );
+              })()}
+            </>
+          )}
+        </TabsContent>
+
+        <TabsContent value="videos" className="py-4">
+          {isLoading ? (
+            <div className="flex justify-center py-8">
+              <FontAwesomeIcon
+                icon={faSpinner}
+                className="h-8 w-8 animate-spin"
+              />
             </div>
+          ) : (
+            <>
+              {/* Filter media to only show videos */}
+              {(() => {
+                const videoMedia = media.filter((item) =>
+                  isVideo(item.mimeType)
+                );
+                return videoMedia.length === 0 ? (
+                  <p className="text-center py-8 text-muted-foreground">
+                    No videos found
+                  </p>
+                ) : (
+                  <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                    {videoMedia.map(renderMediaItem)}
+                  </div>
+                );
+              })()}
+            </>
           )}
         </TabsContent>
       </Tabs>
