@@ -234,13 +234,6 @@ export default function PostsPage() {
     <div className="container mx-auto p-4 md:p-6">
       <div className="flex flex-col space-y-4 md:flex-row md:justify-between md:items-center md:space-y-0 mb-6">
         <div className="flex items-center gap-4">
-          <Button
-            variant="outline"
-            size="icon"
-            onClick={() => router.push(routes.adminDashboard)}
-          >
-            <FontAwesomeIcon icon={faArrowLeft} className="h-4 w-4" />
-          </Button>
           <h1 className="text-2xl font-bold">Post Management</h1>
         </div>
         <Button onClick={() => router.push(routes.adminPosts + "/new")}>
