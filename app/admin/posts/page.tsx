@@ -76,45 +76,51 @@ export default function PostsPage() {
 
   // Load all posts
   useEffect(() => {
-    try {
-      const allPosts = getAllPosts();
-      setPosts(allPosts);
-    } catch (error) {
-      console.error("Failed to load posts", error);
-      toast({
-        title: "Failed to Load Posts",
-        description: "Please refresh the page and try again",
-        variant: "destructive",
-      });
-    } finally {
-      setIsLoading(false);
+    async function fetchPosts() {
+      try {
+        const allPosts = await getAllPosts();
+        setPosts(allPosts);
+      } catch (error) {
+        console.error("Failed to load posts", error);
+        toast({
+          title: "Failed to Load Posts",
+          description: "Please refresh the page and try again",
+          variant: "destructive",
+        });
+      } finally {
+        setIsLoading(false);
+      }
     }
+
+    fetchPosts();
   }, [toast]);
 
   // Handle post deletion
-  const handleDelete = (id: string) => {
-    try {
-      const success = deletePost(id);
-      if (success) {
-        setPosts(posts.filter((post) => post.id !== id));
-        toast({
-          title: "Post Deleted",
-          description: "The post has been successfully deleted",
-        });
-      } else {
+  const handleDelete = async (id: number) => {
+    if (window.confirm("Are you sure you want to delete this post?")) {
+      try {
+        const success = await deletePost(id);
+        if (success) {
+          setPosts(posts.filter((post) => post.id !== id));
+          toast({
+            title: "Post Deleted",
+            description: "The post has been successfully deleted",
+          });
+        } else {
+          toast({
+            title: "Delete Failed",
+            description: "Unable to delete the post, please try again",
+            variant: "destructive",
+          });
+        }
+      } catch (error) {
+        console.error("Delete post error", error);
         toast({
           title: "Delete Failed",
-          description: "Unable to delete the post, please try again",
+          description: "An error occurred, please try again",
           variant: "destructive",
         });
       }
-    } catch (error) {
-      console.error("Delete post error", error);
-      toast({
-        title: "Delete Failed",
-        description: "An error occurred, please try again",
-        variant: "destructive",
-      });
     }
   };
 
@@ -149,7 +155,10 @@ export default function PostsPage() {
         (post) =>
           post.title.toLowerCase().includes(lowerSearchTerm) ||
           post.content.toLowerCase().includes(lowerSearchTerm) ||
-          post.tags.some((tag) => tag.toLowerCase().includes(lowerSearchTerm))
+          post.tags?.some((tag) =>
+            tag.toLowerCase().includes(lowerSearchTerm)
+          ) ||
+          false
       );
     }
 

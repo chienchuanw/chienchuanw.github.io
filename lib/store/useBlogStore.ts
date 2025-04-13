@@ -1,4 +1,4 @@
-import { create } from 'zustand';
+import { create } from "zustand";
 
 // 定義文章類型
 export interface Post {
@@ -7,6 +7,8 @@ export interface Post {
   slug: string;
   content: string;
   excerpt?: string;
+  coverImage?: string;
+  tags?: string[];
   createdAt: string;
   updatedAt: string;
   published: boolean;
@@ -20,7 +22,7 @@ interface BlogState {
   selectedPost: Post | null;
   isLoading: boolean;
   error: string | null;
-  
+
   // 操作方法
   setPosts: (posts: Post[]) => void;
   selectPost: (post: Post | null) => void;
@@ -37,31 +39,34 @@ const useBlogStore = create<BlogState>((set) => ({
   selectedPost: null,
   isLoading: false,
   error: null,
-  
+
   setPosts: (posts) => set({ posts }),
   selectPost: (post) => set({ selectedPost: post }),
   setLoading: (isLoading) => set({ isLoading }),
   setError: (error) => set({ error }),
-  
-  addPost: (post) => set((state) => ({ 
-    posts: [...state.posts, post] 
-  })),
-  
-  updatePost: (updatedPost) => set((state) => ({ 
-    posts: state.posts.map((post) => 
-      post.id === updatedPost.id ? updatedPost : post
-    ),
-    selectedPost: state.selectedPost?.id === updatedPost.id 
-      ? updatedPost 
-      : state.selectedPost
-  })),
-  
-  removePost: (postId) => set((state) => ({ 
-    posts: state.posts.filter((post) => post.id !== postId),
-    selectedPost: state.selectedPost?.id === postId 
-      ? null 
-      : state.selectedPost
-  })),
+
+  addPost: (post) =>
+    set((state) => ({
+      posts: [...state.posts, post],
+    })),
+
+  updatePost: (updatedPost) =>
+    set((state) => ({
+      posts: state.posts.map((post) =>
+        post.id === updatedPost.id ? updatedPost : post
+      ),
+      selectedPost:
+        state.selectedPost?.id === updatedPost.id
+          ? updatedPost
+          : state.selectedPost,
+    })),
+
+  removePost: (postId) =>
+    set((state) => ({
+      posts: state.posts.filter((post) => post.id !== postId),
+      selectedPost:
+        state.selectedPost?.id === postId ? null : state.selectedPost,
+    })),
 }));
 
 export default useBlogStore;

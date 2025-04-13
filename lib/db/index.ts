@@ -3,12 +3,19 @@ import postgres from "postgres";
 import * as schema from "./schema";
 
 // 檢查環境變數是否存在
-if (!process.env.DATABASE_URL) {
-  throw new Error("DATABASE_URL 環境變數未設置");
-}
+const DATABASE_URL =
+  process.env.DATABASE_URL ||
+  "postgresql://postgres:postgres@localhost:5432/db_blog";
 
 // 用於查詢的客戶端
-const queryClient = postgres(process.env.DATABASE_URL, { max: 1 });
+const queryClient = postgres(DATABASE_URL, { max: 1 });
 const db = drizzle(queryClient, { schema });
+
+console.log(
+  "Database connection established with:",
+  DATABASE_URL.includes("@")
+    ? DATABASE_URL.split("@")[1]
+    : "(hidden connection string)"
+);
 
 export default db;

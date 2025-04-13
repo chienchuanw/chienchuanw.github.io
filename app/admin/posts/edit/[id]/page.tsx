@@ -20,9 +20,9 @@ export default function EditPostPage() {
   const router = useRouter();
   const params = useParams();
   const { toast } = useToast();
-  const postId = params.id as string;
+  const postId = parseInt(params.id as string);
 
-  // 表單狀態
+  // Form state
   const [title, setTitle] = useState("");
   const [slug, setSlug] = useState("");
   const [content, setContent] = useState("");
@@ -32,43 +32,58 @@ export default function EditPostPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 
-  // 加載文章數據
+  // Load post data
   useEffect(() => {
-    if (postId) {
-      const post = getPostById(postId);
-      if (post) {
-        setTitle(post.title);
-        setSlug(post.slug);
-        setContent(post.content);
-        setExcerpt(post.excerpt);
-        setTags(post.tags.join(", "));
-        setIsPublished(post.published);
-        setIsLoading(false);
-      } else {
-        toast({
-          title: "Article Not Found",
-          description: "The specified article could not be found",
-          variant: "destructive",
-        });
-        router.push("/admin/posts");
+    async function fetchPost() {
+      if (postId) {
+        try {
+          const post = await getPostById(postId);
+          if (post) {
+            setTitle(post.title);
+            setSlug(post.slug);
+            setContent(post.content);
+            setExcerpt(post.excerpt || "");
+            setTags(post.tags?.join(", ") || "");
+            setIsPublished(post.published);
+          } else {
+            toast({
+              title: "Article Not Found",
+              description: "The specified article could not be found",
+              variant: "destructive",
+            });
+            router.push("/admin/posts");
+          }
+        } catch (error) {
+          console.error(`Failed to fetch post with ID ${postId}:`, error);
+          toast({
+            title: "Error Loading Article",
+            description: "Failed to load the article. Please try again.",
+            variant: "destructive",
+          });
+          router.push("/admin/posts");
+        } finally {
+          setIsLoading(false);
+        }
       }
     }
+
+    fetchPost();
   }, [postId, router, toast]);
 
-  // 自動生成摘要
+  // Auto-generate excerpt
   const handleGenerateExcerpt = () => {
     if (content) {
       setExcerpt(generateExcerpt(content));
     }
   };
 
-  // 處理表單提交
+  // Handle form submission
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
 
     try {
-      // 驗證必填欄位
+      // Validate required fields
       if (!title) {
         toast({
           title: "Title Cannot Be Empty",
@@ -89,37 +104,57 @@ export default function EditPostPage() {
         return;
       }
 
-      // 準備標籤
+      // Prepare tags
       const tagArray = tags
         .split(",")
         .map((tag) => tag.trim())
         .filter((tag) => tag);
 
-      // 準備摘要
+      // Prepare excerpt
       const finalExcerpt = excerpt || generateExcerpt(content);
 
-      // 更新文章
-      const updatedPost = updatePost(postId, {
-        title,
-        slug,
-        content,
-        excerpt: finalExcerpt,
-        tags: tagArray,
-        published: isPublished,
-      });
-
-      if (updatedPost) {
-        toast({
-          title: "Article Updated",
-          description: isPublished
-            ? "Article has been published"
-            : "Article has been saved as draft",
+      try {
+        console.log("Updating post with data:", {
+          id: postId,
+          title,
+          slug,
+          content: content.substring(0, 100) + "...",
+          excerpt: finalExcerpt,
+          tags: tagArray,
+          published: isPublished,
         });
 
-        // 導航到文章列表
-        router.push("/admin/posts");
-      } else {
-        throw new Error("Failed to update article");
+        // Update post
+        const updatedPost = await updatePost(postId, {
+          title,
+          slug,
+          content,
+          excerpt: finalExcerpt,
+          tags: tagArray,
+          published: isPublished,
+        });
+
+        if (updatedPost) {
+          toast({
+            title: "Article Updated",
+            description: isPublished
+              ? "Article has been published"
+              : "Article has been saved as draft",
+          });
+
+          // Navigate to post list
+          router.push("/admin/posts");
+        } else {
+          throw new Error("Failed to update article");
+        }
+      } catch (postError) {
+        console.error("Error updating post:", postError);
+        toast({
+          title: "Update Failed",
+          description:
+            "Failed to update post. Please check your login status and try again.",
+          variant: "destructive",
+        });
       }
     } catch (error) {
       console.error("Submit error", error);
@@ -187,7 +222,7 @@ export default function EditPostPage() {
                   onChange={(e) => setSlug(e.target.value)}
                 />
                 <p className="text-sm text-muted-foreground">
-                  This will be part of your article's URL: /blog/{slug}
+                  This will be part of your article&apos;s URL: /blog/{slug}
                 </p>
               </div>
 
@@ -255,6 +290,7 @@ export default function EditPostPage() {
                     onChange={setContent}
                     height={500}
                     preview="edit"
+                    postId={postId}
                   />
                 </TabsContent>
 
@@ -264,6 +300,7 @@ export default function EditPostPage() {
                     onChange={setContent}
                     height={500}
                     preview="preview"
+                    postId={postId}
                   />
                 </TabsContent>
               </Tabs>
