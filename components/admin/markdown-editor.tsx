@@ -5,12 +5,21 @@ import dynamic from "next/dynamic";
 import "@uiw/react-md-editor/markdown-editor.css";
 import "@uiw/react-markdown-preview/markdown.css";
 import MediaGallery from "./media-gallery";
+import MediaUploader from "./media-uploader";
 import { Button } from "@/components/ui/button";
 import {
   Tooltip,
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faImage, faCircleInfo } from "@fortawesome/free-solid-svg-icons";
 
@@ -82,6 +91,9 @@ export default function MarkdownEditor({
   // We've removed the custom toolbar commands (imageUploadCommand and mediaGalleryCommand)
   // to simplify the editor interface and rely on the Insert Media button below
 
+  // State for dialog open/close
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+
   // Dark mode detection
   const [darkMode] = useState<"dark" | "light">(() => {
     if (typeof window !== "undefined") {
@@ -137,98 +149,177 @@ export default function MarkdownEditor({
             </Tooltip>
           </div>
           <div>
-            <span id="media-gallery-button" className="hidden">
-              <MediaGallery
-                postId={postId}
-                onSelect={(url) => {
-                  // Get the editor API if it exists (for cursor position insertion)
-                  const api = (
+            {/* Media Gallery Dialog */}
+            <Dialog
+              open={isDialogOpen}
+              onOpenChange={(open) => {
+                setIsDialogOpen(open);
+                // Reset the editor API reference when the dialog is closed
+                if (!open) {
+                  delete (
                     window as {
                       __mdEditorApi?: {
                         replaceSelection: (text: string) => void;
                       };
                     }
                   ).__mdEditorApi;
-
-                  if (api) {
-                    // Insert at cursor position if API is available
-                    handleMediaSelect(url, api);
-                    // Clean up the API reference
-                    delete (
-                      window as {
-                        __mdEditorApi?: {
-                          replaceSelection: (text: string) => void;
-                        };
-                      }
-                    ).__mdEditorApi;
-                  } else {
-                    // Otherwise insert at the end
-                    handleMediaSelect(url);
-                  }
-                }}
-              />
-            </span>
-            <Button
-              type="button"
-              variant="outline"
-              size="sm"
-              onClick={() => {
-                // Store the current editor API for use after media selection
-                // This is needed to insert content at the cursor position
-                const editorElement = document.querySelector(
-                  ".w-md-editor-text-input"
-                );
-                if (editorElement) {
-                  // Store the editor's selection API in a global variable
-                  // so it can be accessed after media selection
-                  (
-                    window as {
-                      __mdEditorApi?: {
-                        replaceSelection: (text: string) => void;
-                      };
-                    }
-                  ).__mdEditorApi = {
-                    replaceSelection: (text: string) => {
-                      // Get the current selection
-                      const textarea = editorElement as HTMLTextAreaElement;
-                      const start = textarea.selectionStart;
-                      const end = textarea.selectionEnd;
-                      const currentValue = textarea.value;
-
-                      // Insert the text at the cursor position
-                      const newValue =
-                        currentValue.substring(0, start) +
-                        text +
-                        currentValue.substring(end);
-                      onChange(validateMarkdown(newValue));
-
-                      // Set the cursor position after the inserted text
-                      setTimeout(() => {
-                        textarea.focus();
-                        textarea.setSelectionRange(
-                          start + text.length,
-                          start + text.length
-                        );
-                      }, 0);
-                    },
-                  };
-                }
-
-                // Trigger the media gallery dialog
-                const button = document.getElementById("media-gallery-button");
-                if (button) {
-                  const clickEvent = new MouseEvent("click", {
-                    view: window,
-                    bubbles: true,
-                    cancelable: true,
-                  });
-                  button.dispatchEvent(clickEvent);
                 }
               }}
             >
-              <FontAwesomeIcon icon={faImage} className="h-4 w-4 mr-2" />
-              Insert Media
-            </Button>
+              <DialogTrigger asChild>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={() => {
+                    // Open the dialog
+                    setIsDialogOpen(true);
+
+                    // Store the current editor API for use after media selection
+                    const editorElement = document.querySelector(
+                      ".w-md-editor-text-input"
+                    );
+                    if (editorElement) {
+                      // Store the editor's selection API in a global variable
+                      // so it can be accessed after media selection
+                      (
+                        window as {
+                          __mdEditorApi?: {
+                            replaceSelection: (text: string) => void;
+                          };
+                        }
+                      ).__mdEditorApi = {
+                        replaceSelection: (text: string) => {
+                          // Get the current selection
+                          const textarea = editorElement as HTMLTextAreaElement;
+                          const start = textarea.selectionStart;
+                          const end = textarea.selectionEnd;
+                          const currentValue = textarea.value;
+
+                          // Insert the text at the cursor position
+                          const newValue =
+                            currentValue.substring(0, start) +
+                            text +
+                            currentValue.substring(end);
+                          onChange(validateMarkdown(newValue));
+
+                          // Set the cursor position after the inserted text
+                          setTimeout(() => {
+                            textarea.focus();
+                            textarea.setSelectionRange(
+                              start + text.length,
+                              start + text.length
+                            );
+                          }, 0);
+                        },
+                      };
+                    }
+                  }}
+                >
+                  <FontAwesomeIcon icon={faImage} className="h-4 w-4 mr-2" />
+                  Insert Media
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="max-w-3xl">
+                <DialogHeader>
+                  <DialogTitle>Media Gallery</DialogTitle>
+                </DialogHeader>
+                <Tabs defaultValue="upload">
+                  <TabsList className="grid w-full grid-cols-3">
+                    <TabsTrigger value="upload">Upload New</TabsTrigger>
+                    {postId && (
+                      <TabsTrigger value="post">Post Media</TabsTrigger>
+                    )}
+                    <TabsTrigger value="all">All Media</TabsTrigger>
+                  </TabsList>
+
+                  <TabsContent value="upload" className="py-4">
+                    <MediaUploader
+                      postId={postId}
+                      onUploadComplete={(url: string) => {
+                        // Get the editor API if it exists (for cursor position insertion)
+                        const api = (
+                          window as {
+                            __mdEditorApi?: {
+                              replaceSelection: (text: string) => void;
+                            };
+                          }
+                        ).__mdEditorApi;
+
+                        if (api) {
+                          // Insert at cursor position if API is available
+                          handleMediaSelect(url, api);
+                          // Close the dialog after insertion
+                          setIsDialogOpen(false);
+                        } else {
+                          // Otherwise insert at the end
+                          handleMediaSelect(url);
+                          // Close the dialog
+                          setIsDialogOpen(false);
+                        }
+                      }}
+                    />
+                  </TabsContent>
+
+                  {postId && (
+                    <TabsContent value="post" className="py-4">
+                      <MediaGallery
+                        postId={postId}
+                        onSelect={(url) => {
+                          // Get the editor API if it exists (for cursor position insertion)
+                          const api = (
+                            window as {
+                              __mdEditorApi?: {
+                                replaceSelection: (text: string) => void;
+                              };
+                            }
+                          ).__mdEditorApi;
+
+                          if (api) {
+                            // Insert at cursor position if API is available
+                            handleMediaSelect(url, api);
+                            // Close the dialog after insertion
+                            setIsDialogOpen(false);
+                          } else {
+                            // Otherwise insert at the end
+                            handleMediaSelect(url);
+                            // Close the dialog
+                            setIsDialogOpen(false);
+                          }
+                        }}
+                      />
+                    </TabsContent>
+                  )}
+
+                  <TabsContent value="all" className="py-4">
+                    <MediaGallery
+                      onSelect={(url) => {
+                        // Get the editor API if it exists (for cursor position insertion)
+                        const api = (
+                          window as {
+                            __mdEditorApi?: {
+                              replaceSelection: (text: string) => void;
+                            };
+                          }
+                        ).__mdEditorApi;
+
+                        if (api) {
+                          // Insert at cursor position if API is available
+                          handleMediaSelect(url, api);
+                          // Close the dialog after insertion
+                          setIsDialogOpen(false);
+                        } else {
+                          // Otherwise insert at the end
+                          handleMediaSelect(url);
+                          // Close the dialog
+                          setIsDialogOpen(false);
+                        }
+                      }}
+                    />
+                  </TabsContent>
+                </Tabs>
+              </DialogContent>
+            </Dialog>
           </div>
         </div>
       </div>
