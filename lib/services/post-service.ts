@@ -9,7 +9,6 @@ export const postService = {
   async create(
     postData: Omit<NewPost, "createdAt" | "updatedAt">
   ): Promise<Post> {
-    console.log("Creating post with data:", JSON.stringify(postData, null, 2));
     try {
       const result = await db
         .insert(posts)
@@ -18,7 +17,6 @@ export const postService = {
         })
         .returning();
 
-      console.log("Post created successfully:", result[0]);
       return result[0];
     } catch (error) {
       console.error("Error creating post:", error);

@@ -57,11 +57,6 @@ export const authService = {
    * 根據令牌驗證用戶會話
    */
   async validateSession(token: string): Promise<any | null> {
-    console.log(
-      "Validating session with token:",
-      token.substring(0, 10) + "..."
-    );
-
     try {
       // 獲取會話信息
       const [session] = await db
@@ -69,49 +64,29 @@ export const authService = {
         .from(sessions)
         .where(eq(sessions.token, token));
 
-      console.log(
-        "Session found:",
-        session
-          ? `ID: ${session.id}, User ID: ${session.userId}`
-          : "No session found"
-      );
       if (!session) return null;
 
       // 檢查會話是否過期
       const now = new Date();
       const isExpired = now > session.expires;
-      console.log(
-        "Session expiration check:",
-        `Now: ${now.toISOString()}, Expires: ${session.expires.toISOString()}, Expired: ${isExpired}`
-      );
 
       if (isExpired) {
         // 自動刪除過期會話
-        console.log("Deleting expired session:", session.id);
         await db.delete(sessions).where(eq(sessions.id, session.id));
         return null;
       }
 
       // 獲取用戶信息
-      console.log("Fetching user info for session user ID:", session.userId);
       const user = await db
         .select()
         .from(sessions)
         .innerJoin(users, eq(sessions.userId, users.id))
         .where(eq(sessions.token, token));
 
-      console.log(
-        "User join result:",
-        user ? `Found ${user.length} records` : "No user found"
-      );
       if (!user || user.length === 0) return null;
 
       // 移除用戶密碼後返回
       const { password: _, ...userWithoutPassword } = user[0].users;
-      console.log(
-        "User validated successfully:",
-        `ID: ${userWithoutPassword.id}, Username: ${userWithoutPassword.username}`
-      );
       return userWithoutPassword;
     } catch (error) {
       console.error("Error validating session:", error);

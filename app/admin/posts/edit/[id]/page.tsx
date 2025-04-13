@@ -114,16 +114,6 @@ export default function EditPostPage() {
       const finalExcerpt = excerpt || generateExcerpt(content);
 
       try {
-        console.log("Updating post with data:", {
-          id: postId,
-          title,
-          slug,
-          content: content.substring(0, 100) + "...",
-          excerpt: finalExcerpt,
-          tags: tagArray,
-          published: isPublished,
-        });
-
         // Update post
         const updatedPost = await updatePost(postId, {
           title,
