@@ -273,13 +273,21 @@ export default function PostsPage() {
             <div className="flex gap-2">
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button variant="outline" className="w-[130px]">
-                    <FontAwesomeIcon icon={faFilter} className="mr-2 h-4 w-4" />
-                    {statusFilter === "all"
-                      ? "All Status"
-                      : statusFilter === "published"
-                      ? "Published"
-                      : "Draft"}
+                  <Button
+                    variant="outline"
+                    className="w-[130px] relative pl-11"
+                  >
+                    <FontAwesomeIcon
+                      icon={faFilter}
+                      className="absolute left-4 h-4 w-4"
+                    />
+                    <span className="truncate">
+                      {statusFilter === "all"
+                        ? "All Status"
+                        : statusFilter === "published"
+                        ? "Published"
+                        : "Draft"}
+                    </span>
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end">
