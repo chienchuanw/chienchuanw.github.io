@@ -173,7 +173,7 @@ const Navbar = () => {
                                   Dashboard
                                 </div>
                                 <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
-                                  查看網站總覽和數據統計
+                                  Look at the overall website statistics
                                 </p>
                               </NavigationMenuLink>
                             </Link>
@@ -193,7 +193,7 @@ const Navbar = () => {
                                   Post Management
                                 </div>
                                 <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
-                                  管理和編輯部落格文章
+                                  Manage and edit blog posts
                                 </p>
                               </NavigationMenuLink>
                             </Link>
