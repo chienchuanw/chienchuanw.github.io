@@ -38,3 +38,6 @@ next-env.d.ts
 # IDE
 .vscode/
 .vscode/*
+
+# local uploads
+/public/uploads
