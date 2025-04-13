@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
 // Custom components
@@ -33,6 +33,30 @@ const Navbar = () => {
   const router = useRouter();
   // State for mobile menu
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  // Ref for the mobile menu container
+  const mobileMenuRef = useRef<HTMLDivElement>(null);
+
+  // Handle click outside to close the mobile menu
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        mobileMenuRef.current &&
+        !mobileMenuRef.current.contains(event.target as Node)
+      ) {
+        setIsMobileMenuOpen(false);
+      }
+    };
+
+    // Add event listener when menu is open
+    if (isMobileMenuOpen) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+
+    // Clean up the event listener
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [isMobileMenuOpen]);
 
   // 直接使用 useAuthStore 來訂閱登入狀態
   // 註釋：使用 Zustand store 來獲取登入狀態，以便在客戶端渲染時有即時的狀態
@@ -197,11 +221,11 @@ const Navbar = () => {
 
             {/* Mobile menu button - shown on small and medium screens (less than 1024px) */}
             <div className="lg:hidden">
-              <div className="relative">
+              <div className="relative" ref={mobileMenuRef}>
                 {/* Custom burger button with animation */}
                 <button
                   onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-                  className="p-2 rounded-md focus:outline-none"
+                  className="p-1.5 rounded-md focus:outline-none"
                   aria-label="Toggle menu"
                 >
                   <AnimatedBurger isOpen={isMobileMenuOpen} />
@@ -215,10 +239,10 @@ const Navbar = () => {
                       animate={{ opacity: 1, y: 0 }}
                       exit={{ opacity: 0, y: -20 }}
                       transition={{ duration: 0.2 }}
-                      className="absolute right-0 mt-2 w-[220px] rounded-md shadow-lg bg-background border z-50"
+                      className="absolute right-0 mt-2 w-[200px] rounded-md shadow-lg bg-background border z-50"
                     >
                       <motion.ul
-                        className="py-2 px-3 space-y-1"
+                        className="py-1.5 px-2 space-y-0.5 text-sm"
                         initial="closed"
                         animate="open"
                         variants={{
@@ -238,7 +262,7 @@ const Navbar = () => {
                           }}
                         >
                           <Link href={routes.blog}>
-                            <span className="block px-3 py-2 rounded-md hover:bg-accent transition-colors duration-200">
+                            <span className="block px-2.5 py-1.5 rounded-md hover:bg-accent transition-colors duration-200">
                               Blog
                             </span>
                           </Link>
@@ -251,7 +275,7 @@ const Navbar = () => {
                           }}
                         >
                           <Link href={routes.contact}>
-                            <span className="block px-3 py-2 rounded-md hover:bg-accent transition-colors duration-200">
+                            <span className="block px-2.5 py-1.5 rounded-md hover:bg-accent transition-colors duration-200">
                               Contact
                             </span>
                           </Link>
@@ -261,13 +285,13 @@ const Navbar = () => {
                         {currentLoggedIn && (
                           <>
                             <motion.li
-                              className="mt-3 pt-3 border-t"
+                              className="mt-2 pt-2 border-t"
                               variants={{
                                 open: { opacity: 1, y: 0 },
                                 closed: { opacity: 0, y: -10 },
                               }}
                             >
-                              <span className="block px-3 py-1 font-medium">
+                              <span className="block px-2.5 py-1 text-xs font-medium">
                                 Admin
                               </span>
                             </motion.li>
@@ -279,7 +303,7 @@ const Navbar = () => {
                               }}
                             >
                               <Link href={routes.adminDashboard}>
-                                <span className="block px-3 py-2 pl-5 rounded-md hover:bg-accent transition-colors duration-200">
+                                <span className="block px-2.5 py-1.5 pl-4 rounded-md hover:bg-accent transition-colors duration-200">
                                   Dashboard
                                 </span>
                               </Link>
@@ -292,7 +316,7 @@ const Navbar = () => {
                               }}
                             >
                               <Link href={routes.adminPosts}>
-                                <span className="block px-3 py-2 pl-5 rounded-md hover:bg-accent transition-colors duration-200">
+                                <span className="block px-2.5 py-1.5 pl-4 rounded-md hover:bg-accent transition-colors duration-200">
                                   Post Management
                                 </span>
                               </Link>
@@ -300,7 +324,7 @@ const Navbar = () => {
 
                             {/* Logout button in mobile menu */}
                             <motion.li
-                              className="mt-2"
+                              className="mt-2 pt-1 border-t"
                               variants={{
                                 open: { opacity: 1, y: 0 },
                                 closed: { opacity: 0, y: -10 },
@@ -308,7 +332,7 @@ const Navbar = () => {
                             >
                               <button
                                 onClick={handleLogout}
-                                className="w-full text-left text-red-500 font-medium px-3 py-2 rounded-md hover:bg-red-50 transition-colors duration-200"
+                                className="w-full text-left text-red-500 font-medium px-2.5 py-1.5 rounded-md hover:bg-red-50 transition-colors duration-200"
                               >
                                 Logout
                               </button>
