@@ -85,6 +85,11 @@ const Navbar = () => {
                   <Link href={routes.contact}>Contact</Link>
                 </Button>
                 {currentLoggedIn && (
+                  <Button asChild variant="link" className="rounded-full">
+                    <Link href={routes.adminDashboard}>Admin</Link>
+                  </Button>
+                )}
+                {currentLoggedIn && (
                   <Button
                     variant="link"
                     className="text-red-500 font-bold"
