@@ -7,7 +7,7 @@ import "@uiw/react-markdown-preview/markdown.css";
 import MediaGallery from "./media-gallery";
 import { Button } from "@/components/ui/button";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faImage, faVideo, faFileAlt } from "@fortawesome/free-solid-svg-icons";
+import { faImage } from "@fortawesome/free-solid-svg-icons";
 
 // 動態導入 MD 編輯器以避免 SSR 問題
 const MDEditor = dynamic(
@@ -77,6 +77,12 @@ export default function MarkdownEditor({
     }
   };
 
+  // Helper function to validate and fix markdown syntax
+  const validateMarkdown = (text: string): string => {
+    // Fix empty image sources: ![]() -> []()
+    return text.replace(/!\[(.*?)\]\(\s*\)/g, "[$1]()");
+  };
+
   // 自定義工具欄命令 - 圖片上傳
   const imageUploadCommand = {
     name: "image-upload",
@@ -91,7 +97,7 @@ export default function MarkdownEditor({
       </svg>
     ),
     execute: (
-      state: { text: string; selection: any },
+      _state: { text: string; selection: unknown },
       api: { replaceSelection: (text: string) => void }
     ) => {
       const input = document.createElement("input");
@@ -123,7 +129,9 @@ export default function MarkdownEditor({
                 // 替換臨時 URL 為服務器 URL
                 const serverUrl = data.media.url;
                 const currentContent = value;
-                onChange(currentContent.replace(imageUrl, serverUrl));
+                onChange(
+                  validateMarkdown(currentContent.replace(imageUrl, serverUrl))
+                );
               }
             } catch (error) {
               console.error("Error uploading image:", error);
@@ -141,7 +149,7 @@ export default function MarkdownEditor({
     buttonProps: { "aria-label": "媒體庫" },
     icon: <FontAwesomeIcon icon={faImage} />,
     execute: (
-      state: { text: string; selection: any },
+      _state: { text: string; selection: unknown },
       api: { replaceSelection: (text: string) => void }
     ) => {
       // 在選擇媒體後插入到編輯器
@@ -151,13 +159,17 @@ export default function MarkdownEditor({
       if (mediaGalleryButton) {
         mediaGalleryButton.click();
         // 將 api 存儲起來，以便在選擇媒體後使用
-        (window as any).__mdEditorApi = api;
+        (
+          window as {
+            __mdEditorApi?: { replaceSelection: (text: string) => void };
+          }
+        ).__mdEditorApi = api;
       }
     },
   };
 
   // 暗色模式
-  const [darkMode, setDarkMode] = useState<any>(() => {
+  const [darkMode] = useState<"dark" | "light">(() => {
     if (typeof window !== "undefined") {
       return window.matchMedia?.("(prefers-color-scheme: dark)").matches
         ? "dark"
@@ -171,7 +183,7 @@ export default function MarkdownEditor({
       <div className="space-y-2">
         <MDEditor
           value={value}
-          onChange={(val = "") => onChange(val)}
+          onChange={(val = "") => onChange(validateMarkdown(val))}
           height={height}
           preview={preview}
           extraCommands={[imageUploadCommand, mediaGalleryCommand]}
@@ -180,40 +192,60 @@ export default function MarkdownEditor({
             remarkPlugins: [],
           }}
         />
-        <div className="flex justify-end">
-          <span id="media-gallery-button" className="hidden">
-            <MediaGallery
-              postId={postId}
-              onSelect={(url) => {
-                const api = (window as any).__mdEditorApi;
-                if (api) {
-                  handleMediaSelect(url, api);
-                  delete (window as any).__mdEditorApi;
-                } else {
-                  handleMediaSelect(url);
+        <div className="flex justify-between items-center">
+          <div className="text-xs text-muted-foreground">
+            <span className="font-medium">Tips:</span> Use{" "}
+            <code className="bg-muted px-1 rounded">[text](url)</code> for links
+            and <code className="bg-muted px-1 rounded">![alt](image_url)</code>{" "}
+            for images.
+          </div>
+          <div>
+            <span id="media-gallery-button" className="hidden">
+              <MediaGallery
+                postId={postId}
+                onSelect={(url) => {
+                  const api = (
+                    window as {
+                      __mdEditorApi?: {
+                        replaceSelection: (text: string) => void;
+                      };
+                    }
+                  ).__mdEditorApi;
+                  if (api) {
+                    handleMediaSelect(url, api);
+                    delete (
+                      window as {
+                        __mdEditorApi?: {
+                          replaceSelection: (text: string) => void;
+                        };
+                      }
+                    ).__mdEditorApi;
+                  } else {
+                    handleMediaSelect(url);
+                  }
+                }}
+              />
+            </span>
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={() => {
+                const button = document.getElementById("media-gallery-button");
+                if (button) {
+                  const clickEvent = new MouseEvent("click", {
+                    view: window,
+                    bubbles: true,
+                    cancelable: true,
+                  });
+                  button.dispatchEvent(clickEvent);
                 }
               }}
-            />
-          </span>
-          <Button
-            type="button"
-            variant="outline"
-            size="sm"
-            onClick={() => {
-              const button = document.getElementById("media-gallery-button");
-              if (button) {
-                const clickEvent = new MouseEvent("click", {
-                  view: window,
-                  bubbles: true,
-                  cancelable: true,
-                });
-                button.dispatchEvent(clickEvent);
-              }
-            }}
-          >
-            <FontAwesomeIcon icon={faImage} className="h-4 w-4 mr-2" />
-            Insert Media
-          </Button>
+            >
+              <FontAwesomeIcon icon={faImage} className="h-4 w-4 mr-2" />
+              Insert Media
+            </Button>
+          </div>
         </div>
       </div>
     </div>
@@ -222,7 +254,7 @@ export default function MarkdownEditor({
 
 // 純展示 Markdown 內容的元件
 export function MarkdownPreview({ content }: { content: string }) {
-  const [darkMode, setDarkMode] = useState<any>(() => {
+  const [darkMode] = useState<"dark" | "light">(() => {
     if (typeof window !== "undefined") {
       return window.matchMedia?.("(prefers-color-scheme: dark)").matches
         ? "dark"
