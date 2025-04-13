@@ -28,23 +28,24 @@ import { cn } from "@/lib/utils";
 const Navbar = () => {
   const router = useRouter();
   // 直接使用 useAuthStore 來訂閱登入狀態
+  // 註釋：使用 Zustand store 來獲取登入狀態，以便在客戶端渲染時有即時的狀態
   const isLoggedInFromStore = useAuthStore((state) => state.isLoggedIn);
   const { isLoggedIn, mutate } = useCurrentUser();
   const { logout } = useAuth();
 
   // 使用一個狀態來追蹤當前的登入狀態，結合 Zustand 和 SWR 的狀態
-  // 這樣可以確保即使在 SWR 重新驗證之前，也能反映最新的登入狀態
+  // 註釋：這樣可以確保即使在 SWR 重新驗證之前，也能反映最新的登入狀態
   const currentLoggedIn = isLoggedIn || isLoggedInFromStore;
 
   const handleLogout = async () => {
     try {
-      // 使用 auth-context 的 logout 函數
+      // 註釋：使用 auth-context 的 logout 函數進行登出操作
       await logout();
 
-      // 手動重新驗證當前用戶狀態
+      // 註釋：手動重新驗證當前用戶狀態，確保 UI 更新
       await mutate();
 
-      // 重定向到首頁
+      // 註釋：登出成功後重定向到首頁
       router.push(routes.home);
     } catch (error) {
       console.error("登出失敗:", error);
@@ -52,11 +53,16 @@ const Navbar = () => {
   };
 
   return (
-    <header className="w-full flex justify-center pt-6 md:pt-10">
-      <div className="container px-4 md:px-0">
-        <div className="grid grid-cols-2 md:grid-cols-3 items-center">
-          {/* 左側頭像 - 僅在桌面版和登入時顯示 */}
-          <div className="hidden md:block">
+    <header className="w-full flex justify-center pt-6 lg:pt-10">
+      <div className="container px-4 lg:px-0">
+        {/* 
+          註釋：使用不同的網格配置來適應不同螢幕尺寸
+          - 小和中等螢幕：兩欄布局（logo + 漢堡選單）
+          - 大螢幕：三欄布局
+        */}
+        <div className="grid grid-cols-2 lg:grid-cols-12 items-center">
+          {/* 左側頭像 - 僅在大螢幕和登入時顯示 */}
+          <div className="hidden lg:block lg:col-span-3">
             {currentLoggedIn && (
               <Avatar className="cursor-pointer">
                 <Link href={routes.profile}>
@@ -71,13 +77,13 @@ const Navbar = () => {
             )}
           </div>
           
-          {/* 中間 Logo - 在行動版時靠左對齊 */}
-          <section className="flex md:justify-center">
+          {/* 中間 Logo - 在所有尺寸下居中 */}
+          <section className="flex lg:col-span-6 md:justify-center">
             <div className="max-w-[400px]">
               <div>
                 <Link
                   href={routes.home}
-                  className="font-title text-2xl md:text-4xl font-bold tracking-wide"
+                  className="font-title text-2xl md:text-3xl lg:text-4xl font-bold tracking-wide"
                 >
                   CHIENCHUANW
                 </Link>
@@ -89,10 +95,12 @@ const Navbar = () => {
             </div>
           </section>
           
-          {/* 右側導航 - 桌面版與行動版 */}
-          <div className="flex justify-end items-center">
-            {/* 桌面版導航菜單 */}
-            <div className="hidden md:block">
+          {/* 右側導航 - 大螢幕版與中小螢幕版 */}
+          <div className="flex justify-end items-center lg:col-span-3">
+            {/* 
+              註釋：大螢幕導航菜單 - 僅在 1024px 以上顯示
+            */}
+            <div className="hidden lg:block">
               <NavigationMenu>
                 <NavigationMenuList>
                   <NavigationMenuItem>
@@ -166,14 +174,25 @@ const Navbar = () => {
               </NavigationMenu>
             </div>
             
-            {/* 行動版漢堡選單按鈕 */}
-            <div className="md:hidden">
+            {/* 漢堡選單按鈕 - 在小和中等螢幕顯示 (小於 1024px) */}
+            <div className="lg:hidden">
               <NavigationMenu>
                 <NavigationMenuList>
                   <NavigationMenuItem>
-                    <NavigationMenuTrigger className="p-2">
-                      <Menu className="h-5 w-5" />
-                    </NavigationMenuTrigger>
+                    {/* Custom hamburger button without dropdown arrow */}
+                    <Button 
+                      variant="ghost" 
+                      size="icon" 
+                      className="p-2 h-8 w-8"
+                      asChild
+                    >
+                      <NavigationMenuTrigger className="bg-transparent hover:bg-transparent data-[state=open]:bg-transparent p-0 h-auto w-auto">
+                        <Menu className="h-5 w-5" />
+                        <span className="sr-only">Menu</span>
+                        {/* This empty span helps hide the dropdown icon */}
+                        <span className="hidden">x</span>
+                      </NavigationMenuTrigger>
+                    </Button>
                     <NavigationMenuContent>
                       <ul className="grid w-[200px] gap-2 p-4">
                         <li>
@@ -199,7 +218,7 @@ const Navbar = () => {
                           </Link>
                         </li>
                         
-                        {/* 行動版 Admin 選項 */}
+                        {/* 漢堡選單中的 Admin 選項 */}
                         {currentLoggedIn && (
                           <>
                             <li className="mt-2 font-medium border-t pt-2">Admin</li>
@@ -226,7 +245,7 @@ const Navbar = () => {
                               </Link>
                             </li>
                             
-                            {/* 行動版登出按鈕 */}
+                            {/* 漢堡選單中的登出按鈕 */}
                             <li className="mt-2">
                               <button
                                 onClick={handleLogout}
