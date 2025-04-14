@@ -6,6 +6,8 @@ import "@uiw/react-md-editor/markdown-editor.css";
 import "@uiw/react-markdown-preview/markdown.css";
 import MediaGallery from "./media-gallery";
 import { Button } from "@/components/ui/button";
+import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
+import { tomorrow } from "react-syntax-highlighter/dist/cjs/styles/prism";
 import {
   Tooltip,
   TooltipContent,
@@ -43,7 +45,8 @@ const processCodeBlocks = (text: string) => {
   const codeBlockRegex = /```([a-z]*)?\n([\s\S]*?)```/g;
   return text.replace(codeBlockRegex, (_match, language, code) => {
     const lang = language || "";
-    return `<pre class="bg-gray-100 dark:bg-gray-800 p-4 rounded-md overflow-auto"><code class="language-${lang} text-sm font-mono">${code}</code></pre>`;
+    // Return a placeholder that will be replaced with the actual syntax highlighter component
+    return `<div data-syntax-highlight="true" data-language="${lang}">${code}</div>`;
   });
 };
 
@@ -332,19 +335,18 @@ export function MarkdownPreview({ content }: { content: string }) {
                 </code>
               );
             }
+
+            // Use SyntaxHighlighter for code blocks
+            const language = match ? match[1] : "";
             return (
-              <pre className="bg-gray-100 dark:bg-gray-800 p-4 rounded-md overflow-auto">
-                <code
-                  className={
-                    match
-                      ? `language-${match[1]} text-sm font-mono`
-                      : "text-sm font-mono"
-                  }
-                  {...props}
-                >
-                  {children}
-                </code>
-              </pre>
+              <SyntaxHighlighter
+                language={language}
+                style={tomorrow}
+                className="rounded-md overflow-auto my-4"
+                customStyle={{ padding: "1rem", borderRadius: "0.375rem" }}
+              >
+                {String(children).replace(/\n$/, "")}
+              </SyntaxHighlighter>
             );
           },
           // Handle HTML in markdown, including videos and strikethrough
@@ -383,6 +385,47 @@ export function MarkdownPreview({ content }: { content: string }) {
                   return "";
                 })
                 .join("");
+
+              // Create a temporary div to parse the HTML
+              const tempDiv = document.createElement("div");
+              tempDiv.innerHTML = processedHtml;
+
+              // Find all syntax highlight placeholders
+              const syntaxHighlightElements = tempDiv.querySelectorAll(
+                '[data-syntax-highlight="true"]'
+              );
+
+              if (syntaxHighlightElements.length > 0) {
+                // If we have syntax highlight elements, render them with SyntaxHighlighter
+                return (
+                  <>
+                    {Array.from(syntaxHighlightElements).map(
+                      (element, index) => {
+                        const language =
+                          element.getAttribute("data-language") || "";
+                        const code = element.textContent || "";
+
+                        return (
+                          <SyntaxHighlighter
+                            key={index}
+                            language={language}
+                            style={tomorrow}
+                            className="rounded-md overflow-auto my-4"
+                            customStyle={{
+                              padding: "1rem",
+                              borderRadius: "0.375rem",
+                            }}
+                          >
+                            {code.trim()}
+                          </SyntaxHighlighter>
+                        );
+                      }
+                    )}
+                  </>
+                );
+              }
+
+              // Fallback to the original approach
               return (
                 <div
                   {...props}

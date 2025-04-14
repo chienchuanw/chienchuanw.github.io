@@ -7,6 +7,8 @@ import Link from "next/link";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowLeft } from "@fortawesome/free-solid-svg-icons";
 import dynamic from "next/dynamic";
+import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
+import { tomorrow } from "react-syntax-highlighter/dist/cjs/styles/prism";
 
 // Dynamically import ReactMarkdown for rendering
 const ReactMarkdown = dynamic(() => import("react-markdown"), { ssr: false });
@@ -29,9 +31,10 @@ const processStrikethrough = (text: string) => {
 const processCodeBlocks = (text: string) => {
   // Match code blocks with backticks
   const codeBlockRegex = /```([a-z]*)?\n([\s\S]*?)```/g;
-  return text.replace(codeBlockRegex, (match, language, code) => {
+  return text.replace(codeBlockRegex, (_match, language, code) => {
     const lang = language || "";
-    return `<pre class="bg-gray-100 dark:bg-gray-800 p-4 rounded-md overflow-auto"><code class="language-${lang} text-sm">${code}</code></pre>`;
+    // Return a placeholder that will be replaced with the actual syntax highlighter component
+    return `<div data-syntax-highlight="true" data-language="${lang}">${code}</div>`;
   });
 };
 
@@ -184,19 +187,18 @@ export default function BlogPost() {
                     </code>
                   );
                 }
+
+                // Use SyntaxHighlighter for code blocks
+                const language = match ? match[1] : "";
                 return (
-                  <pre className="bg-gray-100 dark:bg-gray-800 p-4 rounded-md overflow-auto">
-                    <code
-                      className={
-                        match
-                          ? `language-${match[1]} text-sm font-mono`
-                          : "text-sm font-mono"
-                      }
-                      {...props}
-                    >
-                      {children}
-                    </code>
-                  </pre>
+                  <SyntaxHighlighter
+                    language={language}
+                    style={tomorrow}
+                    className="rounded-md overflow-auto my-4"
+                    customStyle={{ padding: "1rem", borderRadius: "0.375rem" }}
+                  >
+                    {String(children).replace(/\n$/, "")}
+                  </SyntaxHighlighter>
                 );
               },
               // Handle HTML in markdown, including videos and strikethrough
@@ -238,6 +240,47 @@ export default function BlogPost() {
                       return "";
                     })
                     .join("");
+
+                  // Create a temporary div to parse the HTML
+                  const tempDiv = document.createElement("div");
+                  tempDiv.innerHTML = processedHtml;
+
+                  // Find all syntax highlight placeholders
+                  const syntaxHighlightElements = tempDiv.querySelectorAll(
+                    '[data-syntax-highlight="true"]'
+                  );
+
+                  if (syntaxHighlightElements.length > 0) {
+                    // If we have syntax highlight elements, render them with SyntaxHighlighter
+                    return (
+                      <>
+                        {Array.from(syntaxHighlightElements).map(
+                          (element, index) => {
+                            const language =
+                              element.getAttribute("data-language") || "";
+                            const code = element.textContent || "";
+
+                            return (
+                              <SyntaxHighlighter
+                                key={index}
+                                language={language}
+                                style={tomorrow}
+                                className="rounded-md overflow-auto my-4"
+                                customStyle={{
+                                  padding: "1rem",
+                                  borderRadius: "0.375rem",
+                                }}
+                              >
+                                {code.trim()}
+                              </SyntaxHighlighter>
+                            );
+                          }
+                        )}
+                      </>
+                    );
+                  }
+
+                  // Fallback to the original approach
                   return (
                     <div
                       {...props}
