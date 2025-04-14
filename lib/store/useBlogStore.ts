@@ -13,6 +13,7 @@ export interface Post {
   createdAt: string;
   updatedAt: string;
   published: boolean;
+  publishedAt?: string;
   authorId: number;
   authorName?: string;
 }
