@@ -50,7 +50,7 @@ export default function Blog() {
             <PostPreview
               key={post.id}
               title={post.title}
-              subtitle={post.excerpt}
+              subtitle={post.subtitle || post.excerpt}
               content={post.content}
               slug={post.slug}
               tags={post.tags}

@@ -4,7 +4,7 @@ import { ArrowUpRight } from "lucide-react";
 
 type PostPreviewProps = {
   title: string;
-  subtitle: string;
+  subtitle?: string;
   content: string;
   slug: string;
   tags?: string[];

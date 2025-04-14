@@ -27,6 +27,7 @@ export default function EditPostPage() {
   // Form state
   const [title, setTitle] = useState("");
   const [slug, setSlug] = useState("");
+  const [subtitle, setSubtitle] = useState("");
   const [content, setContent] = useState("");
   const [excerpt, setExcerpt] = useState("");
   const [tags, setTags] = useState("");
@@ -44,6 +45,7 @@ export default function EditPostPage() {
           if (post) {
             setTitle(post.title);
             setSlug(post.slug);
+            setSubtitle(post.subtitle || "");
             setContent(post.content);
             setExcerpt(post.excerpt || "");
             setTags(post.tags?.join(", ") || "");
@@ -122,6 +124,7 @@ export default function EditPostPage() {
         const updatedPost = await updatePost(postId, {
           title,
           slug,
+          subtitle,
           content,
           excerpt: finalExcerpt,
           coverImage: bannerImage || undefined,
@@ -218,6 +221,19 @@ export default function EditPostPage() {
                 />
                 <p className="text-sm text-muted-foreground">
                   This will be part of your article&apos;s URL: /blog/{slug}
+                </p>
+              </div>
+
+              <div className="grid gap-2">
+                <Label htmlFor="subtitle">Subtitle</Label>
+                <Input
+                  id="subtitle"
+                  placeholder="A brief subtitle for your article"
+                  value={subtitle}
+                  onChange={(e) => setSubtitle(e.target.value)}
+                />
+                <p className="text-sm text-muted-foreground">
+                  This will appear below the title on your article page
                 </p>
               </div>
 
