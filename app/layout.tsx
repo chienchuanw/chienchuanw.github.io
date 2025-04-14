@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import Navbar from "@/components/shared/Navbar";
-import Tags from "@/components/shared/Tags";
 import { AuthProvider } from "@/lib/context/auth-context";
 import { Providers } from "./providers";
 import { Toaster } from "@/components/ui/toaster";

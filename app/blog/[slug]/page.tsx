@@ -13,6 +13,7 @@ import { PostDetails } from "@/components/blog/post-details";
 import { PostSkeleton } from "@/components/blog/post-skeleton";
 import { calculateReadingTime } from "@/lib/utils/reading-time";
 import { Badge } from "@/components/ui/badge";
+import { ScrollToTop } from "@/components/ui/scroll-to-top";
 
 // Dynamically import ReactMarkdown for rendering
 const ReactMarkdown = dynamic(() => import("react-markdown"), { ssr: false });
@@ -133,6 +134,9 @@ export default function BlogPost() {
 
   return (
     <div className="container mx-auto py-10 px-4 md:px-6">
+      {/* Scroll to top button */}
+      <ScrollToTop />
+
       <div className="mb-8">
         <Link
           href="/blog"
