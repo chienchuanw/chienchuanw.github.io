@@ -25,6 +25,7 @@ export default function NewPostPage() {
   // Form state
   const [title, setTitle] = useState("");
   const [slug, setSlug] = useState("");
+  const [subtitle, setSubtitle] = useState("");
   const [content, setContent] = useState(
     "# Start writing your article\n\nYou can use Markdown syntax to edit your article."
   );
@@ -90,6 +91,7 @@ export default function NewPostPage() {
         const newPost = await createPost({
           title,
           slug,
+          subtitle,
           content,
           excerpt: finalExcerpt,
           coverImage: bannerImage || undefined,
@@ -176,6 +178,19 @@ export default function NewPostPage() {
                 />
                 <p className="text-sm text-muted-foreground">
                   This will be part of your article&apos;s URL: /blog/{slug}
+                </p>
+              </div>
+
+              <div className="grid gap-2">
+                <Label htmlFor="subtitle">Subtitle</Label>
+                <Input
+                  id="subtitle"
+                  placeholder="A brief subtitle for your article"
+                  value={subtitle}
+                  onChange={(e) => setSubtitle(e.target.value)}
+                />
+                <p className="text-sm text-muted-foreground">
+                  This will appear below the title on your article page
                 </p>
               </div>
 

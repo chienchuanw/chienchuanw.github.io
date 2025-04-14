@@ -117,6 +117,7 @@ export async function PUT(
     const updatedPost = await postService.update(id, {
       title: data.title,
       slug: newSlug,
+      subtitle: data.subtitle,
       content: data.content,
       excerpt: data.excerpt,
       coverImage: data.coverImage,

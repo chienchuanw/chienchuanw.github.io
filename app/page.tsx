@@ -39,19 +39,19 @@ export default function Home() {
       <main className="flex-grow">
         {posts.length === 0 ? (
           <div className="container mx-auto py-20 text-center">
-            <h2 className="text-2xl font-medium">目前還沒有發布的文章</h2>
+            <h2 className="text-2xl font-medium">No published articles yet</h2>
             <p className="mt-4 text-neutral-600">
-              文章將很快上線，請稍後再來查看
+              Articles will be available soon, please check back later
             </p>
           </div>
         ) : (
           <div className="container mx-auto py-10">
-            <h2 className="text-3xl font-bold mb-10">最新文章</h2>
+            <h2 className="text-3xl font-bold mb-10">Latest Articles</h2>
             {posts.map((post) => (
               <PostPreview
                 key={post.id}
                 title={post.title}
-                subtitle={post.excerpt}
+                subtitle={post.subtitle || post.excerpt}
                 content={post.content}
                 slug={post.slug}
                 tags={post.tags}

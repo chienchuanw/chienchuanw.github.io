@@ -39,6 +39,7 @@ export const posts = pgTable("posts", {
   id: serial("id").primaryKey(),
   title: varchar("title", { length: 255 }).notNull(),
   slug: varchar("slug", { length: 255 }).notNull().unique(),
+  subtitle: text("subtitle"),
   content: text("content").notNull(),
   excerpt: text("excerpt"),
   coverImage: varchar("cover_image", { length: 255 }),
