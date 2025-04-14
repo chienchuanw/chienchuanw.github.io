@@ -342,8 +342,13 @@ export function MarkdownPreview({ content }: { content: string }) {
               <SyntaxHighlighter
                 language={language}
                 style={tomorrow}
-                className="rounded-md overflow-auto my-4"
-                customStyle={{ padding: "1rem", borderRadius: "0.375rem" }}
+                className="rounded-md overflow-auto my-4 text-sm"
+                customStyle={{
+                  padding: "1rem",
+                  borderRadius: "0.375rem",
+                  fontSize: "0.85rem",
+                  lineHeight: "1.5",
+                }}
               >
                 {String(children).replace(/\n$/, "")}
               </SyntaxHighlighter>
@@ -410,10 +415,12 @@ export function MarkdownPreview({ content }: { content: string }) {
                             key={index}
                             language={language}
                             style={tomorrow}
-                            className="rounded-md overflow-auto my-4"
+                            className="rounded-md overflow-auto my-4 text-sm"
                             customStyle={{
                               padding: "1rem",
                               borderRadius: "0.375rem",
+                              fontSize: "0.875rem", // 14px
+                              lineHeight: "1.5",
                             }}
                           >
                             {code.trim()}
