@@ -24,9 +24,10 @@ export default function RootLayout({
           <AuthProvider>
             <div id="nav-container">
               <Navbar />
-              <Tags />
             </div>
-            <main className="max-w-screen-xl mx-auto px-4">{children}</main>
+            <main className="max-w-screen-xl mx-auto px-4 mt-16">
+              {children}
+            </main>
             <Toaster />
             {/* 移除登入狀態指示燈 */}
           </AuthProvider>
