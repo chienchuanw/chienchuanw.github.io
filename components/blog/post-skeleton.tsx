@@ -10,9 +10,13 @@ export function PostSkeleton() {
         <Skeleton className="h-full w-full" />
         <div className="absolute inset-0 flex flex-col justify-end p-6 md:p-10">
           <div className="text-center space-y-4">
-            <Skeleton className="h-4 w-32 mx-auto" />
-            <Skeleton className="h-12 w-full max-w-3xl mx-auto" />
-            <Skeleton className="h-4 w-64 mx-auto" />
+            <Skeleton className="h-4 w-32 mx-auto" /> {/* Date */}
+            <Skeleton className="h-12 w-full max-w-3xl mx-auto" /> {/* Title */}
+            <div className="flex justify-center gap-2">
+              <Skeleton className="h-4 w-16" /> {/* Tag */}
+              <Skeleton className="h-4 w-16" /> {/* Tag */}
+            </div>
+            <Skeleton className="h-4 w-64 mx-auto" /> {/* Subtitle */}
           </div>
         </div>
       </div>

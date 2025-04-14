@@ -11,6 +11,7 @@ import { tomorrow } from "react-syntax-highlighter/dist/cjs/styles/prism";
 import { PostDetails } from "@/components/blog/post-details";
 import { PostSkeleton } from "@/components/blog/post-skeleton";
 import { calculateReadingTime } from "@/lib/utils/reading-time";
+import { Badge } from "@/components/ui/badge";
 
 // Dynamically import ReactMarkdown for rendering
 const ReactMarkdown = dynamic(() => import("react-markdown"), { ssr: false });
@@ -156,8 +157,21 @@ export default function BlogPost() {
               <h1 className="text-4xl md:text-5xl font-bold mb-4 leading-tight text-white drop-shadow-sm">
                 {post.title}
               </h1>
+              <div className="flex flex-wrap items-center justify-center gap-2 mb-4">
+                {post.tags &&
+                  post.tags.length > 0 &&
+                  post.tags.map((tag, index) => (
+                    <Badge
+                      key={index}
+                      variant="secondary"
+                      className="rounded-sm text-neutral-200 bg-neutral-800/50"
+                    >
+                      {tag}
+                    </Badge>
+                  ))}
+              </div>
               {post.subtitle && (
-                <p className="text-lg text-neutral-200 max-w-2xl mx-auto">
+                <p className="text-lg text-neutral-200 max-w-2xl mx-auto italic">
                   {post.subtitle}
                 </p>
               )}
@@ -166,18 +180,30 @@ export default function BlogPost() {
         </div>
       ) : (
         <>
-          {/* Date at the top */}
-          <div className="text-center mb-4 text-sm text-neutral-500 uppercase tracking-wider">
-            {formattedDate}
-          </div>
-
-          {/* Title and subtitle */}
+          {/* Title, date, tags, and subtitle */}
           <div className="text-center mb-10">
+            {/* Date above title */}
+            <div className="text-sm text-neutral-500 uppercase tracking-wider mb-2">
+              {formattedDate}
+            </div>
+
             <h1 className="text-4xl md:text-5xl font-bold mb-4 leading-tight">
               {post.title}
             </h1>
+
+            {/* Tags underneath title */}
+            <div className="flex flex-wrap items-center justify-center gap-2 mb-4">
+              {post.tags &&
+                post.tags.length > 0 &&
+                post.tags.map((tag, index) => (
+                  <Badge key={index} variant="secondary" className="rounded-sm">
+                    {tag}
+                  </Badge>
+                ))}
+            </div>
+
             {post.subtitle && (
-              <p className="text-lg text-neutral-600 max-w-2xl mx-auto">
+              <p className="text-lg text-neutral-600 max-w-2xl mx-auto italic">
                 {post.subtitle}
               </p>
             )}
