@@ -30,13 +30,26 @@ const PostPreview: React.FC<PostPreviewProps> = ({
       <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
         {/* Left column - Content */}
         <div className="md:col-span-2 space-y-4">
+          {/* Date above title */}
+          {date && <div className="text-sm text-neutral-500">{date}</div>}
+
           <h2 className="text-3xl font-bold tracking-tight">
             <Link href={`/blog/${slug}`} className="hover:underline">
               {title}
             </Link>
           </h2>
 
-          {subtitle && <p className="text-neutral-600">{subtitle}</p>}
+          {/* Tags underneath the title */}
+          <div className="flex flex-wrap items-center gap-2 text-sm">
+            {tags.length > 0 &&
+              tags.map((tag, index) => (
+                <Badge key={index} variant="secondary" className="rounded-sm">
+                  {tag}
+                </Badge>
+              ))}
+          </div>
+
+          {subtitle && <p className="text-neutral-600 italic">{subtitle}</p>}
 
           <p className="text-neutral-700">{contentPreview}</p>
 
@@ -69,17 +82,7 @@ const PostPreview: React.FC<PostPreviewProps> = ({
             )}
           </Link>
 
-          {/* Date and tags */}
-          <div className="mt-4 flex flex-wrap items-center gap-2">
-            {date && <span className="text-sm text-neutral-500">{date}</span>}
-
-            {tags.length > 0 &&
-              tags.map((tag, index) => (
-                <Badge key={index} variant="secondary" className="rounded-sm">
-                  {tag}
-                </Badge>
-              ))}
-          </div>
+          {/* Date and tags moved to below the title */}
         </div>
       </div>
     </article>
