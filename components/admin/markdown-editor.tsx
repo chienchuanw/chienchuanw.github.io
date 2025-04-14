@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import dynamic from "next/dynamic";
 import Image from "next/image";
 import "@uiw/react-md-editor/markdown-editor.css";
@@ -110,18 +110,35 @@ export default function MarkdownEditor({
   // State for dialog open/close
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
-  // Dark mode detection
-  const [darkMode] = useState<"dark" | "light">(() => {
-    if (typeof window !== "undefined") {
-      return window.matchMedia?.("(prefers-color-scheme: dark)").matches
-        ? "dark"
-        : "light";
-    }
-    return "light";
-  });
+  // Use a ref to track if we're in the browser
+  const isBrowser = useRef(false);
+  // Default to light mode for SSR
+  const [darkMode, setDarkMode] = useState<"dark" | "light">("light");
+
+  // Only update dark mode after component mounts to avoid hydration mismatch
+  useEffect(() => {
+    isBrowser.current = true;
+    // Check for dark mode preference
+    const isDarkMode = window.matchMedia?.(
+      "(prefers-color-scheme: dark)"
+    ).matches;
+    setDarkMode(isDarkMode ? "dark" : "light");
+
+    // Listen for changes in color scheme preference
+    const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
+    const handleChange = (e: MediaQueryListEvent) => {
+      setDarkMode(e.matches ? "dark" : "light");
+    };
+
+    mediaQuery.addEventListener("change", handleChange);
+    return () => mediaQuery.removeEventListener("change", handleChange);
+  }, []);
 
   return (
-    <div data-color-mode={darkMode} className="w-full">
+    <div
+      data-color-mode={isBrowser.current ? darkMode : "light"}
+      className="w-full"
+    >
       <div className="space-y-2">
         <MDEditor
           value={value}
@@ -277,19 +294,35 @@ export default function MarkdownEditor({
 
 // Component for displaying Markdown content without editing capabilities
 export function MarkdownPreview({ content }: { content: string }) {
-  const [darkMode] = useState<"dark" | "light">(() => {
-    if (typeof window !== "undefined") {
-      return window.matchMedia?.("(prefers-color-scheme: dark)").matches
-        ? "dark"
-        : "light";
-    }
-    return "light";
-  });
+  // Use a ref to track if we're in the browser
+  const isBrowser = useRef(false);
+  // Default to light mode for SSR
+  const [darkMode, setDarkMode] = useState<"dark" | "light">("light");
+
+  // Only update dark mode after component mounts to avoid hydration mismatch
+  useEffect(() => {
+    isBrowser.current = true;
+    // Check for dark mode preference
+    const isDarkMode = window.matchMedia?.(
+      "(prefers-color-scheme: dark)"
+    ).matches;
+    setDarkMode(isDarkMode ? "dark" : "light");
+
+    // Listen for changes in color scheme preference
+    const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
+    const handleChange = (e: MediaQueryListEvent) => {
+      setDarkMode(e.matches ? "dark" : "light");
+    };
+
+    mediaQuery.addEventListener("change", handleChange);
+    return () => mediaQuery.removeEventListener("change", handleChange);
+  }, []);
 
   return (
     <div
+      data-color-mode={isBrowser.current ? darkMode : "light"}
       className={`w-full prose markdown-body ${
-        darkMode === "dark" ? "dark-mode" : ""
+        isBrowser.current && darkMode === "dark" ? "dark-mode" : ""
       }`}
     >
       <ReactMarkdown
