@@ -4,6 +4,7 @@ import { useEffect, useState, useRef, useCallback } from "react";
 import PostPreview from "@/app/blog/PostPreview";
 import { Post } from "@/lib/store/useBlogStore";
 import { Skeleton } from "@/components/ui/skeleton";
+import { ScrollToTop } from "@/components/ui/scroll-to-top";
 import * as clientPosts from "@/lib/client/posts";
 
 export default function Blog() {
@@ -90,6 +91,9 @@ export default function Blog() {
   return (
     <div className="container mx-auto py-10 px-4 md:px-6">
       <h1 className="text-3xl font-bold mb-10">All Articles</h1>
+
+      {/* Scroll to top button */}
+      <ScrollToTop />
 
       {error && (
         <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-6">
