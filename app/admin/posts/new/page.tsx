@@ -6,6 +6,7 @@ import { createPost, generateExcerpt, generateSlug } from "@/lib/posts";
 import MarkdownEditor, {
   MarkdownPreview,
 } from "@/components/admin/markdown-editor";
+import BannerUploader from "@/components/admin/banner-uploader";
 import { useToast } from "@/components/ui/use-toast";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -13,9 +14,9 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
+import { Badge } from "@/components/ui/badge";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowLeft, faSave } from "@fortawesome/free-solid-svg-icons";
-import { Badge } from "@/components/ui/badge";
 
 export default function NewPostPage() {
   const router = useRouter();
@@ -29,6 +30,7 @@ export default function NewPostPage() {
   );
   const [excerpt, setExcerpt] = useState("");
   const [tags, setTags] = useState("");
+  const [bannerImage, setBannerImage] = useState<string | null>(null);
   const [isPublished, setIsPublished] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [postId, setPostId] = useState<number | undefined>(undefined);
@@ -90,6 +92,7 @@ export default function NewPostPage() {
           slug,
           content,
           excerpt: finalExcerpt,
+          coverImage: bannerImage || undefined,
           tags: tagArray,
           published: isPublished,
         });
@@ -152,7 +155,7 @@ export default function NewPostPage() {
             <CardHeader>
               <CardTitle>Article Basic Information</CardTitle>
             </CardHeader>
-            <CardContent className="space-y-4">
+            <CardContent className="space-y-6">
               <div className="grid gap-2">
                 <Label htmlFor="title">Title</Label>
                 <Input
@@ -207,6 +210,17 @@ export default function NewPostPage() {
                 />
                 <p className="text-sm text-muted-foreground">
                   Separate multiple tags with commas
+                </p>
+              </div>
+
+              <div className="grid gap-2">
+                <Label>Banner Image</Label>
+                <BannerUploader
+                  postId={postId}
+                  onImageChange={setBannerImage}
+                />
+                <p className="text-sm text-muted-foreground">
+                  This image will be displayed at the top of your article
                 </p>
               </div>
 

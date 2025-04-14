@@ -11,7 +11,6 @@ import { tomorrow } from "react-syntax-highlighter/dist/cjs/styles/prism";
 import { PostDetails } from "@/components/blog/post-details";
 import { PostSkeleton } from "@/components/blog/post-skeleton";
 import { calculateReadingTime } from "@/lib/utils/reading-time";
-import { Badge } from "@/components/ui/badge";
 
 // Dynamically import ReactMarkdown for rendering
 const ReactMarkdown = dynamic(() => import("react-markdown"), { ssr: false });
@@ -114,7 +113,7 @@ export default function BlogPost() {
     );
   }
 
-  // Format date for display
+  // Format date for display - ensure it's done client-side to avoid hydration issues
   const formattedDate = new Date(
     post.updatedAt || post.createdAt
   ).toLocaleDateString("en-US", {
@@ -123,8 +122,8 @@ export default function BlogPost() {
     day: "numeric",
   });
 
-  // Calculate reading time
-  const readingTime = calculateReadingTime(post.content);
+  // Calculate reading time - ensure consistent calculation between server and client
+  const readingTime = calculateReadingTime(post.content || "");
 
   // Get first tag as category (if available)
   const category =
@@ -141,38 +140,58 @@ export default function BlogPost() {
         </Link>
       </div>
 
-      {/* Date at the top */}
-      <div className="text-center mb-4 text-sm text-neutral-500 uppercase tracking-wider">
-        {formattedDate}
-      </div>
-
-      {/* Title and subtitle */}
-      <div className="text-center mb-10">
-        <h1 className="text-4xl md:text-5xl font-bold mb-4 leading-tight">
-          {post.title}
-        </h1>
-        {post.excerpt && (
-          <p className="text-lg text-neutral-600 max-w-2xl mx-auto">
-            {post.excerpt}
-          </p>
-        )}
-      </div>
-
-      {/* Featured image */}
-      {post.coverImage && (
-        <div className="mb-10">
+      {/* Banner image - full width at the top */}
+      {post.coverImage ? (
+        <div className="-mx-4 md:-mx-6 mb-10 relative h-[50vh] min-h-[400px] max-h-[600px]">
           <img
             src={post.coverImage}
             alt={post.title}
-            className="w-full h-auto object-cover rounded-md max-h-[500px]"
+            className="w-full h-full object-cover"
           />
+          <div className="absolute inset-0 bg-gradient-to-t from-background/80 to-transparent flex flex-col justify-end p-6 md:p-10">
+            <div className="text-center">
+              <div className="text-sm text-neutral-200 uppercase tracking-wider mb-2">
+                {formattedDate}
+              </div>
+              <h1 className="text-4xl md:text-5xl font-bold mb-4 leading-tight text-white drop-shadow-sm">
+                {post.title}
+              </h1>
+              {post.excerpt && (
+                <p className="text-lg text-neutral-200 max-w-2xl mx-auto">
+                  {post.excerpt}
+                </p>
+              )}
+            </div>
+          </div>
         </div>
+      ) : (
+        <>
+          {/* Date at the top */}
+          <div className="text-center mb-4 text-sm text-neutral-500 uppercase tracking-wider">
+            {formattedDate}
+          </div>
+
+          {/* Title and subtitle */}
+          <div className="text-center mb-10">
+            <h1 className="text-4xl md:text-5xl font-bold mb-4 leading-tight">
+              {post.title}
+            </h1>
+            {post.excerpt && (
+              <p className="text-lg text-neutral-600 max-w-2xl mx-auto">
+                {post.excerpt}
+              </p>
+            )}
+          </div>
+        </>
       )}
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
         {/* Main content */}
         <article className="lg:col-span-2">
-          <div className="prose prose-lg max-w-none">
+          <div
+            className="prose prose-lg max-w-none w-full markdown-body"
+            data-color-mode="light"
+          >
             <ReactMarkdown
               // @ts-expect-error - Type issues with remarkPlugins
               remarkPlugins={[RemarkGfm]}
