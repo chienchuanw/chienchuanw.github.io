@@ -74,6 +74,7 @@ export async function POST(request: NextRequest) {
     const post = await postService.create({
       title: data.title,
       slug: data.slug,
+      subtitle: data.subtitle,
       content: data.content,
       excerpt: data.excerpt,
       coverImage: data.coverImage,

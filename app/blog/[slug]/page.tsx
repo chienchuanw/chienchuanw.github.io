@@ -156,9 +156,9 @@ export default function BlogPost() {
               <h1 className="text-4xl md:text-5xl font-bold mb-4 leading-tight text-white drop-shadow-sm">
                 {post.title}
               </h1>
-              {post.excerpt && (
+              {post.subtitle && (
                 <p className="text-lg text-neutral-200 max-w-2xl mx-auto">
-                  {post.excerpt}
+                  {post.subtitle}
                 </p>
               )}
             </div>
@@ -176,9 +176,9 @@ export default function BlogPost() {
             <h1 className="text-4xl md:text-5xl font-bold mb-4 leading-tight">
               {post.title}
             </h1>
-            {post.excerpt && (
+            {post.subtitle && (
               <p className="text-lg text-neutral-600 max-w-2xl mx-auto">
-                {post.excerpt}
+                {post.subtitle}
               </p>
             )}
           </div>
