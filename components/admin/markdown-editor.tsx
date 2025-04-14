@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import dynamic from "next/dynamic";
+import Image from "next/image";
 import "@uiw/react-md-editor/markdown-editor.css";
 import "@uiw/react-markdown-preview/markdown.css";
 import MediaGallery from "./media-gallery";
@@ -299,10 +300,13 @@ export function MarkdownPreview({ content }: { content: string }) {
           img: ({ ...props }) => {
             return (
               <span className="inline-block relative">
-                <img
+                <Image
                   src={props.src || ""}
                   alt={props.alt || ""}
                   className="max-w-full h-auto rounded-md"
+                  width={800}
+                  height={600}
+                  style={{ width: "100%", height: "auto" }}
                 />
               </span>
             );
@@ -321,9 +325,10 @@ export function MarkdownPreview({ content }: { content: string }) {
             );
           },
           // Custom rendering for code blocks
-          code: ({ className, children, ...props }: any) => {
+          // @ts-expect-error - Type issues with react-markdown components
+          code: ({ className, children, inline, ...props }) => {
             const match = /language-(\w+)/.exec(className || "");
-            const isInline = !match && (props.inline || false);
+            const isInline = !match && (inline || false);
 
             if (isInline) {
               return (
