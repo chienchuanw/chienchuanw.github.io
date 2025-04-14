@@ -30,6 +30,23 @@ const remarkGfm = dynamic(
   { ssr: false }
 );
 
+// Helper function to detect strikethrough text
+const processStrikethrough = (text: string) => {
+  // Match text between ~~ and ~~ (strikethrough in markdown)
+  const strikethroughRegex = /~~([^~]+)~~/g;
+  return text.replace(strikethroughRegex, "<del>$1</del>");
+};
+
+// Helper function to detect code blocks
+const processCodeBlocks = (text: string) => {
+  // Match code blocks with backticks
+  const codeBlockRegex = /```([a-z]*)?\n([\s\S]*?)```/g;
+  return text.replace(codeBlockRegex, (_match, language, code) => {
+    const lang = language || "";
+    return `<pre class="bg-gray-100 dark:bg-gray-800 p-4 rounded-md overflow-auto"><code class="language-${lang} text-sm font-mono">${code}</code></pre>`;
+  });
+};
+
 interface MarkdownEditorProps {
   value: string;
   onChange: (value: string) => void;
@@ -267,12 +284,12 @@ export function MarkdownPreview({ content }: { content: string }) {
 
   return (
     <div
-      className={`w-full markdown-body ${
+      className={`w-full prose markdown-body ${
         darkMode === "dark" ? "dark-mode" : ""
       }`}
     >
       <ReactMarkdown
-        // @ts-ignore - Type issues with remarkPlugins
+        // @ts-expect-error - Type issues with remarkPlugins
         remarkPlugins={[remarkGfm]}
         components={{
           // Custom rendering for images
@@ -308,7 +325,7 @@ export function MarkdownPreview({ content }: { content: string }) {
             if (isInline) {
               return (
                 <code
-                  className="bg-gray-100 dark:bg-gray-800 px-1 py-0.5 rounded text-sm"
+                  className="bg-gray-100 dark:bg-gray-800 px-1 py-0.5 rounded text-sm font-mono"
                   {...props}
                 >
                   {children}
@@ -317,18 +334,35 @@ export function MarkdownPreview({ content }: { content: string }) {
             }
             return (
               <pre className="bg-gray-100 dark:bg-gray-800 p-4 rounded-md overflow-auto">
-                <code className="text-sm" {...props}>
+                <code
+                  className={
+                    match
+                      ? `language-${match[1]} text-sm font-mono`
+                      : "text-sm font-mono"
+                  }
+                  {...props}
+                >
                   {children}
                 </code>
               </pre>
             );
           },
-          // Handle HTML in markdown, including videos
+          // Handle HTML in markdown, including videos and strikethrough
           p: ({ children, ...props }) => {
             // Check if the paragraph contains a video element
             const childrenArray = React.Children.toArray(children);
             const hasVideo = childrenArray.some(
               (child) => typeof child === "string" && child.includes("<video")
+            );
+
+            // Check if the paragraph contains strikethrough text
+            const hasStrikethrough = childrenArray.some(
+              (child) => typeof child === "string" && child.includes("~~")
+            );
+
+            // Check if the paragraph contains code blocks
+            const hasCodeBlock = childrenArray.some(
+              (child) => typeof child === "string" && child.includes("```")
             );
 
             if (hasVideo) {
@@ -339,7 +373,47 @@ export function MarkdownPreview({ content }: { content: string }) {
               return <div dangerouslySetInnerHTML={{ __html: videoHtml }} />;
             }
 
+            if (hasCodeBlock) {
+              // Process code blocks
+              const processedHtml = childrenArray
+                .map((child) => {
+                  if (typeof child === "string") {
+                    return processCodeBlocks(child);
+                  }
+                  return "";
+                })
+                .join("");
+              return (
+                <div
+                  {...props}
+                  dangerouslySetInnerHTML={{ __html: processedHtml }}
+                />
+              );
+            }
+
+            if (hasStrikethrough) {
+              // Process strikethrough text
+              const processedHtml = childrenArray
+                .map((child) => {
+                  if (typeof child === "string") {
+                    return processStrikethrough(child);
+                  }
+                  return "";
+                })
+                .join("");
+              return (
+                <p
+                  {...props}
+                  dangerouslySetInnerHTML={{ __html: processedHtml }}
+                />
+              );
+            }
+
             return <p {...props}>{children}</p>;
+          },
+          // Add explicit support for del (strikethrough)
+          del: ({ children }) => {
+            return <del className="line-through">{children}</del>;
           },
         }}
       >

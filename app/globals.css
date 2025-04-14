@@ -167,4 +167,35 @@ body {
   .dark-mode .prose a {
     @apply text-blue-400;
   }
+
+  /* Strikethrough styles */
+  .prose del,
+  .prose s,
+  .prose strike {
+    @apply line-through text-gray-500;
+  }
+
+  /* Support for markdown strikethrough syntax */
+  .prose p:has(del) {
+    @apply my-4;
+  }
+
+  /* Code block syntax highlighting */
+  .prose pre {
+    @apply bg-gray-100 dark:bg-gray-800 p-4 rounded-md overflow-auto my-4;
+  }
+
+  .prose code {
+    @apply font-mono text-sm;
+  }
+
+  /* Inline code */
+  .prose :not(pre) > code {
+    @apply bg-gray-100 dark:bg-gray-800 px-1 py-0.5 rounded text-sm;
+  }
+
+  /* Code block with language */
+  .prose pre code {
+    @apply block p-0 overflow-visible rounded-none bg-transparent;
+  }
 }

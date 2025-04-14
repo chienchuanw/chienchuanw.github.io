@@ -10,10 +10,30 @@ import dynamic from "next/dynamic";
 
 // Dynamically import ReactMarkdown for rendering
 const ReactMarkdown = dynamic(() => import("react-markdown"), { ssr: false });
+
+// Import remark-gfm plugin for GitHub Flavored Markdown
+// This plugin adds support for tables, strikethrough, tasklists, and URLs
 const RemarkGfm = dynamic(
   () => import("remark-gfm").then((mod) => mod.default),
   { ssr: false }
 );
+
+// Helper function to detect strikethrough text
+const processStrikethrough = (text: string) => {
+  // Match text between ~~ and ~~ (strikethrough in markdown)
+  const strikethroughRegex = /~~([^~]+)~~/g;
+  return text.replace(strikethroughRegex, "<del>$1</del>");
+};
+
+// Helper function to detect code blocks
+const processCodeBlocks = (text: string) => {
+  // Match code blocks with backticks
+  const codeBlockRegex = /```([a-z]*)?\n([\s\S]*?)```/g;
+  return text.replace(codeBlockRegex, (match, language, code) => {
+    const lang = language || "";
+    return `<pre class="bg-gray-100 dark:bg-gray-800 p-4 rounded-md overflow-auto"><code class="language-${lang} text-sm">${code}</code></pre>`;
+  });
+};
 
 export default function BlogPost() {
   const { slug } = useParams();
@@ -23,24 +43,31 @@ export default function BlogPost() {
 
   useEffect(() => {
     if (!slug || typeof slug !== "string") {
-      setError("無效的文章 URL");
+      setError("Invalid article URL");
       setLoading(false);
       return;
     }
 
-    // 從數據庫獲取文章
+    // Fetch post from database
     async function fetchPost() {
       try {
-        const foundPost = await getPostBySlug(slug);
+        // Ensure slug is a string
+        const slugString = Array.isArray(slug) ? slug[0] : slug;
+        // TypeScript check to ensure slugString is not undefined
+        if (!slugString) {
+          setError("Invalid article URL");
+          return;
+        }
+        const foundPost = await getPostBySlug(slugString);
 
         if (foundPost && foundPost.published) {
           setPost(foundPost);
         } else {
-          setError("找不到文章");
+          setError("Article not found");
         }
       } catch (error) {
         console.error(`Failed to fetch post with slug ${slug}:`, error);
-        setError("加載文章時發生錯誤");
+        setError("Error loading article");
       } finally {
         setLoading(false);
       }
@@ -52,7 +79,7 @@ export default function BlogPost() {
   if (loading) {
     return (
       <div className="container mx-auto py-20 text-center">
-        <p>載入中...</p>
+        <p>Loading...</p>
       </div>
     );
   }
@@ -60,14 +87,14 @@ export default function BlogPost() {
   if (error || !post) {
     return (
       <div className="container mx-auto py-20 text-center">
-        <h2 className="text-2xl font-medium">{error || "找不到文章"}</h2>
+        <h2 className="text-2xl font-medium">{error || "Article not found"}</h2>
         <div className="mt-6">
           <Link
             href="/blog"
             className="inline-flex items-center text-blue-600 hover:underline"
           >
-            <FontAwesomeIcon icon={faArrowLeft} className="w-4 h-4 mr-1" />{" "}
-            返回文章列表
+            <FontAwesomeIcon icon={faArrowLeft} className="w-4 h-4 mr-1" /> Back
+            to Articles
           </Link>
         </div>
       </div>
@@ -81,8 +108,8 @@ export default function BlogPost() {
           href="/blog"
           className="inline-flex items-center text-neutral-600 hover:text-neutral-900"
         >
-          <FontAwesomeIcon icon={faArrowLeft} className="w-4 h-4 mr-1" />{" "}
-          返回文章列表
+          <FontAwesomeIcon icon={faArrowLeft} className="w-4 h-4 mr-1" /> Back
+          to Articles
         </Link>
       </div>
 
@@ -104,10 +131,11 @@ export default function BlogPost() {
           )}
 
           <div className="text-neutral-500 text-sm">
-            發佈於 {new Date(post.createdAt).toLocaleDateString("zh-TW")}
+            Published on {new Date(post.createdAt).toLocaleDateString("en-US")}
             {post.updatedAt !== post.createdAt && (
               <span>
-                ，更新於 {new Date(post.updatedAt).toLocaleDateString("zh-TW")}
+                , Updated on{" "}
+                {new Date(post.updatedAt).toLocaleDateString("en-US")}
               </span>
             )}
           </div>
@@ -149,7 +177,7 @@ export default function BlogPost() {
                 if (isInline) {
                   return (
                     <code
-                      className="bg-gray-100 dark:bg-gray-800 px-1 py-0.5 rounded text-sm"
+                      className="bg-gray-100 dark:bg-gray-800 px-1 py-0.5 rounded text-sm font-mono"
                       {...props}
                     >
                       {children}
@@ -158,19 +186,36 @@ export default function BlogPost() {
                 }
                 return (
                   <pre className="bg-gray-100 dark:bg-gray-800 p-4 rounded-md overflow-auto">
-                    <code className="text-sm" {...props}>
+                    <code
+                      className={
+                        match
+                          ? `language-${match[1]} text-sm font-mono`
+                          : "text-sm font-mono"
+                      }
+                      {...props}
+                    >
                       {children}
                     </code>
                   </pre>
                 );
               },
-              // Handle HTML in markdown, including videos
+              // Handle HTML in markdown, including videos and strikethrough
               p: ({ children, ...props }) => {
                 // Check if the paragraph contains a video element
                 const childrenArray = React.Children.toArray(children);
                 const hasVideo = childrenArray.some(
                   (child) =>
                     typeof child === "string" && child.includes("<video")
+                );
+
+                // Check if the paragraph contains strikethrough text
+                const hasStrikethrough = childrenArray.some(
+                  (child) => typeof child === "string" && child.includes("~~")
+                );
+
+                // Check if the paragraph contains code blocks
+                const hasCodeBlock = childrenArray.some(
+                  (child) => typeof child === "string" && child.includes("```")
                 );
 
                 if (hasVideo) {
@@ -183,7 +228,47 @@ export default function BlogPost() {
                   );
                 }
 
+                if (hasCodeBlock) {
+                  // Process code blocks
+                  const processedHtml = childrenArray
+                    .map((child) => {
+                      if (typeof child === "string") {
+                        return processCodeBlocks(child);
+                      }
+                      return "";
+                    })
+                    .join("");
+                  return (
+                    <div
+                      {...props}
+                      dangerouslySetInnerHTML={{ __html: processedHtml }}
+                    />
+                  );
+                }
+
+                if (hasStrikethrough) {
+                  // Process strikethrough text
+                  const processedHtml = childrenArray
+                    .map((child) => {
+                      if (typeof child === "string") {
+                        return processStrikethrough(child);
+                      }
+                      return "";
+                    })
+                    .join("");
+                  return (
+                    <p
+                      {...props}
+                      dangerouslySetInnerHTML={{ __html: processedHtml }}
+                    />
+                  );
+                }
+
                 return <p {...props}>{children}</p>;
+              },
+              // Add explicit support for del (strikethrough)
+              del: ({ children }) => {
+                return <del className="line-through">{children}</del>;
               },
             }}
           >
