@@ -4,6 +4,7 @@ import React, { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import { getPostBySlug, Post } from "@/lib/posts";
 import Link from "next/link";
+import Image from "next/image";
 import { ArrowLeft } from "lucide-react";
 import dynamic from "next/dynamic";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
@@ -116,7 +117,7 @@ export default function BlogPost() {
 
   // Format date for display - ensure it's done client-side to avoid hydration issues
   const formattedDate = new Date(
-    post.updatedAt || post.createdAt
+    post.publishedAt || post.updatedAt || post.createdAt
   ).toLocaleDateString("en-US", {
     year: "numeric",
     month: "long",
@@ -144,10 +145,13 @@ export default function BlogPost() {
       {/* Banner image - full width at the top */}
       {post.coverImage ? (
         <div className="-mx-4 md:-mx-6 mb-10 relative h-[50vh] min-h-[400px] max-h-[600px]">
-          <img
+          <Image
             src={post.coverImage}
             alt={post.title}
-            className="w-full h-full object-cover"
+            fill
+            sizes="100vw"
+            priority
+            className="object-cover"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-background/80 to-transparent flex flex-col justify-end p-6 md:p-10">
             <div className="text-center">
@@ -225,11 +229,16 @@ export default function BlogPost() {
                 // Custom rendering for images
                 img: ({ ...props }) => {
                   return (
-                    <img
-                      src={props.src || ""}
-                      alt={props.alt || ""}
-                      className="max-w-full h-auto rounded-md"
-                    />
+                    <span className="inline-block relative w-full max-w-full h-auto rounded-md overflow-hidden">
+                      <Image
+                        src={props.src || ""}
+                        alt={props.alt || ""}
+                        width={800}
+                        height={600}
+                        className="max-w-full h-auto rounded-md"
+                        style={{ width: "100%", height: "auto" }}
+                      />
+                    </span>
                   );
                 },
                 // Custom rendering for links

@@ -3,7 +3,6 @@
 import { useEffect, useState } from "react";
 import PostPreview from "@/app/blog/PostPreview";
 import { getAllPosts, Post } from "@/lib/posts";
-import Link from "next/link";
 import { Skeleton } from "@/components/ui/skeleton";
 
 export default function Blog() {
@@ -55,7 +54,7 @@ export default function Blog() {
               slug={post.slug}
               tags={post.tags}
               date={new Date(
-                post.updatedAt || post.createdAt
+                post.publishedAt || post.updatedAt || post.createdAt
               ).toLocaleDateString("en-US", {
                 year: "numeric",
                 month: "long",

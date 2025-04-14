@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { Badge } from "@/components/ui/badge";
 import { ArrowUpRight } from "lucide-react";
 
@@ -29,7 +30,7 @@ const PostPreview: React.FC<PostPreviewProps> = ({
     <article>
       <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
         {/* Left column - Content */}
-        <div className="md:col-span-2 space-y-4">
+        <div className="md:col-span-2 space-y-2">
           {/* Date above title */}
           {date && <div className="text-sm text-neutral-500">{date}</div>}
 
@@ -70,11 +71,15 @@ const PostPreview: React.FC<PostPreviewProps> = ({
             className="block overflow-hidden rounded-md"
           >
             {coverImage ? (
-              <img
-                src={coverImage}
-                alt={title}
-                className="w-full h-auto object-cover aspect-[4/3] transition-transform duration-300 hover:scale-105"
-              />
+              <div className="relative aspect-[4/3] w-full">
+                <Image
+                  src={coverImage}
+                  alt={title}
+                  fill
+                  sizes="(max-width: 768px) 100vw, 33vw"
+                  className="object-cover transition-transform duration-300 hover:scale-105"
+                />
+              </div>
             ) : (
               <div className="bg-neutral-200 w-full aspect-[4/3] flex items-center justify-center">
                 <span className="text-neutral-500">No image</span>

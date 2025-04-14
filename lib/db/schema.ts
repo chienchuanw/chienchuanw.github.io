@@ -45,6 +45,7 @@ export const posts = pgTable("posts", {
   coverImage: varchar("cover_image", { length: 255 }),
   tags: json("tags").$type<string[]>().default([]),
   published: boolean("published").default(false).notNull(),
+  publishedAt: timestamp("published_at"),
   authorId: integer("author_id")
     .references(() => users.id)
     .notNull(),
@@ -74,7 +75,15 @@ export type User = typeof users.$inferSelect;
 export type NewUser = typeof users.$inferInsert;
 export type Session = typeof sessions.$inferSelect;
 export type NewSession = typeof sessions.$inferInsert;
-export type Post = typeof posts.$inferSelect;
+
+// Base Post type from database schema
+export type PostBase = typeof posts.$inferSelect;
 export type NewPost = typeof posts.$inferInsert;
+
+// Extended Post type with additional fields
+export interface Post extends PostBase {
+  authorName?: string;
+}
+
 export type Media = typeof media.$inferSelect;
 export type NewMedia = typeof media.$inferInsert;

@@ -175,6 +175,26 @@ export default function PostsPage() {
         const aValue = a[sortField];
         const bValue = b[sortField];
 
+        // Handle date fields (createdAt, updatedAt, publishedAt)
+        if (
+          sortField === "createdAt" ||
+          sortField === "updatedAt" ||
+          sortField === "publishedAt"
+        ) {
+          // Handle null values for publishedAt
+          if (sortField === "publishedAt") {
+            if (!aValue && !bValue) return 0;
+            if (!aValue) return sortDirection === "asc" ? 1 : -1;
+            if (!bValue) return sortDirection === "asc" ? -1 : 1;
+          }
+
+          const dateA = new Date(aValue as string).getTime();
+          const dateB = new Date(bValue as string).getTime();
+
+          return sortDirection === "asc" ? dateA - dateB : dateB - dateA;
+        }
+
+        // Handle string fields
         if (typeof aValue === "string" && typeof bValue === "string") {
           if (sortDirection === "asc") {
             return aValue.localeCompare(bValue);
@@ -349,6 +369,12 @@ export default function PostsPage() {
                         Created Date {renderSortIcon("createdAt")}
                       </TableHead>
                       <TableHead
+                        className="cursor-pointer hidden lg:table-cell"
+                        onClick={() => handleSort("publishedAt")}
+                      >
+                        Published Date {renderSortIcon("publishedAt")}
+                      </TableHead>
+                      <TableHead
                         className="cursor-pointer"
                         onClick={() => handleSort("updatedAt")}
                       >
@@ -379,6 +405,11 @@ export default function PostsPage() {
                         </TableCell>
                         <TableCell className="hidden lg:table-cell">
                           {formatDate(post.createdAt)}
+                        </TableCell>
+                        <TableCell className="hidden lg:table-cell">
+                          {post.publishedAt
+                            ? formatDate(post.publishedAt)
+                            : "-"}
                         </TableCell>
                         <TableCell>{formatDate(post.updatedAt)}</TableCell>
                         <TableCell className="text-right">
@@ -507,9 +538,14 @@ export default function PostsPage() {
                           >
                             {post.published ? "Published" : "Draft"}
                           </Badge>
-                          <span className="text-muted-foreground text-xs">
-                            Updated: {formatDate(post.updatedAt)}
-                          </span>
+                          <div className="text-muted-foreground text-xs flex flex-col items-end">
+                            {post.publishedAt && (
+                              <span>
+                                Published: {formatDate(post.publishedAt)}
+                              </span>
+                            )}
+                            <span>Updated: {formatDate(post.updatedAt)}</span>
+                          </div>
                         </div>
                       </div>
                     </CardContent>
