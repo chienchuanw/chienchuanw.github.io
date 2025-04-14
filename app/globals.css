@@ -189,6 +189,15 @@ body {
     @apply font-mono text-sm;
   }
 
+  /* Syntax highlighter customizations */
+  .prose pre.react-syntax-highlighter-line-numbers {
+    @apply p-0;
+  }
+
+  .prose pre.react-syntax-highlighter-line-numbers > span {
+    @apply text-sm font-mono;
+  }
+
   /* Inline code */
   .prose :not(pre) > code {
     @apply bg-gray-100 dark:bg-gray-800 px-1 py-0.5 rounded text-sm;
