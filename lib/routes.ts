@@ -15,6 +15,7 @@ type Routes = {
   admin: string;
   adminDashboard: string;
   adminPosts: string;
+  adminProfile: string;
   adminUsers: string;
   adminSettings: string;
 
@@ -53,6 +54,7 @@ const routes: Routes = {
   admin: "/admin",
   adminDashboard: "/admin/dashboard",
   adminPosts: "/admin/posts",
+  adminProfile: "/admin/profile",
   adminUsers: "/admin/users",
   adminSettings: "/admin/settings",
 

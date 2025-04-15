@@ -198,6 +198,26 @@ const Navbar = () => {
                               </NavigationMenuLink>
                             </Link>
                           </li>
+                          <li className="row-span-1">
+                            <Link
+                              href={routes.adminProfile}
+                              legacyBehavior
+                              passHref
+                            >
+                              <NavigationMenuLink
+                                className={cn(
+                                  "block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
+                                )}
+                              >
+                                <div className="text-sm font-medium leading-none">
+                                  Profile
+                                </div>
+                                <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
+                                  Manage your account information
+                                </p>
+                              </NavigationMenuLink>
+                            </Link>
+                          </li>
                         </ul>
                       </NavigationMenuContent>
                     </NavigationMenuItem>
@@ -318,6 +338,19 @@ const Navbar = () => {
                               <Link href={routes.adminPosts}>
                                 <span className="block px-2.5 py-1.5 pl-4 rounded-md hover:bg-accent transition-colors duration-200">
                                   Post Management
+                                </span>
+                              </Link>
+                            </motion.li>
+
+                            <motion.li
+                              variants={{
+                                open: { opacity: 1, y: 0 },
+                                closed: { opacity: 0, y: -10 },
+                              }}
+                            >
+                              <Link href={routes.adminProfile}>
+                                <span className="block px-2.5 py-1.5 pl-4 rounded-md hover:bg-accent transition-colors duration-200">
+                                  Profile
                                 </span>
                               </Link>
                             </motion.li>
