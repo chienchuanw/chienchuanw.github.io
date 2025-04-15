@@ -15,7 +15,7 @@ type Routes = {
   admin: string;
   adminDashboard: string;
   adminPosts: string;
-  adminProfile: string;
+  adminContactSettings: string;
   adminUsers: string;
   adminSettings: string;
 
@@ -35,6 +35,9 @@ type Routes = {
   // 媒體 API 路徑
   apiMedia: string;
   apiMediaById: string;
+
+  // 聯絡頁面 API 路徑
+  apiContact: string;
 };
 
 const routes: Routes = {
@@ -54,7 +57,7 @@ const routes: Routes = {
   admin: "/admin",
   adminDashboard: "/admin/dashboard",
   adminPosts: "/admin/posts",
-  adminProfile: "/admin/profile",
+  adminContactSettings: "/admin/contact-settings",
   adminUsers: "/admin/users",
   adminSettings: "/admin/settings",
 
@@ -74,6 +77,9 @@ const routes: Routes = {
   // 媒體 API 路徑
   apiMedia: "/api/media",
   apiMediaById: "/api/media/:id",
+
+  // 聯絡頁面 API 路徑
+  apiContact: "/api/contact",
 };
 
 export default routes;

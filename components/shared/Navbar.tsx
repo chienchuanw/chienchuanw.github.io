@@ -200,7 +200,7 @@ const Navbar = () => {
                           </li>
                           <li className="row-span-1">
                             <Link
-                              href={routes.adminProfile}
+                              href={routes.adminContactSettings}
                               legacyBehavior
                               passHref
                             >
@@ -210,10 +210,10 @@ const Navbar = () => {
                                 )}
                               >
                                 <div className="text-sm font-medium leading-none">
-                                  Profile
+                                  Contact Settings
                                 </div>
                                 <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
-                                  Manage your account information
+                                  Manage your contact page information
                                 </p>
                               </NavigationMenuLink>
                             </Link>
@@ -348,9 +348,9 @@ const Navbar = () => {
                                 closed: { opacity: 0, y: -10 },
                               }}
                             >
-                              <Link href={routes.adminProfile}>
+                              <Link href={routes.adminContactSettings}>
                                 <span className="block px-2.5 py-1.5 pl-4 rounded-md hover:bg-accent transition-colors duration-200">
-                                  Profile
+                                  Contact Settings
                                 </span>
                               </Link>
                             </motion.li>
