@@ -6,33 +6,61 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEnvelope } from "@fortawesome/free-solid-svg-icons";
 import { faGithub, faLinkedin } from "@fortawesome/free-brands-svg-icons";
 import { faArrowRight } from "@fortawesome/free-solid-svg-icons";
+import { contactService } from "@/lib/services/contact-service";
+import { Skeleton } from "@/components/ui/skeleton";
 
-export default function Contact() {
+// 獲取聯絡頁面資訊
+async function getContactInfo() {
+  try {
+    return await contactService.getContactInfo();
+  } catch (error) {
+    console.error("Error fetching contact info:", error);
+    return null;
+  }
+}
+
+export default async function Contact() {
+  const contactInfo = await getContactInfo();
   return (
     <div className="flex min-h-screen flex-col items-center justify-center p-4 md:p-8">
       <main className="max-w-2xl w-full space-y-8 mx-auto">
         {/* Profile Section */}
         <section className="flex flex-col items-center space-y-4 text-center md:items-start md:text-left">
           <Avatar className="h-24 w-24 md:h-32 md:w-32">
-            <AvatarImage src="/images/avatar.jpg" alt="Chien Chuan" />
-            <AvatarFallback>CC</AvatarFallback>
+            {contactInfo?.avatarUrl ? (
+              <AvatarImage src={contactInfo.avatarUrl} alt={contactInfo.name} />
+            ) : null}
+            <AvatarFallback>
+              {contactInfo?.name
+                ? contactInfo.name.charAt(0).toUpperCase()
+                : "CC"}
+            </AvatarFallback>
           </Avatar>
 
           <div className="space-y-2">
             <h1 className="text-3xl font-bold tracking-tight md:text-4xl">
-              Chien Chuan W
+              {contactInfo?.name || "Chien Chuan W"}
             </h1>
             <p className="text-muted-foreground max-w-md">
-              Web Developer specializing in Python and TypeScript. Currently
-              working with Ruby on Rails.
+              {contactInfo?.bio ||
+                "Web Developer specializing in Python and TypeScript."}
             </p>
           </div>
 
           <div className="flex flex-wrap gap-2 justify-center md:justify-start">
-            <Badge variant="secondary">TypeScript</Badge>
-            <Badge variant="secondary">Python</Badge>
-            <Badge variant="secondary">Ruby on Rails</Badge>
-            <Badge variant="secondary">Next.js</Badge>
+            {contactInfo?.skills && contactInfo.skills.length > 0 ? (
+              contactInfo.skills.map((skill, index) => (
+                <Badge key={index} variant="secondary">
+                  {skill}
+                </Badge>
+              ))
+            ) : (
+              <>
+                <Badge variant="secondary">TypeScript</Badge>
+                <Badge variant="secondary">Python</Badge>
+                <Badge variant="secondary">Next.js</Badge>
+              </>
+            )}
           </div>
         </section>
 
@@ -50,36 +78,42 @@ export default function Contact() {
               <div className="flex items-center gap-2">
                 <FontAwesomeIcon icon={faEnvelope} className="h-5 w-5" />
                 <a
-                  href="mailto:contact@chienchuan.com"
+                  href={`mailto:${
+                    contactInfo?.email || "contact@chienchuan.com"
+                  }`}
                   className="hover:underline"
                 >
-                  contact@chienchuan.com
+                  {contactInfo?.email || "contact@chienchuan.com"}
                 </a>
               </div>
 
-              <div className="flex items-center gap-2">
-                <FontAwesomeIcon icon={faGithub} className="h-5 w-5" />
-                <a
-                  href="https://github.com/chienchuanw"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="hover:underline"
-                >
-                  github.com/chienchuanw
-                </a>
-              </div>
+              {contactInfo?.github && (
+                <div className="flex items-center gap-2">
+                  <FontAwesomeIcon icon={faGithub} className="h-5 w-5" />
+                  <a
+                    href={contactInfo.github}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="hover:underline"
+                  >
+                    {contactInfo.github.replace("https://", "")}
+                  </a>
+                </div>
+              )}
 
-              <div className="flex items-center gap-2">
-                <FontAwesomeIcon icon={faLinkedin} className="h-5 w-5" />
-                <a
-                  href="https://linkedin.com/in/chienchuanw"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="hover:underline"
-                >
-                  linkedin.com/in/chienchuanw
-                </a>
-              </div>
+              {contactInfo?.linkedin && (
+                <div className="flex items-center gap-2">
+                  <FontAwesomeIcon icon={faLinkedin} className="h-5 w-5" />
+                  <a
+                    href={contactInfo.linkedin}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="hover:underline"
+                  >
+                    {contactInfo.linkedin.replace("https://", "")}
+                  </a>
+                </div>
+              )}
             </div>
           </div>
         </section>
@@ -134,30 +168,38 @@ export default function Contact() {
         {/* Social Links */}
         <section className="pt-4">
           <div className="flex justify-center gap-4 md:justify-start">
-            <Button variant="outline" size="icon" asChild>
-              <a
-                href="https://github.com/chienchuanw"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                <FontAwesomeIcon icon={faGithub} className="h-5 w-5" />
-                <span className="sr-only">GitHub</span>
-              </a>
-            </Button>
+            {contactInfo?.github && (
+              <Button variant="outline" size="icon" asChild>
+                <a
+                  href={contactInfo.github}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <FontAwesomeIcon icon={faGithub} className="h-5 w-5" />
+                  <span className="sr-only">GitHub</span>
+                </a>
+              </Button>
+            )}
+
+            {contactInfo?.linkedin && (
+              <Button variant="outline" size="icon" asChild>
+                <a
+                  href={contactInfo.linkedin}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <FontAwesomeIcon icon={faLinkedin} className="h-5 w-5" />
+                  <span className="sr-only">LinkedIn</span>
+                </a>
+              </Button>
+            )}
 
             <Button variant="outline" size="icon" asChild>
               <a
-                href="https://linkedin.com/in/chienchuanw"
-                target="_blank"
-                rel="noopener noreferrer"
+                href={`mailto:${
+                  contactInfo?.email || "contact@chienchuan.com"
+                }`}
               >
-                <FontAwesomeIcon icon={faLinkedin} className="h-5 w-5" />
-                <span className="sr-only">LinkedIn</span>
-              </a>
-            </Button>
-
-            <Button variant="outline" size="icon" asChild>
-              <a href="mailto:contact@chienchuan.com">
                 <FontAwesomeIcon icon={faEnvelope} className="h-5 w-5" />
                 <span className="sr-only">Email</span>
               </a>

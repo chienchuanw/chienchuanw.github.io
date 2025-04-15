@@ -87,3 +87,21 @@ export interface Post extends PostBase {
 
 export type Media = typeof media.$inferSelect;
 export type NewMedia = typeof media.$inferInsert;
+
+// 聯絡頁面資訊表 - 用於存儲聯絡頁面的內容
+export const contactInfo = pgTable("contact_info", {
+  id: serial("id").primaryKey(),
+  name: varchar("name", { length: 100 }).notNull(),
+  title: varchar("title", { length: 255 }).notNull(),
+  bio: text("bio").notNull(),
+  email: varchar("email", { length: 255 }).notNull(),
+  github: varchar("github", { length: 255 }),
+  linkedin: varchar("linkedin", { length: 255 }),
+  skills: json("skills").$type<string[]>().default([]),
+  avatarUrl: varchar("avatar_url", { length: 255 }),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
+
+export type ContactInfo = typeof contactInfo.$inferSelect;
+export type NewContactInfo = typeof contactInfo.$inferInsert;

@@ -43,6 +43,13 @@
       "when": 1744641260748,
       "tag": "0005_true_kid_colt",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "5",
+      "when": 1744642000000,
+      "tag": "0006_contact_info",
+      "breakpoints": true
     }
   ]
 }
