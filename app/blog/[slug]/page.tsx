@@ -157,7 +157,7 @@ export default function BlogPost() {
             priority
             className="object-cover"
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-background/80 to-transparent flex flex-col justify-end p-6 md:p-10">
+          <div className="absolute inset-0 bg-gradient-to-t from-background/40 to-transparent flex flex-col justify-end p-6 md:p-10">
             <div className="text-center">
               <div className="text-sm text-neutral-200 uppercase tracking-wider mb-2">
                 {formattedDate}
