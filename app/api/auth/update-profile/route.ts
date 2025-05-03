@@ -33,10 +33,11 @@ export async function POST(request: NextRequest) {
     };
 
     // 更新用戶信息
-    const updatedUser = await userService.update(user.id, updateData);
+    const userId = user.id as number;
+    const updatedUser = await userService.update(userId, updateData);
 
     // 移除密碼後返回更新後的用戶信息
-    const { password: _, ...userWithoutPassword } = updatedUser;
+    const { ...userWithoutPassword } = updatedUser;
 
     return NextResponse.json({
       user: userWithoutPassword,

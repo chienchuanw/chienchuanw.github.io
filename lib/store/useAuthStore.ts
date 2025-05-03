@@ -62,7 +62,7 @@ const useAuthStore = create<AuthState>()(
             const data = await response.json();
             set({ error: data.error || "登出失敗" });
           }
-        } catch (error) {
+        } catch {
           set({ error: "登出時發生錯誤" });
         } finally {
           set({ isLoading: false });

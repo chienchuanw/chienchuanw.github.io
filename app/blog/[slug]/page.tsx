@@ -259,9 +259,11 @@ export default function BlogPost() {
                   );
                 },
                 // Custom rendering for code blocks
-                code: ({ className, children, ...props }: any) => {
+                code: ({ className, children, ...props }) => {
                   const match = /language-(\w+)/.exec(className || "");
-                  const isInline = !match && (props.inline || false);
+                  // Type assertion for props
+                  const codeProps = props as { inline?: boolean };
+                  const isInline = !match && (codeProps.inline || false);
 
                   if (isInline) {
                     return (

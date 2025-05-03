@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { useToast } from '@/components/ui/use-toast';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faUpload, faImage, faVideo, faFile, faSpinner, faTimes } from '@fortawesome/free-solid-svg-icons';
+import { faUpload, faSpinner } from '@fortawesome/free-solid-svg-icons';
 
 interface MediaUploaderProps {
   postId?: number;
@@ -21,7 +21,7 @@ export default function MediaUploader({ postId, onUploadComplete }: MediaUploade
   const handleDrag = (e: React.DragEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    
+
     if (e.type === 'dragenter' || e.type === 'dragover') {
       setDragActive(true);
     } else if (e.type === 'dragleave') {
@@ -33,7 +33,7 @@ export default function MediaUploader({ postId, onUploadComplete }: MediaUploade
     e.preventDefault();
     e.stopPropagation();
     setDragActive(false);
-    
+
     if (e.dataTransfer.files && e.dataTransfer.files[0]) {
       handleFileUpload(e.dataTransfer.files[0]);
     }
@@ -47,32 +47,32 @@ export default function MediaUploader({ postId, onUploadComplete }: MediaUploade
 
   const handleFileUpload = async (file: File) => {
     setIsUploading(true);
-    
+
     try {
       const formData = new FormData();
       formData.append('file', file);
-      
+
       if (postId) {
         formData.append('postId', postId.toString());
       }
-      
+
       const response = await fetch('/api/media', {
         method: 'POST',
         body: formData,
       });
-      
+
       if (!response.ok) {
         const errorData = await response.json();
         throw new Error(errorData.error || 'Upload failed');
       }
-      
+
       const data = await response.json();
-      
+
       toast({
         title: 'Upload Successful',
         description: 'Media file has been uploaded',
       });
-      
+
       // Call the callback with the media URL
       if (onUploadComplete && data.media) {
         onUploadComplete(data.media.url);
@@ -93,15 +93,7 @@ export default function MediaUploader({ postId, onUploadComplete }: MediaUploade
     }
   };
 
-  const getFileIcon = (mimeType: string) => {
-    if (mimeType.startsWith('image/')) {
-      return faImage;
-    } else if (mimeType.startsWith('video/')) {
-      return faVideo;
-    } else {
-      return faFile;
-    }
-  };
+
 
   return (
     <Card className={`border-2 ${dragActive ? 'border-primary border-dashed' : 'border-border'}`}>

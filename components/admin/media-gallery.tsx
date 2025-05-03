@@ -12,6 +12,7 @@ import {
 } from "@/components/ui/dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/components/ui/use-toast";
+import Image from "next/image";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faImages,
@@ -154,7 +155,7 @@ export default function MediaGallery({
     }
   };
 
-  const handleUploadComplete = (mediaUrl: string) => {
+  const handleUploadComplete = () => {
     // Refresh the media lists
     fetchMedia();
   };
@@ -251,20 +252,26 @@ export default function MediaGallery({
     <Card key={item.id} className="overflow-hidden group relative">
       <CardContent className="p-0">
         {isImage(item.mimeType) ? (
-          <img
-            src={item.url}
-            alt={item.filename}
-            className="w-full h-32 object-cover"
-          />
+          <div className="relative w-full h-32">
+            <Image
+              src={item.url}
+              alt={item.filename}
+              fill
+              className="object-cover"
+            />
+          </div>
         ) : isVideo(item.mimeType) ? (
           <div className="w-full h-32 bg-muted relative">
             {videoThumbnails[item.id] ? (
               <>
-                <img
-                  src={videoThumbnails[item.id]}
-                  alt={`Thumbnail for ${item.filename}`}
-                  className="w-full h-full object-cover"
-                />
+                <div className="relative w-full h-full">
+                  <Image
+                    src={videoThumbnails[item.id]}
+                    alt={`Thumbnail for ${item.filename}`}
+                    fill
+                    className="object-cover"
+                  />
+                </div>
                 {/* Play icon overlay */}
                 <div className="absolute inset-0 flex items-center justify-center">
                   <div className="bg-black/40 rounded-full p-2">

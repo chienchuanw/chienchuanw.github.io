@@ -1,4 +1,4 @@
-import { eq, desc, and } from 'drizzle-orm';
+import { eq, desc, and, isNull } from 'drizzle-orm';
 import path from 'path';
 import fs from 'fs/promises';
 import { v4 as uuidv4 } from 'uuid';
@@ -37,7 +37,7 @@ export const mediaService = {
   async ensureUploadDir(): Promise<void> {
     try {
       await fs.access(UPLOAD_DIR);
-    } catch (error) {
+    } catch {
       // Directory doesn't exist, create it
       await fs.mkdir(UPLOAD_DIR, { recursive: true });
     }
@@ -80,30 +80,30 @@ export const mediaService = {
     // Generate unique filename
     const fileExt = path.extname(file.name);
     const uniqueFilename = `${uuidv4()}${fileExt}`;
-    
+
     // Create year/month based directory structure
     const now = new Date();
     const yearMonth = `${now.getFullYear()}/${(now.getMonth() + 1).toString().padStart(2, '0')}`;
     const uploadPath = path.join(UPLOAD_DIR, yearMonth);
-    
+
     // Ensure year/month directory exists
     await fs.mkdir(uploadPath, { recursive: true });
-    
+
     // Full path to save the file
     const filePath = path.join(uploadPath, uniqueFilename);
-    
+
     // Get file buffer
     const buffer = Buffer.from(await file.arrayBuffer());
-    
+
     // Write file to disk
     await fs.writeFile(filePath, buffer);
-    
+
     // Calculate relative path for database
     const relativePath = path.join(yearMonth, uniqueFilename);
-    
+
     // Create URL for accessing the file
     const fileUrl = `${UPLOAD_BASE_URL}/${yearMonth}/${uniqueFilename}`;
-    
+
     // Save file info to database
     const newMedia: NewMedia = {
       filename: uniqueFilename,
@@ -115,9 +115,9 @@ export const mediaService = {
       authorId,
       postId: postId || null,
     };
-    
+
     const result = await db.insert(media).values(newMedia).returning();
-    
+
     return result[0];
   },
 
@@ -138,7 +138,7 @@ export const mediaService = {
       .from(media)
       .where(eq(media.postId, postId))
       .orderBy(desc(media.createdAt));
-    
+
     return result;
   },
 
@@ -152,7 +152,7 @@ export const mediaService = {
       .where(eq(media.authorId, authorId))
       .orderBy(desc(media.createdAt))
       .limit(limit);
-    
+
     return result;
   },
 
@@ -162,11 +162,11 @@ export const mediaService = {
   async delete(id: number): Promise<boolean> {
     // Get media info
     const mediaItem = await this.getById(id);
-    
+
     if (!mediaItem) {
       return false;
     }
-    
+
     // Delete file from disk
     try {
       const filePath = path.join(UPLOAD_DIR, mediaItem.path);
@@ -175,13 +175,13 @@ export const mediaService = {
       console.error('Error deleting file:', error);
       // Continue with database deletion even if file deletion fails
     }
-    
+
     // Delete from database
     const result = await db
       .delete(media)
       .where(eq(media.id, id))
       .returning({ id: media.id });
-    
+
     return result.length > 0;
   },
 
@@ -197,11 +197,11 @@ export const mediaService = {
       })
       .where(eq(media.id, id))
       .returning();
-    
+
     if (result.length === 0) {
       return undefined;
     }
-    
+
     return result[0];
   },
 
@@ -215,11 +215,12 @@ export const mediaService = {
       .where(
         and(
           eq(media.authorId, authorId),
-          eq(media.postId, null)
+          // Use isNull instead of eq for null comparison
+          isNull(media.postId)
         )
       )
       .orderBy(desc(media.createdAt));
-    
+
     return result;
   }
 };

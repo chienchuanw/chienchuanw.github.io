@@ -3,6 +3,8 @@ import { postService } from "@/lib/services/post-service";
 import { authService } from "@/lib/services/auth-service";
 import { cookies } from "next/headers";
 
+export const dynamic = 'force-dynamic';
+
 export async function GET(request: NextRequest) {
   try {
     // Get query parameters
@@ -71,6 +73,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Create post
+    const userId = user.id as number;
     const post = await postService.create({
       title: data.title,
       slug: data.slug,
@@ -80,7 +83,7 @@ export async function POST(request: NextRequest) {
       coverImage: data.coverImage,
       tags: data.tags || [],
       published: data.published || false,
-      authorId: user.id,
+      authorId: userId,
     });
 
     return NextResponse.json({ post });
