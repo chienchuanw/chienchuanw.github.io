@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { usePosts } from '@/hooks/swr/usePosts';
-import useBlogStore from '@/lib/store/useBlogStore';
+import useBlogStore, { Post } from '@/lib/store/useBlogStore';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 
@@ -22,7 +22,7 @@ export function BlogPostsExample() {
   };
 
   // 處理文章選擇
-  const handleSelectPost = (post: any) => {
+  const handleSelectPost = (post: Post) => {
     selectPost(post);
   };
 

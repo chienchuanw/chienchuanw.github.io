@@ -3,9 +3,11 @@ import { postService } from "@/lib/services/post-service";
 import { authService } from "@/lib/services/auth-service";
 import { cookies } from "next/headers";
 
+export const dynamic = 'force-dynamic';
+
 export async function GET(
   request: NextRequest,
-  { params }: { params: { slug: string } }
+  { params }: { params: Promise<{ slug: string }> }
 ) {
   try {
     // Ensure params is awaited
@@ -53,7 +55,7 @@ export async function GET(
 
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { slug: string } }
+  { params }: { params: Promise<{ slug: string }> }
 ) {
   try {
     // Check authentication
@@ -126,7 +128,7 @@ export async function PUT(
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { slug: string } }
+  { params }: { params: Promise<{ slug: string }> }
 ) {
   try {
     // Check authentication

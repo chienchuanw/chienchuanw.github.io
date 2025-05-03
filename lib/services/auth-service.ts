@@ -1,6 +1,6 @@
 import { eq } from "drizzle-orm";
 import db from "../db";
-import { sessions, users, NewSession, Session } from "../db/schema";
+import { sessions, users, NewSession } from "../db/schema";
 import { userService } from "./user-service";
 import crypto from "crypto";
 
@@ -11,7 +11,7 @@ export const authService = {
   async login(
     identifier: string,
     password: string
-  ): Promise<{ user: any; token: string } | null> {
+  ): Promise<{ user: Record<string, unknown>; token: string } | null> {
     console.log("嘗試登入，識別碼:", identifier);
 
     // 根據電子郵件或用戶名獲取用戶
@@ -46,7 +46,8 @@ export const authService = {
     await db.insert(sessions).values(sessionData);
 
     // 移除用戶密碼後返回
-    const { password: _, ...userWithoutPassword } = user;
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { password: pwd, ...userWithoutPassword } = user;
     return {
       user: userWithoutPassword,
       token,
@@ -56,7 +57,7 @@ export const authService = {
   /**
    * 根據令牌驗證用戶會話
    */
-  async validateSession(token: string): Promise<any | null> {
+  async validateSession(token: string): Promise<Record<string, unknown> | null> {
     try {
       // 獲取會話信息
       const [session] = await db
@@ -86,7 +87,7 @@ export const authService = {
       if (!user || user.length === 0) return null;
 
       // 移除用戶密碼後返回
-      const { password: _, ...userWithoutPassword } = user[0].users;
+      const { ...userWithoutPassword } = user[0].users;
       return userWithoutPassword;
     } catch (error) {
       console.error("Error validating session:", error);

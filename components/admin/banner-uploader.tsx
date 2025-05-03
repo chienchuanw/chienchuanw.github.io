@@ -4,7 +4,7 @@ import { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { useToast } from "@/components/ui/use-toast";
-import { ImageIcon, Upload, X } from "lucide-react";
+import { ImageIcon, X } from "lucide-react";
 import Image from "next/image";
 
 interface BannerUploaderProps {

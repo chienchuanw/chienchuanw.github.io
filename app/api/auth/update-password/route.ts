@@ -11,17 +11,17 @@ export async function POST(request: NextRequest) {
     // 獲取當前會話，確認用戶已登入
     const cookieStore = await cookies();
     const authToken = cookieStore.get('auth_token')?.value;
-    
+
     if (!authToken) {
       return NextResponse.json(
         { error: '您必須登入才能更新密碼' },
         { status: 401 }
       );
     }
-    
+
     // 驗證會話
     const currentUser = await authService.validateSession(authToken);
-    
+
     if (!currentUser) {
       return NextResponse.json(
         { error: '會話已過期，請重新登入' },
@@ -47,10 +47,11 @@ export async function POST(request: NextRequest) {
     }
 
     // 獲取用戶資料以驗證當前密碼
+    const userId = currentUser.id as number;
     const userResult = await db
       .select()
       .from(users)
-      .where(eq(users.id, currentUser.id))
+      .where(eq(users.id, userId))
       .limit(1);
 
     if (userResult.length === 0) {
@@ -58,10 +59,10 @@ export async function POST(request: NextRequest) {
     }
 
     const user = userResult[0];
-    
+
     // 發送調試信息
-    console.log('User data:', { 
-      id: user.id, 
+    console.log('User data:', {
+      id: user.id,
       hasPassword: !!user.password
     });
 
@@ -96,7 +97,7 @@ export async function POST(request: NextRequest) {
         password: newPasswordHash,
         updatedAt: new Date(),
       })
-      .where(eq(users.id, currentUser.id));
+      .where(eq(users.id, userId));
 
     return NextResponse.json({ success: true });
   } catch (error) {

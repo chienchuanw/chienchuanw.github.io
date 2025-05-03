@@ -1,4 +1,3 @@
-import { Post as DbPost } from "./db/schema";
 import { Post as StorePost } from "./store/useBlogStore";
 import * as clientPosts from "./client/posts";
 
