@@ -7,7 +7,6 @@ import { faEnvelope } from "@fortawesome/free-solid-svg-icons";
 import { faGithub, faLinkedin } from "@fortawesome/free-brands-svg-icons";
 import { faArrowRight } from "@fortawesome/free-solid-svg-icons";
 import { contactService } from "@/lib/services/contact-service";
-import { Skeleton } from "@/components/ui/skeleton";
 
 // 獲取聯絡頁面資訊
 async function getContactInfo() {

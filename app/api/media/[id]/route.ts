@@ -5,11 +5,11 @@ import { cookies } from "next/headers";
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     // Ensure params is awaited
-    const { id: idStr } = await Promise.resolve(params);
+    const { id: idStr } = await params;
     const id = parseInt(idStr);
 
     if (isNaN(id)) {
@@ -35,7 +35,7 @@ export async function GET(
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     // Check authentication
@@ -54,7 +54,7 @@ export async function DELETE(
     }
 
     // Ensure params is awaited
-    const { id: idStr } = await Promise.resolve(params);
+    const { id: idStr } = await params;
     const id = parseInt(idStr);
 
     if (isNaN(id)) {
@@ -95,7 +95,7 @@ export async function DELETE(
 
 export async function PATCH(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     // Check authentication
@@ -114,7 +114,7 @@ export async function PATCH(
     }
 
     // Ensure params is awaited
-    const { id: idStr } = await Promise.resolve(params);
+    const { id: idStr } = await params;
     const id = parseInt(idStr);
 
     if (isNaN(id)) {

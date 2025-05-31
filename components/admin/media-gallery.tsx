@@ -154,7 +154,7 @@ export default function MediaGallery({
     }
   };
 
-  const handleUploadComplete = (mediaUrl: string) => {
+  const handleUploadComplete = () => {
     // Refresh the media lists
     fetchMedia();
   };

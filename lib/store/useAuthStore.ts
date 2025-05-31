@@ -62,6 +62,7 @@ const useAuthStore = create<AuthState>()(
             const data = await response.json();
             set({ error: data.error || "登出失敗" });
           }
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         } catch (error) {
           set({ error: "登出時發生錯誤" });
         } finally {

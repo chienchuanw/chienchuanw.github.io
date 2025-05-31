@@ -3,8 +3,6 @@
 import { useEffect, useState } from "react";
 import PostPreview from "@/app/blog/PostPreview";
 import { getAllPosts, Post } from "@/lib/posts";
-import Link from "next/link";
-import { Button } from "@/components/ui/button";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEnvelope } from "@fortawesome/free-solid-svg-icons";
 import { faGithub, faLinkedin } from "@fortawesome/free-brands-svg-icons";

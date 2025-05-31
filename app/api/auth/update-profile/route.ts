@@ -36,6 +36,7 @@ export async function POST(request: NextRequest) {
     const updatedUser = await userService.update(user.id, updateData);
 
     // 移除密碼後返回更新後的用戶信息
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { password: _, ...userWithoutPassword } = updatedUser;
 
     return NextResponse.json({

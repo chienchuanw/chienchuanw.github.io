@@ -89,7 +89,7 @@ export default function AvatarGallery({ onSelect }: AvatarGalleryProps) {
     }
   };
 
-  const handleUploadComplete = (mediaUrl: string) => {
+  const handleUploadComplete = () => {
     // Refresh the media lists
     fetchMedia();
   };
