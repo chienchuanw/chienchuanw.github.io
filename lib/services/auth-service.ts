@@ -1,5 +1,6 @@
 import { eq } from "drizzle-orm";
 import db from "../db";
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { sessions, users, NewSession, Session } from "../db/schema";
 import { userService } from "./user-service";
 import crypto from "crypto";
@@ -11,6 +12,7 @@ export const authService = {
   async login(
     identifier: string,
     password: string
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   ): Promise<{ user: any; token: string } | null> {
     console.log("嘗試登入，識別碼:", identifier);
 
@@ -46,6 +48,7 @@ export const authService = {
     await db.insert(sessions).values(sessionData);
 
     // 移除用戶密碼後返回
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { password: _, ...userWithoutPassword } = user;
     return {
       user: userWithoutPassword,
@@ -56,6 +59,7 @@ export const authService = {
   /**
    * 根據令牌驗證用戶會話
    */
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   async validateSession(token: string): Promise<any | null> {
     try {
       // 獲取會話信息
@@ -86,6 +90,7 @@ export const authService = {
       if (!user || user.length === 0) return null;
 
       // 移除用戶密碼後返回
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const { password: _, ...userWithoutPassword } = user[0].users;
       return userWithoutPassword;
     } catch (error) {

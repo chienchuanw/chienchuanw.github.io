@@ -1,4 +1,4 @@
-import { eq, desc, and } from 'drizzle-orm';
+import { eq, desc, and, isNull } from 'drizzle-orm';
 import path from 'path';
 import fs from 'fs/promises';
 import { v4 as uuidv4 } from 'uuid';
@@ -37,6 +37,7 @@ export const mediaService = {
   async ensureUploadDir(): Promise<void> {
     try {
       await fs.access(UPLOAD_DIR);
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
       // Directory doesn't exist, create it
       await fs.mkdir(UPLOAD_DIR, { recursive: true });
@@ -215,7 +216,7 @@ export const mediaService = {
       .where(
         and(
           eq(media.authorId, authorId),
-          eq(media.postId, null)
+          isNull(media.postId)
         )
       )
       .orderBy(desc(media.createdAt));

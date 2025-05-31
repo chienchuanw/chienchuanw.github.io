@@ -1,8 +1,8 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
 import { authService } from '@/lib/services/auth-service';
 
-export async function GET(request: NextRequest) {
+export async function GET() {
   try {
     // 獲取身份驗證令牌
     const cookieStore = await cookies();

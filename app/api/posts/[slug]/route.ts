@@ -5,11 +5,11 @@ import { cookies } from "next/headers";
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { slug: string } }
+  { params }: { params: Promise<{ slug: string }> }
 ) {
   try {
     // Ensure params is awaited
-    const { slug } = await Promise.resolve(params);
+    const { slug } = await params;
 
     // Get post by slug
     const post = await postService.getBySlug(slug);
@@ -53,7 +53,7 @@ export async function GET(
 
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { slug: string } }
+  { params }: { params: Promise<{ slug: string }> }
 ) {
   try {
     // Check authentication
@@ -72,7 +72,7 @@ export async function PUT(
     }
 
     // Ensure params is awaited
-    const { slug } = await Promise.resolve(params);
+    const { slug } = await params;
 
     // Get post by slug
     const post = await postService.getBySlug(slug);
@@ -126,7 +126,7 @@ export async function PUT(
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { slug: string } }
+  { params }: { params: Promise<{ slug: string }> }
 ) {
   try {
     // Check authentication
@@ -145,7 +145,7 @@ export async function DELETE(
     }
 
     // Ensure params is awaited
-    const { slug } = await Promise.resolve(params);
+    const { slug } = await params;
 
     // Get post by slug
     const post = await postService.getBySlug(slug);

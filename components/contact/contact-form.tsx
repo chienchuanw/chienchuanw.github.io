@@ -53,26 +53,10 @@ const contactSchema = z.object({
 
 type ContactFormValues = z.infer<typeof contactSchema>;
 
-interface ContactInfo {
-  id: number;
-  name: string;
-  title: string;
-  bio: string;
-  email: string;
-  github?: string;
-  linkedin?: string;
-  skills: string[];
-  avatarUrl?: string;
-  createdAt: string;
-  updatedAt: string;
-}
-
 export default function ContactForm() {
   const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [contactInfo, setContactInfo] = useState<ContactInfo | null>(null);
   const [skills, setSkills] = useState<string[]>([]);
-  const [newSkill, setNewSkill] = useState("");
 
   // 表單設置
   const form = useForm<ContactFormValues>({
@@ -102,7 +86,6 @@ export default function ContactForm() {
         }
 
         const data = await response.json();
-        setContactInfo(data.contactInfo);
         setSkills(data.contactInfo.skills || []);
 
         // 設置表單預設值
@@ -175,10 +158,7 @@ export default function ContactForm() {
         );
       }
 
-      const result = await response.json();
-
-      // 更新本地狀態
-      setContactInfo(result.contactInfo);
+      await response.json();
 
       // 即時更新：觸發所有使用 contact API 的 SWR hook 重新驗證
       // 註釋：這會讓 Navbar 和其他使用聯絡資訊的組件立即更新
