@@ -57,11 +57,11 @@ export const config = {
   matcher: [
     // 需要身份驗證的路徑
     // 添加 admin 路徑，使其需要登入才能訪問
-    `${routes.profile}/:path*`,
-    `${routes.admin}/:path*`,
-    routes.admin,
+    "/profile/:path*",
+    "/admin/:path*",
+    "/admin",
     // 公共認證頁面
-    routes.login,
+    "/login",
     "/register", // 保留以便重定向
   ],
 };
