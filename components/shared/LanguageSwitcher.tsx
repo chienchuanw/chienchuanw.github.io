@@ -41,10 +41,10 @@ export default function LanguageSwitcher() {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button 
-          variant="ghost" 
-          size="sm" 
-          className="flex items-center gap-2 text-sm"
+        <Button
+          variant="ghost"
+          size="sm"
+          className="flex items-center gap-2 text-sm px-3 py-2 whitespace-nowrap"
           aria-label={t('switchLanguage')}
         >
           <Globe className="h-4 w-4" />
@@ -53,7 +53,7 @@ export default function LanguageSwitcher() {
           </span>
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="min-w-[120px]">
+      <DropdownMenuContent align="end" className="min-w-[140px]">
         {locales.map((locale) => (
           <DropdownMenuItem
             key={locale}

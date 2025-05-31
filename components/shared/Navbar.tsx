@@ -146,10 +146,10 @@ const Navbar = () => {
             */}
             <div className="hidden lg:block">
               <NavigationMenu>
-                <NavigationMenuList>
+                <NavigationMenuList className="gap-1">
                   <NavigationMenuItem>
                     <Link href={routes.blog} legacyBehavior passHref>
-                      <NavigationMenuLink className="px-4 py-2 text-sm font-medium rounded-md transition-colors hover:bg-accent hover:text-accent-foreground">
+                      <NavigationMenuLink className="px-3 py-2 text-sm font-medium rounded-md transition-colors hover:bg-accent hover:text-accent-foreground whitespace-nowrap">
                         {t('blog')}
                       </NavigationMenuLink>
                     </Link>
@@ -157,7 +157,7 @@ const Navbar = () => {
 
                   <NavigationMenuItem>
                     <Link href={routes.contact} legacyBehavior passHref>
-                      <NavigationMenuLink className="px-4 py-2 text-sm font-medium rounded-md transition-colors hover:bg-accent hover:text-accent-foreground">
+                      <NavigationMenuLink className="px-3 py-2 text-sm font-medium rounded-md transition-colors hover:bg-accent hover:text-accent-foreground whitespace-nowrap">
                         {t('contact')}
                       </NavigationMenuLink>
                     </Link>
@@ -166,7 +166,7 @@ const Navbar = () => {
                   {/* Admin 選單與子選單 */}
                   {currentLoggedIn && (
                     <NavigationMenuItem>
-                      <NavigationMenuTrigger className="px-4 py-2 text-sm font-medium rounded-md">
+                      <NavigationMenuTrigger className="px-3 py-2 text-sm font-medium rounded-md whitespace-nowrap">
                         {t('admin')}
                       </NavigationMenuTrigger>
                       <NavigationMenuContent>
@@ -241,7 +241,7 @@ const Navbar = () => {
                     <NavigationMenuItem>
                       <Button
                         variant="ghost"
-                        className="text-red-500 text-sm font-medium hover:text-red-600 hover:bg-red-50 px-4 py-2"
+                        className="text-red-500 text-sm font-medium hover:text-red-600 hover:bg-red-50 px-3 py-2 whitespace-nowrap"
                         onClick={handleLogout}
                       >
                         {t('logout')}
@@ -277,7 +277,7 @@ const Navbar = () => {
                       animate={{ opacity: 1, y: 0 }}
                       exit={{ opacity: 0, y: -20 }}
                       transition={{ duration: 0.2 }}
-                      className="absolute right-0 mt-2 w-[200px] rounded-md shadow-lg bg-background border z-50"
+                      className="absolute right-0 mt-2 w-[220px] rounded-md shadow-lg bg-background border z-50"
                     >
                       <motion.ul
                         className="py-1.5 px-2 space-y-0.5 text-sm"
