@@ -85,7 +85,7 @@ export function BlogPostsExample() {
             <div className="flex items-center justify-between mt-2 text-xs text-gray-500 dark:text-gray-400">
               <span>作者: {post.authorName || '未知'}</span>
               <span>
-                {new Date(post.createdAt).toLocaleDateString('zh-TW')}
+                {new Date(post.createdAt).toLocaleDateString('tw')}
               </span>
             </div>
           </div>

@@ -1,3 +1,7 @@
+import createNextIntlPlugin from 'next-intl/plugin';
+
+const withNextIntl = createNextIntlPlugin('./lib/i18n/request.ts');
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   // 圖片優化設定
@@ -9,10 +13,8 @@ const nextConfig = {
   // 輸出設定 - 適用於靜態部署
   output: 'standalone',
 
-  // 實驗性功能
-  experimental: {
-    serverComponentsExternalPackages: ['pg', 'postgres'],
-  },
+  // 伺服器外部套件
+  serverExternalPackages: ['pg', 'postgres'],
 };
 
-export default nextConfig;
+export default withNextIntl(nextConfig);
