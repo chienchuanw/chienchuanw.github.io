@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useCallback } from "react";
+import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import {
@@ -251,19 +252,25 @@ export default function MediaGallery({
     <Card key={item.id} className="overflow-hidden group relative">
       <CardContent className="p-0">
         {isImage(item.mimeType) ? (
-          <img
+          <Image
             src={item.url}
             alt={item.filename}
+            width={300}
+            height={128}
             className="w-full h-32 object-cover"
+            unoptimized
           />
         ) : isVideo(item.mimeType) ? (
           <div className="w-full h-32 bg-muted relative">
             {videoThumbnails[item.id] ? (
               <>
-                <img
+                <Image
                   src={videoThumbnails[item.id]}
                   alt={`Thumbnail for ${item.filename}`}
+                  width={300}
+                  height={128}
                   className="w-full h-full object-cover"
+                  unoptimized
                 />
                 {/* Play icon overlay */}
                 <div className="absolute inset-0 flex items-center justify-center">
