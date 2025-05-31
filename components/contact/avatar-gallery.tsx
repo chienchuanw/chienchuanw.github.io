@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useCallback } from "react";
+import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -100,10 +101,13 @@ export default function AvatarGallery({ onSelect }: AvatarGalleryProps) {
     <Card key={item.id} className="overflow-hidden group relative">
       <CardContent className="p-0">
         {isImage(item.mimeType) ? (
-          <img
+          <Image
             src={item.url}
             alt={item.filename}
+            width={300}
+            height={128}
             className="w-full h-32 object-cover"
+            unoptimized
           />
         ) : null}
         <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
