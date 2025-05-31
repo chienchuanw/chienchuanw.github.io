@@ -52,9 +52,6 @@ async function createContactTable() {
     console.log('Migration completed successfully!');
   } catch (error) {
     console.error('Error during migration:', error);
-  } finally {
-    // Close the database connection
-    await db.end();
   }
 }
 
