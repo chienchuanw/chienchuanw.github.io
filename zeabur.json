@@ -1,0 +1,14 @@
+{
+  "name": "chienchuan-blog",
+  "build": {
+    "commands": [
+      "npm install",
+      "npm run db:generate",
+      "npm run build"
+    ]
+  },
+  "start": "npm start",
+  "env": {
+    "NODE_ENV": "production"
+  }
+}
