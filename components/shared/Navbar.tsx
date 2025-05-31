@@ -4,9 +4,11 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { useTranslations } from 'next-intl';
 
 // Custom components
 import AnimatedBurger from "./AnimatedBurger";
+import LanguageSwitcher from "./LanguageSwitcher";
 
 // shadcn/ui components
 import {
@@ -31,6 +33,7 @@ import routes from "@/lib/routes";
 import { cn } from "@/lib/utils";
 
 const Navbar = () => {
+  const t = useTranslations('navigation');
   const router = useRouter();
   // State for mobile menu
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -147,7 +150,7 @@ const Navbar = () => {
                   <NavigationMenuItem>
                     <Link href={routes.blog} legacyBehavior passHref>
                       <NavigationMenuLink className="px-4 py-2 text-sm font-medium rounded-md transition-colors hover:bg-accent hover:text-accent-foreground">
-                        Blog
+                        {t('blog')}
                       </NavigationMenuLink>
                     </Link>
                   </NavigationMenuItem>
@@ -155,7 +158,7 @@ const Navbar = () => {
                   <NavigationMenuItem>
                     <Link href={routes.contact} legacyBehavior passHref>
                       <NavigationMenuLink className="px-4 py-2 text-sm font-medium rounded-md transition-colors hover:bg-accent hover:text-accent-foreground">
-                        Contact
+                        {t('contact')}
                       </NavigationMenuLink>
                     </Link>
                   </NavigationMenuItem>
@@ -164,7 +167,7 @@ const Navbar = () => {
                   {currentLoggedIn && (
                     <NavigationMenuItem>
                       <NavigationMenuTrigger className="px-4 py-2 text-sm font-medium rounded-md">
-                        Admin
+                        {t('admin')}
                       </NavigationMenuTrigger>
                       <NavigationMenuContent>
                         <ul className="grid w-[200px] gap-3 p-4">
@@ -180,7 +183,7 @@ const Navbar = () => {
                                 )}
                               >
                                 <div className="text-sm font-medium leading-none">
-                                  Dashboard
+                                  {t('dashboard')}
                                 </div>
                                 <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
                                   Look at the overall website statistics
@@ -200,7 +203,7 @@ const Navbar = () => {
                                 )}
                               >
                                 <div className="text-sm font-medium leading-none">
-                                  Post Management
+                                  {t('posts')}
                                 </div>
                                 <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
                                   Manage and edit blog posts
@@ -220,7 +223,7 @@ const Navbar = () => {
                                 )}
                               >
                                 <div className="text-sm font-medium leading-none">
-                                  Contact Settings
+                                  {t('contactSettings')}
                                 </div>
                                 <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
                                   Manage your contact page information
@@ -241,10 +244,15 @@ const Navbar = () => {
                         className="text-red-500 text-sm font-medium hover:text-red-600 hover:bg-red-50 px-4 py-2"
                         onClick={handleLogout}
                       >
-                        Logout
+                        {t('logout')}
                       </Button>
                     </NavigationMenuItem>
                   )}
+
+                  {/* 語言切換器 */}
+                  <NavigationMenuItem>
+                    <LanguageSwitcher />
+                  </NavigationMenuItem>
                 </NavigationMenuList>
               </NavigationMenu>
             </div>
@@ -293,7 +301,7 @@ const Navbar = () => {
                         >
                           <Link href={routes.blog}>
                             <span className="block px-2.5 py-1.5 rounded-md hover:bg-accent transition-colors duration-200">
-                              Blog
+                              {t('blog')}
                             </span>
                           </Link>
                         </motion.li>
@@ -306,7 +314,7 @@ const Navbar = () => {
                         >
                           <Link href={routes.contact}>
                             <span className="block px-2.5 py-1.5 rounded-md hover:bg-accent transition-colors duration-200">
-                              Contact
+                              {t('contact')}
                             </span>
                           </Link>
                         </motion.li>
@@ -322,7 +330,7 @@ const Navbar = () => {
                               }}
                             >
                               <span className="block px-2.5 py-1 text-xs font-medium">
-                                Admin
+                                {t('admin')}
                               </span>
                             </motion.li>
 
@@ -334,7 +342,7 @@ const Navbar = () => {
                             >
                               <Link href={routes.adminDashboard}>
                                 <span className="block px-2.5 py-1.5 pl-4 rounded-md hover:bg-accent transition-colors duration-200">
-                                  Dashboard
+                                  {t('dashboard')}
                                 </span>
                               </Link>
                             </motion.li>
@@ -347,7 +355,7 @@ const Navbar = () => {
                             >
                               <Link href={routes.adminPosts}>
                                 <span className="block px-2.5 py-1.5 pl-4 rounded-md hover:bg-accent transition-colors duration-200">
-                                  Post Management
+                                  {t('posts')}
                                 </span>
                               </Link>
                             </motion.li>
@@ -360,7 +368,7 @@ const Navbar = () => {
                             >
                               <Link href={routes.adminContactSettings}>
                                 <span className="block px-2.5 py-1.5 pl-4 rounded-md hover:bg-accent transition-colors duration-200">
-                                  Contact Settings
+                                  {t('contactSettings')}
                                 </span>
                               </Link>
                             </motion.li>
@@ -377,11 +385,24 @@ const Navbar = () => {
                                 onClick={handleLogout}
                                 className="w-full text-left text-red-500 font-medium px-2.5 py-1.5 rounded-md hover:bg-red-50 transition-colors duration-200"
                               >
-                                Logout
+                                {t('logout')}
                               </button>
                             </motion.li>
                           </>
                         )}
+
+                        {/* 語言切換器 - 手機版 */}
+                        <motion.li
+                          className="mt-2 pt-2 border-t"
+                          variants={{
+                            open: { opacity: 1, y: 0 },
+                            closed: { opacity: 0, y: -10 },
+                          }}
+                        >
+                          <div className="px-2.5 py-1.5">
+                            <LanguageSwitcher />
+                          </div>
+                        </motion.li>
                       </motion.ul>
                     </motion.div>
                   )}
