@@ -39,7 +39,7 @@ export default async function Contact() {
 
           <div className="space-y-2">
             <h1 className="text-3xl font-bold tracking-tight md:text-4xl">
-              {contactInfo?.name || "Chien Chuan W"}
+              {contactInfo?.name || "CHIEN CHUAN"}
             </h1>
             <p className="text-muted-foreground max-w-md">
               {contactInfo?.bio ||
@@ -79,11 +79,11 @@ export default async function Contact() {
                 <FontAwesomeIcon icon={faEnvelope} className="h-5 w-5" />
                 <a
                   href={`mailto:${
-                    contactInfo?.email || "contact@chienchuan.com"
+                    contactInfo?.email || "chienchuanwww@gmail.com"
                   }`}
                   className="hover:underline"
                 >
-                  {contactInfo?.email || "contact@chienchuan.com"}
+                  {contactInfo?.email || "chienchuanwww@gmail.com"}
                 </a>
               </div>
 
@@ -197,7 +197,7 @@ export default async function Contact() {
             <Button variant="outline" size="icon" asChild>
               <a
                 href={`mailto:${
-                  contactInfo?.email || "contact@chienchuan.com"
+                  contactInfo?.email || "chienchuanwww@gmail.com"
                 }`}
               >
                 <FontAwesomeIcon icon={faEnvelope} className="h-5 w-5" />

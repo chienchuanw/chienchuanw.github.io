@@ -5,14 +5,20 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { useToast } from '@/components/ui/use-toast';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faUpload, faImage, faVideo, faFile, faSpinner, faTimes } from '@fortawesome/free-solid-svg-icons';
+import { faUpload, faSpinner } from '@fortawesome/free-solid-svg-icons';
+import { compressImage } from '@/components/contact/avatar-uploader';
 
 interface MediaUploaderProps {
   postId?: number;
   onUploadComplete?: (mediaUrl: string) => void;
+  enableImageOptimization?: boolean; // 是否啟用圖片最佳化
 }
 
-export default function MediaUploader({ postId, onUploadComplete }: MediaUploaderProps) {
+export default function MediaUploader({
+  postId,
+  onUploadComplete,
+  enableImageOptimization = false
+}: MediaUploaderProps) {
   const [isUploading, setIsUploading] = useState(false);
   const [dragActive, setDragActive] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -47,11 +53,28 @@ export default function MediaUploader({ postId, onUploadComplete }: MediaUploade
 
   const handleFileUpload = async (file: File) => {
     setIsUploading(true);
-    
+
     try {
+      let fileToUpload = file;
+
+      // 如果啟用圖片最佳化且檔案是圖片，則進行壓縮
+      if (enableImageOptimization && file.type.startsWith('image/')) {
+        try {
+          fileToUpload = await compressImage(file);
+          toast({
+            title: 'Image Optimized',
+            description: 'Image has been compressed for better performance',
+            variant: 'default',
+          });
+        } catch (error) {
+          console.warn('圖片壓縮失敗，使用原始檔案:', error);
+          // 如果壓縮失敗，繼續使用原始檔案
+        }
+      }
+
       const formData = new FormData();
-      formData.append('file', file);
-      
+      formData.append('file', fileToUpload);
+
       if (postId) {
         formData.append('postId', postId.toString());
       }
@@ -93,15 +116,7 @@ export default function MediaUploader({ postId, onUploadComplete }: MediaUploade
     }
   };
 
-  const getFileIcon = (mimeType: string) => {
-    if (mimeType.startsWith('image/')) {
-      return faImage;
-    } else if (mimeType.startsWith('video/')) {
-      return faVideo;
-    } else {
-      return faFile;
-    }
-  };
+
 
   return (
     <Card className={`border-2 ${dragActive ? 'border-primary border-dashed' : 'border-border'}`}>

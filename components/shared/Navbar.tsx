@@ -24,6 +24,7 @@ import { Button } from "@/components/ui/button";
 import { useAuth } from "@/lib/context/auth-context";
 import { useCurrentUser } from "@/hooks/swr/useCurrentUser";
 import useAuthStore from "@/lib/store/useAuthStore";
+import { useContactInfo } from "@/hooks/swr/useContactInfo";
 
 // routes
 import routes from "@/lib/routes";
@@ -64,6 +65,10 @@ const Navbar = () => {
   const { isLoggedIn, mutate } = useCurrentUser();
   const { logout } = useAuth();
 
+  // 獲取聯絡資訊（包含頭像）
+  // 註釋：使用 SWR 獲取聯絡資訊，讓頭像能夠動態更新
+  const { contactInfo } = useContactInfo();
+
   // 使用一個狀態來追蹤當前的登入狀態，結合 Zustand 和 SWR 的狀態
   // 註釋：這樣可以確保即使在 SWR 重新驗證之前，也能反映最新的登入狀態
   const currentLoggedIn = isLoggedIn || isLoggedInFromStore;
@@ -98,11 +103,16 @@ const Navbar = () => {
               <Avatar className="cursor-pointer">
                 <Link href={routes.profile}>
                   <AvatarImage
-                    src="/images/avatar.jpg"
+                    src={contactInfo?.avatarUrl || "/images/avatar.jpg"}
                     className="object-cover"
                     alt="User avatar"
                   />
-                  <AvatarFallback>CN</AvatarFallback>
+                  <AvatarFallback>
+                    {contactInfo?.name
+                      ? contactInfo.name.charAt(0).toUpperCase()
+                      : "CN"
+                    }
+                  </AvatarFallback>
                 </Link>
               </Avatar>
             )}

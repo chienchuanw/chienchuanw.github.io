@@ -135,7 +135,10 @@ export default function AvatarGallery({ onSelect }: AvatarGalleryProps) {
         </TabsList>
 
         <TabsContent value="upload" className="py-4">
-          <MediaUploader onUploadComplete={handleUploadComplete} />
+          <MediaUploader
+            onUploadComplete={handleUploadComplete}
+            enableImageOptimization={true}
+          />
         </TabsContent>
 
         <TabsContent value="images" className="py-4">
