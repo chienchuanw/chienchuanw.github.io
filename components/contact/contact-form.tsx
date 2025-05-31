@@ -5,6 +5,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import routes from "@/lib/routes";
+import { mutate } from "swr";
 import {
   Form,
   FormControl,
@@ -29,7 +30,6 @@ import { toast } from "@/components/ui/use-toast";
 import { Badge } from "@/components/ui/badge";
 import { X } from "lucide-react";
 import AvatarUploader from "./avatar-uploader";
-import Image from "next/image";
 
 // 表單驗證模式
 const contactSchema = z.object({
@@ -179,6 +179,10 @@ export default function ContactForm() {
 
       // 更新本地狀態
       setContactInfo(result.contactInfo);
+
+      // 即時更新：觸發所有使用 contact API 的 SWR hook 重新驗證
+      // 註釋：這會讓 Navbar 和其他使用聯絡資訊的組件立即更新
+      await mutate(routes.apiContact);
 
       toast({
         title: "Success",

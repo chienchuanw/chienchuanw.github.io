@@ -1,11 +1,11 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
 import { useToast } from "@/components/ui/use-toast";
-import { Upload, X, Camera } from "lucide-react";
-import Image from "next/image";
+import { X, Camera } from "lucide-react";
+import { mutate } from "swr";
+import routes from "@/lib/routes";
 import {
   Dialog,
   DialogContent,
@@ -22,12 +22,77 @@ interface AvatarUploaderProps {
   onImageChange: (imageUrl: string) => void;
 }
 
+// 圖片最佳化設定
+const IMAGE_CONFIG = {
+  maxWidth: 512,
+  maxHeight: 512,
+  quality: 0.8,
+  format: 'image/jpeg' as const,
+};
+
+/**
+ * 圖片壓縮和調整大小函數
+ * 將圖片調整為指定尺寸並壓縮以提升載入效能
+ */
+export const compressImage = (file: File): Promise<File> => {
+  return new Promise((resolve, reject) => {
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d');
+    const img = new window.Image();
+
+    img.onload = () => {
+      // 計算新的尺寸，保持比例
+      let { width, height } = img;
+      const maxWidth = IMAGE_CONFIG.maxWidth;
+      const maxHeight = IMAGE_CONFIG.maxHeight;
+
+      if (width > height) {
+        if (width > maxWidth) {
+          height = (height * maxWidth) / width;
+          width = maxWidth;
+        }
+      } else {
+        if (height > maxHeight) {
+          width = (width * maxHeight) / height;
+          height = maxHeight;
+        }
+      }
+
+      // 設定 canvas 尺寸
+      canvas.width = width;
+      canvas.height = height;
+
+      // 繪製圖片到 canvas
+      ctx?.drawImage(img, 0, 0, width, height);
+
+      // 轉換為 blob
+      canvas.toBlob(
+        (blob) => {
+          if (blob) {
+            const compressedFile = new File([blob], file.name, {
+              type: IMAGE_CONFIG.format,
+              lastModified: Date.now(),
+            });
+            resolve(compressedFile);
+          } else {
+            reject(new Error('圖片壓縮失敗'));
+          }
+        },
+        IMAGE_CONFIG.format,
+        IMAGE_CONFIG.quality
+      );
+    };
+
+    img.onerror = () => reject(new Error('圖片載入失敗'));
+    img.src = URL.createObjectURL(file);
+  });
+};
+
 export default function AvatarUploader({
   initialImage,
   name = "",
   onImageChange,
 }: AvatarUploaderProps) {
-  const [isUploading, setIsUploading] = useState(false);
   const [previewImage, setPreviewImage] = useState<string | null>(
     initialImage || null
   );
@@ -42,10 +107,14 @@ export default function AvatarUploader({
   }, [initialImage]);
 
   // Handle media selection from the gallery
-  const handleMediaSelect = (mediaUrl: string) => {
+  const handleMediaSelect = async (mediaUrl: string) => {
     setPreviewImage(mediaUrl);
     onImageChange(mediaUrl);
     setIsMediaGalleryOpen(false);
+
+    // 即時更新：觸發所有使用 contact API 的 SWR hook 重新驗證
+    // 註釋：這會讓 Navbar 和其他使用聯絡資訊的組件立即更新頭像
+    await mutate(routes.apiContact);
 
     toast({
       title: "Avatar Updated",
