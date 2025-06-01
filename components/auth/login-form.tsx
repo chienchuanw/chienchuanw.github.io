@@ -5,21 +5,26 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/lib/context/auth-context";
-import routes from "@/lib/routes";
+import { useTranslations, useLocale } from 'next-intl';
 
-// 表單驗證模式
-const loginSchema = z.object({
-  identifier: z.string().min(1, "請輸入電子郵件或用戶名"),
-  password: z.string().min(6, "密碼至少需要6個字符"),
-});
-
-type LoginFormValues = z.infer<typeof loginSchema>;
+type LoginFormValues = {
+  identifier: string;
+  password: string;
+};
 
 export function LoginForm() {
+  const t = useTranslations('auth.login');
+  const locale = useLocale();
   const router = useRouter();
   const { login } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  // 表單驗證模式 - 使用翻譯的錯誤訊息
+  const loginSchema = z.object({
+    identifier: z.string().min(1, t('identifierRequired')),
+    password: z.string().min(6, t('passwordMinLength')),
+  });
 
   const {
     register,
@@ -44,10 +49,10 @@ export function LoginForm() {
 
       // 登入成功後，使用 Next.js 路由器進行導航
       // 不需要重新整理頁面，提供更流暢的用戶體驗
-      router.push(routes.home);
+      router.push(`/${locale}`);
     } catch (err) {
       const errorMessage =
-        err instanceof Error ? err.message : "登入失敗，請稍後再試";
+        err instanceof Error ? err.message : t('error');
       setError(errorMessage);
     } finally {
       setIsLoading(false);
@@ -57,9 +62,9 @@ export function LoginForm() {
   return (
     <div className="space-y-6">
       <div className="space-y-2 text-center">
-        <h1 className="text-3xl font-bold">登入</h1>
+        <h1 className="text-3xl font-bold">{t('title')}</h1>
         <p className="text-gray-500 dark:text-gray-400">
-          輸入您的信息以登入您的帳戶
+          {t('subtitle')}
         </p>
       </div>
 
@@ -75,12 +80,12 @@ export function LoginForm() {
             className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
             htmlFor="identifier"
           >
-            電子郵件或用戶名
+            {t('identifier')}
           </label>
           <input
             className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
             id="identifier"
-            placeholder="name@example.com 或 username"
+            placeholder={t('identifierPlaceholder')}
             type="text"
             disabled={isLoading}
             {...register("identifier")}
@@ -96,10 +101,10 @@ export function LoginForm() {
               className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
               htmlFor="password"
             >
-              密碼
+              {t('password')}
             </label>
             <a className="text-sm text-blue-500 hover:text-blue-700" href="#">
-              忘記密碼?
+              {t('forgotPassword')}
             </a>
           </div>
           <input
@@ -119,12 +124,12 @@ export function LoginForm() {
           type="submit"
           disabled={isLoading}
         >
-          {isLoading ? "登入中..." : "登入"}
+          {isLoading ? t('loggingIn') : t('loginButton')}
         </button>
       </form>
 
       <div className="mt-4 text-center text-sm text-gray-500">
-        需要帳戶? 請與管理員聯絡以創建新帳戶。
+        {t('noAccount')}
       </div>
     </div>
   );
