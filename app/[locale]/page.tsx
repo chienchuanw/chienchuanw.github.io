@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import PostPreview from "@/app/blog/PostPreview";
+import PostPreview from "./blog/PostPreview";
 import { getAllPosts, Post } from "@/lib/posts";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEnvelope } from "@fortawesome/free-solid-svg-icons";

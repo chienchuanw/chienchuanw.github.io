@@ -58,8 +58,9 @@
     "viewAllPosts": "View All Posts"
   },
   "blog": {
-    "title": "Blog",
+    "title": "All Articles",
     "subtitle": "All Posts",
+    "noPosts": "No posts found.",
     "noPostsFound": "No posts found",
     "loadMore": "Load More",
     "backToTop": "Back to Top",
@@ -69,7 +70,9 @@
     "relatedPosts": "Related Posts",
     "sharePost": "Share Post",
     "previousPost": "Previous Post",
-    "nextPost": "Next Post"
+    "nextPost": "Next Post",
+    "backToArticles": "Back to Articles",
+    "articleNotFound": "Article not found"
   },
   "contact": {
     "title": "Contact Me",
