@@ -2,8 +2,8 @@
 
 import { useState, useEffect, useMemo } from "react";
 import { useRouter } from "next/navigation";
+import { useTranslations, useLocale } from 'next-intl';
 import { getAllPosts, deletePost, Post } from "@/lib/posts";
-import routes from "@/lib/routes";
 
 // UI Components
 import { Button } from "@/components/ui/button";
@@ -41,7 +41,6 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from "@/components/ui/pagination";
-// Command component not used in this implementation
 
 // Icons
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -63,6 +62,8 @@ import { MoreHorizontal } from "lucide-react";
 
 export default function PostsPage() {
   const router = useRouter();
+  const locale = useLocale();
+  const t = useTranslations('admin.posts');
   const { toast } = useToast();
   const [posts, setPosts] = useState<Post[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -84,8 +85,8 @@ export default function PostsPage() {
       } catch (error) {
         console.error("Failed to load posts", error);
         toast({
-          title: "Failed to Load Posts",
-          description: "Please refresh the page and try again",
+          title: t('loadError'),
+          description: t('loadErrorDescription'),
           variant: "destructive",
         });
       } finally {
@@ -94,31 +95,31 @@ export default function PostsPage() {
     }
 
     fetchPosts();
-  }, [toast]);
+  }, [toast, t]);
 
   // Handle post deletion
   const handleDelete = async (id: number) => {
-    if (window.confirm("Are you sure you want to delete this post?")) {
+    if (window.confirm(t('deleteConfirm'))) {
       try {
         const success = await deletePost(id);
         if (success) {
           setPosts(posts.filter((post) => post.id !== id));
           toast({
-            title: "Post Deleted",
-            description: "The post has been successfully deleted",
+            title: t('deleteSuccess'),
+            description: t('deleteSuccessDescription'),
           });
         } else {
           toast({
-            title: "Delete Failed",
-            description: "Unable to delete the post, please try again",
+            title: t('deleteError'),
+            description: t('deleteErrorDescription'),
             variant: "destructive",
           });
         }
       } catch (error) {
         console.error("Delete post error", error);
         toast({
-          title: "Delete Failed",
-          description: "An error occurred, please try again",
+          title: t('deleteError'),
+          description: t('deleteErrorGeneral'),
           variant: "destructive",
         });
       }
@@ -128,7 +129,7 @@ export default function PostsPage() {
   // Format date
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
-    return date.toLocaleDateString("en-US", {
+    return date.toLocaleDateString(locale === 'tw' ? 'zh-TW' : 'en-US', {
       year: "numeric",
       month: "long",
       day: "numeric",
@@ -257,24 +258,24 @@ export default function PostsPage() {
           <Button
             variant="outline"
             size="icon"
-            onClick={() => router.push(routes.adminDashboard)}
+            onClick={() => router.push(`/${locale}/admin/dashboard`)}
             className="md:mr-2"
-            aria-label="Back to Dashboard"
+            aria-label={t('backToDashboard')}
           >
             <FontAwesomeIcon icon={faArrowLeft} className="h-4 w-4" />
           </Button>
-          <h1 className="text-xl md:text-2xl font-bold">Post Management</h1>
+          <h1 className="text-xl md:text-2xl font-bold">{t('title')}</h1>
         </div>
-        <Button onClick={() => router.push(routes.adminPosts + "/new")}>
-          <FontAwesomeIcon icon={faPlus} className="h-4 w-4 mr-2" /> Add Post
+        <Button onClick={() => router.push(`/${locale}/admin/posts/new`)}>
+          <FontAwesomeIcon icon={faPlus} className="h-4 w-4 mr-2" /> {t('addPost')}
         </Button>
       </div>
 
       <Card className="mb-6">
         <CardHeader>
-          <CardTitle>Posts</CardTitle>
+          <CardTitle>{t('postsTitle')}</CardTitle>
           <CardDescription>
-            Manage your blog posts, articles, and content
+            {t('postsDescription')}
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -285,7 +286,7 @@ export default function PostsPage() {
                 className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4"
               />
               <Input
-                placeholder="Search posts..."
+                placeholder={t('searchPlaceholder')}
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="pl-9 h-9"
@@ -304,24 +305,24 @@ export default function PostsPage() {
                     />
                     <span className="truncate">
                       {statusFilter === "all"
-                        ? "All Status"
+                        ? t('allStatus')
                         : statusFilter === "published"
-                        ? "Published"
-                        : "Draft"}
+                        ? t('published')
+                        : t('draft')}
                     </span>
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end">
                   <DropdownMenuItem onClick={() => setStatusFilter("all")}>
-                    All Status
+                    {t('allStatus')}
                   </DropdownMenuItem>
                   <DropdownMenuItem
                     onClick={() => setStatusFilter("published")}
                   >
-                    Published
+                    {t('published')}
                   </DropdownMenuItem>
                   <DropdownMenuItem onClick={() => setStatusFilter("draft")}>
-                    Draft
+                    {t('draft')}
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
@@ -342,10 +343,10 @@ export default function PostsPage() {
             </div>
           ) : filteredAndSortedPosts.length === 0 ? (
             <div className="flex flex-col justify-center items-center py-12">
-              <p className="text-muted-foreground mb-4">No posts available</p>
-              <Button onClick={() => router.push(routes.adminPosts + "/new")}>
+              <p className="text-muted-foreground mb-4">{t('noPostsAvailable')}</p>
+              <Button onClick={() => router.push(`/${locale}/admin/posts/new`)}>
                 <FontAwesomeIcon icon={faPlus} className="h-4 w-4 mr-2" />
-                Create First Post
+                {t('createFirstPost')}
               </Button>
             </div>
           ) : (
@@ -359,26 +360,26 @@ export default function PostsPage() {
                         className="w-[300px] cursor-pointer"
                         onClick={() => handleSort("title")}
                       >
-                        Title {renderSortIcon("title")}
+                        {t('postTitle')} {renderSortIcon("title")}
                       </TableHead>
                       <TableHead>Status</TableHead>
                       <TableHead
                         className="cursor-pointer hidden lg:table-cell"
                         onClick={() => handleSort("createdAt")}
                       >
-                        Created Date {renderSortIcon("createdAt")}
+                        {t('createdDate')} {renderSortIcon("createdAt")}
                       </TableHead>
                       <TableHead
                         className="cursor-pointer hidden lg:table-cell"
                         onClick={() => handleSort("publishedAt")}
                       >
-                        Published Date {renderSortIcon("publishedAt")}
+                        {t('publishedDate')} {renderSortIcon("publishedAt")}
                       </TableHead>
                       <TableHead
                         className="cursor-pointer"
                         onClick={() => handleSort("updatedAt")}
                       >
-                        Updated Date {renderSortIcon("updatedAt")}
+                        {t('updatedDate')} {renderSortIcon("updatedAt")}
                       </TableHead>
                       <TableHead className="text-right">Actions</TableHead>
                     </TableRow>
@@ -388,7 +389,7 @@ export default function PostsPage() {
                       <TableRow key={post.id}>
                         <TableCell className="font-medium">
                           <a
-                            href={`/blog/${post.slug}`}
+                            href={`/${locale}/blog/${post.slug}`}
                             target="_blank"
                             rel="noopener noreferrer"
                             className="hover:underline cursor-pointer"
@@ -400,7 +401,7 @@ export default function PostsPage() {
                           <Badge
                             variant={post.published ? "success" : "secondary"}
                           >
-                            {post.published ? "Published" : "Draft"}
+                            {post.published ? t('published') : t('draft')}
                           </Badge>
                         </TableCell>
                         <TableCell className="hidden lg:table-cell">
@@ -427,25 +428,25 @@ export default function PostsPage() {
                             <DropdownMenuContent align="end">
                               <DropdownMenuItem
                                 onClick={() =>
-                                  router.push(`/admin/posts/edit/${post.id}`)
+                                  router.push(`/${locale}/admin/posts/edit/${post.id}`)
                                 }
                               >
                                 <FontAwesomeIcon
                                   icon={faEdit}
                                   className="h-4 w-4 mr-2"
                                 />
-                                Edit
+                                {t('edit')}
                               </DropdownMenuItem>
                               <DropdownMenuItem
                                 onClick={() =>
-                                  window.open(`/blog/${post.slug}`, "_blank")
+                                  window.open(`/${locale}/blog/${post.slug}`, "_blank")
                                 }
                               >
                                 <FontAwesomeIcon
                                   icon={faEye}
                                   className="h-4 w-4 mr-2"
                                 />
-                                View
+                                {t('view')}
                               </DropdownMenuItem>
                               <DropdownMenuSeparator />
                               <DropdownMenuItem
@@ -456,7 +457,7 @@ export default function PostsPage() {
                                   icon={faTrash}
                                   className="h-4 w-4 mr-2"
                                 />
-                                Delete
+                                {t('delete')}
                               </DropdownMenuItem>
                             </DropdownMenuContent>
                           </DropdownMenu>
@@ -465,252 +466,6 @@ export default function PostsPage() {
                     ))}
                   </TableBody>
                 </Table>
-              </div>
-
-              {/* Mobile view - Card layout */}
-              <div className="space-y-4 md:hidden">
-                {paginatedPosts.map((post) => (
-                  <Card key={post.id} className="overflow-hidden">
-                    <CardContent className="p-0">
-                      <div className="p-4 flex flex-col space-y-3">
-                        <div className="flex justify-between items-start">
-                          <a
-                            href={`/blog/${post.slug}`}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="font-medium hover:underline cursor-pointer text-base"
-                          >
-                            {post.title}
-                          </a>
-                          <DropdownMenu>
-                            <DropdownMenuTrigger asChild>
-                              <div
-                                className="inline-flex items-center justify-center h-8 w-8 rounded-md text-sm transition-colors hover:bg-accent cursor-pointer"
-                                style={{
-                                  WebkitTapHighlightColor: "transparent",
-                                }}
-                              >
-                                <MoreHorizontal className="h-4 w-4" />
-                              </div>
-                            </DropdownMenuTrigger>
-                            <DropdownMenuContent align="end">
-                              <DropdownMenuItem
-                                onClick={() =>
-                                  router.push(`/admin/posts/edit/${post.id}`)
-                                }
-                              >
-                                <FontAwesomeIcon
-                                  icon={faEdit}
-                                  className="h-4 w-4 mr-2"
-                                />
-                                Edit
-                              </DropdownMenuItem>
-                              <DropdownMenuItem
-                                onClick={() =>
-                                  window.open(`/blog/${post.slug}`, "_blank")
-                                }
-                              >
-                                <FontAwesomeIcon
-                                  icon={faEye}
-                                  className="h-4 w-4 mr-2"
-                                />
-                                View
-                              </DropdownMenuItem>
-                              <DropdownMenuSeparator />
-                              <DropdownMenuItem
-                                className="text-destructive"
-                                onClick={() => handleDelete(post.id)}
-                              >
-                                <FontAwesomeIcon
-                                  icon={faTrash}
-                                  className="h-4 w-4 mr-2"
-                                />
-                                Delete
-                              </DropdownMenuItem>
-                            </DropdownMenuContent>
-                          </DropdownMenu>
-                        </div>
-
-                        <div className="flex justify-between items-center text-sm">
-                          <Badge
-                            variant={post.published ? "success" : "secondary"}
-                            className="mr-2"
-                          >
-                            {post.published ? "Published" : "Draft"}
-                          </Badge>
-                          <div className="text-muted-foreground text-xs flex flex-col items-end">
-                            {post.publishedAt && (
-                              <span>
-                                Published: {formatDate(post.publishedAt)}
-                              </span>
-                            )}
-                            <span>Updated: {formatDate(post.updatedAt)}</span>
-                          </div>
-                        </div>
-                      </div>
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
-
-              <div className="mt-6 flex flex-col md:flex-row justify-between items-center gap-4">
-                <div className="flex items-center w-full md:w-auto order-2 md:order-1 mt-4 md:mt-0">
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <Button
-                        variant="outline"
-                        className="w-full md:w-[130px] relative pl-11 h-9 border-none shadow-none"
-                      >
-                        <FontAwesomeIcon
-                          icon={faSort}
-                          className="absolute left-4 top-1/2 transform -translate-y-1/2 h-4 w-4"
-                        />
-                        <span className="truncate">
-                          {postsPerPage} per page
-                        </span>
-                      </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="start">
-                      <DropdownMenuItem
-                        onClick={() => {
-                          setPostsPerPage(10);
-                          // Adjust current page to maintain position
-                          const newTotalPages = Math.ceil(
-                            filteredAndSortedPosts.length / 10
-                          );
-                          if (currentPage > newTotalPages) {
-                            setCurrentPage(newTotalPages || 1);
-                          }
-                        }}
-                      >
-                        10 per page
-                      </DropdownMenuItem>
-                      <DropdownMenuItem
-                        onClick={() => {
-                          setPostsPerPage(20);
-                          // Adjust current page to maintain position
-                          const newTotalPages = Math.ceil(
-                            filteredAndSortedPosts.length / 20
-                          );
-                          if (currentPage > newTotalPages) {
-                            setCurrentPage(newTotalPages || 1);
-                          }
-                        }}
-                      >
-                        20 per page
-                      </DropdownMenuItem>
-                      <DropdownMenuItem
-                        onClick={() => {
-                          setPostsPerPage(50);
-                          // Adjust current page to maintain position
-                          const newTotalPages = Math.ceil(
-                            filteredAndSortedPosts.length / 50
-                          );
-                          if (currentPage > newTotalPages) {
-                            setCurrentPage(newTotalPages || 1);
-                          }
-                        }}
-                      >
-                        50 per page
-                      </DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
-                  <div className="text-sm text-muted-foreground ml-4 hidden md:block">
-                    Showing{" "}
-                    {Math.min(
-                      filteredAndSortedPosts.length,
-                      (currentPage - 1) * postsPerPage + 1
-                    )}
-                    -
-                    {Math.min(
-                      filteredAndSortedPosts.length,
-                      currentPage * postsPerPage
-                    )}{" "}
-                    of {filteredAndSortedPosts.length}
-                  </div>
-                </div>
-
-                {totalPages > 1 && (
-                  <div className="w-full md:w-auto order-1 md:order-2">
-                    <Pagination>
-                      <PaginationContent className="flex-wrap justify-center">
-                        <PaginationItem>
-                          <PaginationPrevious
-                            onClick={() => {
-                              if (currentPage > 1) {
-                                setCurrentPage((prev) => prev - 1);
-                              }
-                            }}
-                            className={
-                              currentPage === 1
-                                ? "pointer-events-none opacity-50"
-                                : ""
-                            }
-                          />
-                        </PaginationItem>
-
-                        {/* Show limited pagination items on mobile */}
-                        {paginationItems.length > 5 ? (
-                          <>
-                            {/* Always show first page */}
-                            {paginationItems[0]}
-
-                            {/* Show ellipsis if not near the start */}
-                            {currentPage > 3 && (
-                              <PaginationItem className="hidden sm:inline-block">
-                                <span className="px-4 py-2">...</span>
-                              </PaginationItem>
-                            )}
-
-                            {/* Show current page and neighbors */}
-                            {paginationItems
-                              .filter((_, i) => {
-                                // On mobile, show fewer items
-                                if (window.innerWidth < 640) {
-                                  return i + 1 === currentPage;
-                                }
-                                // On larger screens, show current and neighbors
-                                return (
-                                  i + 1 >= currentPage - 1 &&
-                                  i + 1 <= currentPage + 1 &&
-                                  i + 1 > 1 &&
-                                  i + 1 < paginationItems.length
-                                );
-                              })
-                              .map((item) => item)}
-
-                            {/* Show ellipsis if not near the end */}
-                            {currentPage < paginationItems.length - 2 && (
-                              <PaginationItem className="hidden sm:inline-block">
-                                <span className="px-4 py-2">...</span>
-                              </PaginationItem>
-                            )}
-
-                            {/* Always show last page */}
-                            {paginationItems[paginationItems.length - 1]}
-                          </>
-                        ) : (
-                          paginationItems
-                        )}
-
-                        <PaginationItem>
-                          <PaginationNext
-                            onClick={() => {
-                              if (currentPage < totalPages) {
-                                setCurrentPage((prev) => prev + 1);
-                              }
-                            }}
-                            className={
-                              currentPage === totalPages
-                                ? "pointer-events-none opacity-50"
-                                : ""
-                            }
-                          />
-                        </PaginationItem>
-                      </PaginationContent>
-                    </Pagination>
-                  </div>
-                )}
               </div>
             </>
           )}
