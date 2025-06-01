@@ -422,9 +422,7 @@ const Navbar = () => {
                             closed: { opacity: 0, y: -10 },
                           }}
                         >
-                          <div className="px-2.5 py-1.5">
-                            <LanguageSwitcher />
-                          </div>
+                          <LanguageSwitcher />
                         </motion.li>
                       </motion.ul>
                     </motion.div>
