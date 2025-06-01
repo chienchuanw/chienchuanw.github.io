@@ -109,11 +109,11 @@ const Navbar = () => {
         {/*
           註釋：使用不同的網格配置來適應不同螢幕尺寸
           - 小和中等螢幕：兩欄布局（logo + 漢堡選單）
-          - 大螢幕：三欄布局
+          - 大螢幕（1280px以上）：三欄布局
         */}
-        <div className="grid grid-cols-2 lg:grid-cols-12 items-center">
+        <div className="grid grid-cols-2 xl:grid-cols-12 items-center">
           {/* 左側頭像 - 僅在大螢幕和登入時顯示 */}
-          <div className="hidden lg:block lg:col-span-3">
+          <div className="hidden xl:block xl:col-span-3">
             {currentLoggedIn && (
               <Avatar className="cursor-pointer">
                 <Link href={localizedRoutes.profile}>
@@ -133,8 +133,8 @@ const Navbar = () => {
             )}
           </div>
 
-          {/* 中間 Logo - 在所有尺寸下居中 */}
-          <section className="flex lg:col-span-6 md:justify-center">
+          {/* 中間 Logo - 在畫面水平居中 */}
+          <section className="col-span-2 xl:col-span-6 flex justify-center">
             <div className="max-w-[400px]">
               <div>
                 <Link
@@ -152,11 +152,11 @@ const Navbar = () => {
           </section>
 
           {/* 右側導航 - 大螢幕版與中小螢幕版 */}
-          <div className="flex justify-end items-center lg:col-span-3">
+          <div className="absolute right-4 xl:relative xl:right-auto flex justify-end items-center xl:col-span-3">
             {/*
-              註釋：大螢幕導航菜單 - 僅在 1024px 以上顯示
+              註釋：大螢幕導航菜單 - 僅在 1280px 以上顯示
             */}
-            <div className="hidden lg:block">
+            <div className="hidden xl:block">
               <NavigationMenu>
                 <NavigationMenuList className="gap-1">
                   <NavigationMenuItem>
@@ -280,8 +280,8 @@ const Navbar = () => {
               </NavigationMenu>
             </div>
 
-            {/* Mobile menu button - shown on small and medium screens (less than 1024px) */}
-            <div className="lg:hidden">
+            {/* Mobile menu button - shown on small and medium screens (less than 1280px) */}
+            <div className="xl:hidden">
               <div className="relative" ref={mobileMenuRef}>
                 {/* Custom burger button with animation */}
                 <button
