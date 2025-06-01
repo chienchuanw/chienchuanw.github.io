@@ -1,3 +1,5 @@
+"use client";
+
 import Link from "next/link";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
@@ -6,20 +8,62 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEnvelope } from "@fortawesome/free-solid-svg-icons";
 import { faGithub, faLinkedin } from "@fortawesome/free-brands-svg-icons";
 import { faArrowRight } from "@fortawesome/free-solid-svg-icons";
-import { contactService } from "@/lib/services/contact-service";
 
-// 獲取聯絡頁面資訊
-async function getContactInfo() {
-  try {
-    return await contactService.getContactInfo();
-  } catch (error) {
-    console.error("Error fetching contact info:", error);
-    return null;
+import { useTranslations, useLocale } from 'next-intl';
+import { useEffect, useState } from 'react';
+
+export default function Contact() {
+  const t = useTranslations('contact');
+  const navT = useTranslations('navigation');
+  const locale = useLocale();
+  const [contactInfo, setContactInfo] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+
+  // 獲取聯絡頁面資訊
+  useEffect(() => {
+    async function fetchContactInfo() {
+      try {
+        const response = await fetch('/api/contact');
+        if (response.ok) {
+          const data = await response.json();
+          setContactInfo(data.contactInfo);
+        } else {
+          console.error("Failed to fetch contact info:", response.statusText);
+        }
+      } catch (error) {
+        console.error("Error fetching contact info:", error);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    fetchContactInfo();
+  }, []);
+
+  // 構建支援 locale 的路由
+  const homeUrl = `/${locale}`;
+  const blogUrl = `/${locale}/blog`;
+  const projectsUrl = `/${locale}/projects`;
+  const aboutUrl = `/${locale}/about`;
+
+  if (loading) {
+    return (
+      <div className="flex min-h-screen flex-col items-center justify-center p-4 md:p-8">
+        <div className="max-w-2xl w-full space-y-8 mx-auto">
+          <div className="animate-pulse">
+            <div className="flex flex-col items-center space-y-4 text-center md:items-start md:text-left">
+              <div className="h-24 w-24 md:h-32 md:w-32 bg-gray-200 rounded-full"></div>
+              <div className="space-y-2">
+                <div className="h-8 bg-gray-200 rounded w-48"></div>
+                <div className="h-4 bg-gray-200 rounded w-64"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
   }
-}
 
-export default async function Contact() {
-  const contactInfo = await getContactInfo();
   return (
     <div className="flex min-h-screen flex-col items-center justify-center p-4 md:p-8">
       <main className="max-w-2xl w-full space-y-8 mx-auto">
@@ -42,13 +86,13 @@ export default async function Contact() {
             </h1>
             <p className="text-muted-foreground max-w-md">
               {contactInfo?.bio ||
-                "Web Developer specializing in Python and TypeScript."}
+                t('defaultBio')}
             </p>
           </div>
 
           <div className="flex flex-wrap gap-2 justify-center md:justify-start">
             {contactInfo?.skills && contactInfo.skills.length > 0 ? (
-              contactInfo.skills.map((skill, index) => (
+              contactInfo.skills.map((skill: string, index: number) => (
                 <Badge key={index} variant="secondary">
                   {skill}
                 </Badge>
@@ -68,9 +112,9 @@ export default async function Contact() {
           <div className="h-px w-full bg-border" />
 
           <div className="space-y-4">
-            <h2 className="text-xl font-semibold">聯絡資訊</h2>
+            <h2 className="text-xl font-semibold">{t('title')}</h2>
             <p className="text-muted-foreground">
-              如果您對我的工作有興趣，或想討論合作機會，請透過以下方式與我聯繫。
+              {t('description')}
             </p>
 
             <div className="grid gap-4">
@@ -122,9 +166,9 @@ export default async function Contact() {
           <div className="h-px w-full bg-border" />
 
           <div className="grid gap-2">
-            <Link href="/" className="group">
+            <Link href={homeUrl} className="group">
               <Button variant="ghost" className="w-full justify-between">
-                <span>首頁</span>
+                <span>{navT('home')}</span>
                 <FontAwesomeIcon
                   icon={faArrowRight}
                   className="h-4 w-4 opacity-0 transition-opacity group-hover:opacity-100"
@@ -132,9 +176,9 @@ export default async function Contact() {
               </Button>
             </Link>
 
-            <Link href="/blog" className="group">
+            <Link href={blogUrl} className="group">
               <Button variant="ghost" className="w-full justify-between">
-                <span>Blog</span>
+                <span>{navT('blog')}</span>
                 <FontAwesomeIcon
                   icon={faArrowRight}
                   className="h-4 w-4 opacity-0 transition-opacity group-hover:opacity-100"
@@ -142,9 +186,9 @@ export default async function Contact() {
               </Button>
             </Link>
 
-            <Link href="/projects" className="group">
+            <Link href={projectsUrl} className="group">
               <Button variant="ghost" className="w-full justify-between">
-                <span>Projects</span>
+                <span>{t('links.projects')}</span>
                 <FontAwesomeIcon
                   icon={faArrowRight}
                   className="h-4 w-4 opacity-0 transition-opacity group-hover:opacity-100"
@@ -152,9 +196,9 @@ export default async function Contact() {
               </Button>
             </Link>
 
-            <Link href="/about" className="group">
+            <Link href={aboutUrl} className="group">
               <Button variant="ghost" className="w-full justify-between">
-                <span>About</span>
+                <span>{t('links.about')}</span>
                 <FontAwesomeIcon
                   icon={faArrowRight}
                   className="h-4 w-4 opacity-0 transition-opacity group-hover:opacity-100"
