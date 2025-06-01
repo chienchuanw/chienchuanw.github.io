@@ -58,8 +58,9 @@
     "viewAllPosts": "查看所有文章"
   },
   "blog": {
-    "title": "部落格",
+    "title": "所有文章",
     "subtitle": "所有文章",
+    "noPosts": "找不到文章。",
     "noPostsFound": "找不到文章",
     "loadMore": "載入更多",
     "backToTop": "回到頂部",
@@ -69,7 +70,9 @@
     "relatedPosts": "相關文章",
     "sharePost": "分享文章",
     "previousPost": "上一篇",
-    "nextPost": "下一篇"
+    "nextPost": "下一篇",
+    "backToArticles": "回到文章列表",
+    "articleNotFound": "找不到文章"
   },
   "contact": {
     "title": "聯絡我",

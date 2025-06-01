@@ -14,6 +14,7 @@ import { PostSkeleton } from "@/components/blog/post-skeleton";
 import { calculateReadingTime } from "@/lib/utils/reading-time";
 import { Badge } from "@/components/ui/badge";
 import { ScrollToTop } from "@/components/ui/scroll-to-top";
+import { useLocale, useTranslations } from 'next-intl';
 
 // Dynamically import ReactMarkdown for rendering
 const ReactMarkdown = dynamic(() => import("react-markdown"), { ssr: false });
@@ -45,9 +46,14 @@ const processCodeBlocks = (text: string) => {
 
 export default function BlogPost() {
   const { slug } = useParams();
+  const locale = useLocale();
+  const t = useTranslations('blog');
   const [post, setPost] = useState<Post | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
+  // 構建支援 locale 的返回路由
+  const backToBlogUrl = `/${locale}/blog`;
 
   useEffect(() => {
     if (!slug || typeof slug !== "string") {
@@ -89,10 +95,10 @@ export default function BlogPost() {
       <div className="container mx-auto py-10 px-4 md:px-6">
         <div className="mb-8">
           <Link
-            href="/blog"
+            href={backToBlogUrl}
             className="inline-flex items-center text-neutral-600 hover:text-neutral-900"
           >
-            <ArrowLeft className="w-4 h-4 mr-1" /> Back to Articles
+            <ArrowLeft className="w-4 h-4 mr-1" /> {t('backToArticles')}
           </Link>
         </div>
         <PostSkeleton />
@@ -103,13 +109,13 @@ export default function BlogPost() {
   if (error || !post) {
     return (
       <div className="container mx-auto py-20 text-center">
-        <h2 className="text-2xl font-medium">{error || "Article not found"}</h2>
+        <h2 className="text-2xl font-medium">{error || t('articleNotFound')}</h2>
         <div className="mt-6">
           <Link
-            href="/blog"
+            href={backToBlogUrl}
             className="inline-flex items-center text-neutral-600 hover:text-neutral-900"
           >
-            <ArrowLeft className="w-4 h-4 mr-1" /> Back to Articles
+            <ArrowLeft className="w-4 h-4 mr-1" /> {t('backToArticles')}
           </Link>
         </div>
       </div>
@@ -139,10 +145,10 @@ export default function BlogPost() {
 
       <div className="mb-8">
         <Link
-          href="/blog"
+          href={backToBlogUrl}
           className="inline-flex items-center text-neutral-600 hover:text-neutral-900"
         >
-          <ArrowLeft className="w-4 h-4 mr-1" /> Back to Articles
+          <ArrowLeft className="w-4 h-4 mr-1" /> {t('backToArticles')}
         </Link>
       </div>
 
