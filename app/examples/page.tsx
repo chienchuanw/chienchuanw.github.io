@@ -1,16 +1,43 @@
 "use client";
 
-import React from "react";
+import React, { useEffect, useState } from "react";
+
+// 強制動態渲染，避免靜態生成問題
+export const dynamic = 'force-dynamic';
+
 import { AuthExample } from "@/components/examples/AuthExample";
 import { BlogPostsExample } from "@/components/examples/BlogPostsExample";
 import { ThemeToggle } from "@/components/examples/ThemeToggle";
 import useUIStore from "@/lib/store/useUIStore";
 
 export default function ExamplesPage() {
+  const [mounted, setMounted] = useState(false);
   const isDarkMode = useUIStore((state) => state.isDarkMode);
   const toasts = useUIStore((state) => state.toasts);
   const addToast = useUIStore((state) => state.addToast);
   const removeToast = useUIStore((state) => state.removeToast);
+
+  // 確保組件只在客戶端渲染
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  if (!mounted) {
+    return (
+      <div className="p-6">
+        <div className="max-w-4xl mx-auto">
+          <div className="animate-pulse">
+            <div className="h-8 bg-gray-200 rounded w-1/3 mb-8"></div>
+            <div className="space-y-8">
+              <div className="h-32 bg-gray-200 rounded"></div>
+              <div className="h-32 bg-gray-200 rounded"></div>
+              <div className="h-32 bg-gray-200 rounded"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   const handleAddToast = (type: "success" | "error" | "info" | "warning") => {
     const messages = {
