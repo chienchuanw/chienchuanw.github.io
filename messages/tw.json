@@ -232,6 +232,11 @@
       "passwordUpdateSuccess": "密碼更新成功",
       "passwordUpdateError": "密碼更新失敗",
       "currentPasswordIncorrect": "目前密碼不正確"
+    },
+    "contactSettings": {
+      "title": "聯絡設定",
+      "description": "管理聯絡頁面顯示的資訊",
+      "backToDashboard": "返回儀表板"
     }
   },
   "errors": {
