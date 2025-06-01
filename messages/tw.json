@@ -75,9 +75,10 @@
     "articleNotFound": "找不到文章"
   },
   "contact": {
-    "title": "聯絡我",
+    "title": "聯絡資訊",
     "subtitle": "與我聯繫",
-    "description": "歡迎與我聯繫，討論任何問題或合作機會。",
+    "description": "如果您對我的工作有興趣，或想討論合作機會，請透過以下方式與我聯繫。",
+    "defaultBio": "專精於 Python 和 TypeScript 的網頁開發者。",
     "form": {
       "name": "您的姓名",
       "email": "您的電子郵件",
@@ -93,6 +94,10 @@
       "phone": "電話",
       "location": "地點",
       "socialMedia": "社群媒體"
+    },
+    "links": {
+      "projects": "專案",
+      "about": "關於我"
     }
   },
   "auth": {
