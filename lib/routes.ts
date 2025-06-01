@@ -50,8 +50,8 @@ const routes: Routes = {
   login: "/login",
 
   // 用戶相關頁面
-  profile: "/profile",
-  profileEdit: "/profile/edit",
+  profile: "/admin/profile",
+  profileEdit: "/admin/profile/edit",
 
   // 管理員相關頁面
   admin: "/admin",
