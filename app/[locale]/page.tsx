@@ -45,16 +45,18 @@ export default function Home() {
         ) : (
           <div className="container mx-auto py-10">
             <h2 className="text-3xl font-bold mb-10">Latest Articles</h2>
-            {posts.map((post) => (
-              <PostPreview
-                key={post.id}
-                title={post.title}
-                subtitle={post.subtitle || post.excerpt}
-                content={post.content}
-                slug={post.slug}
-                tags={post.tags}
-              />
-            ))}
+            <section className="space-y-8">
+              {posts.map((post) => (
+                <PostPreview
+                  key={post.id}
+                  title={post.title}
+                  subtitle={post.subtitle || post.excerpt}
+                  content={post.content}
+                  slug={post.slug}
+                  tags={post.tags}
+                />
+              ))}
+            </section>
           </div>
         )}
       </main>
