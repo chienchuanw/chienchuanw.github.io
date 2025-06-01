@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { useTranslations } from 'next-intl';
+import { useTranslations, useLocale } from 'next-intl';
 
 // Custom components
 import AnimatedBurger from "./AnimatedBurger";
@@ -34,6 +34,7 @@ import { cn } from "@/lib/utils";
 
 const Navbar = () => {
   const t = useTranslations('navigation');
+  const locale = useLocale();
   const router = useRouter();
   // State for mobile menu
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -76,6 +77,17 @@ const Navbar = () => {
   // 註釋：這樣可以確保即使在 SWR 重新驗證之前，也能反映最新的登入狀態
   const currentLoggedIn = isLoggedIn || isLoggedInFromStore;
 
+  // 構建支援語言的路由
+  const localizedRoutes = {
+    home: `/${locale}`,
+    blog: `/${locale}/blog`,
+    contact: `/${locale}/contact`,
+    profile: `/${locale}/profile`,
+    adminDashboard: `/${locale}/admin/dashboard`,
+    adminPosts: `/${locale}/admin/posts`,
+    adminContactSettings: `/${locale}/admin/contact-settings`,
+  };
+
   const handleLogout = async () => {
     try {
       // 註釋：使用 auth-context 的 logout 函數進行登出操作
@@ -85,7 +97,7 @@ const Navbar = () => {
       await mutate();
 
       // 註釋：登出成功後重定向到首頁
-      router.push(routes.home);
+      router.push(localizedRoutes.home);
     } catch (error) {
       console.error("登出失敗:", error);
     }
@@ -104,7 +116,7 @@ const Navbar = () => {
           <div className="hidden lg:block lg:col-span-3">
             {currentLoggedIn && (
               <Avatar className="cursor-pointer">
-                <Link href={routes.profile}>
+                <Link href={localizedRoutes.profile}>
                   <AvatarImage
                     src={contactInfo?.avatarUrl || "/images/avatar.jpg"}
                     className="object-cover"
@@ -126,7 +138,7 @@ const Navbar = () => {
             <div className="max-w-[400px]">
               <div>
                 <Link
-                  href={routes.home}
+                  href={localizedRoutes.home}
                   className="font-title text-2xl md:text-3xl lg:text-4xl font-bold tracking-wide"
                 >
                   CHIENCHUANW
@@ -148,7 +160,7 @@ const Navbar = () => {
               <NavigationMenu>
                 <NavigationMenuList className="gap-1">
                   <NavigationMenuItem>
-                    <Link href={routes.blog} legacyBehavior passHref>
+                    <Link href={localizedRoutes.blog} legacyBehavior passHref>
                       <NavigationMenuLink className="px-3 py-2 text-sm font-medium rounded-md transition-colors hover:bg-accent hover:text-accent-foreground whitespace-nowrap">
                         {t('blog')}
                       </NavigationMenuLink>
@@ -156,7 +168,7 @@ const Navbar = () => {
                   </NavigationMenuItem>
 
                   <NavigationMenuItem>
-                    <Link href={routes.contact} legacyBehavior passHref>
+                    <Link href={localizedRoutes.contact} legacyBehavior passHref>
                       <NavigationMenuLink className="px-3 py-2 text-sm font-medium rounded-md transition-colors hover:bg-accent hover:text-accent-foreground whitespace-nowrap">
                         {t('contact')}
                       </NavigationMenuLink>
@@ -173,7 +185,7 @@ const Navbar = () => {
                         <ul className="grid w-[200px] gap-3 p-4">
                           <li className="row-span-1">
                             <Link
-                              href={routes.adminDashboard}
+                              href={localizedRoutes.adminDashboard}
                               legacyBehavior
                               passHref
                             >
@@ -193,7 +205,7 @@ const Navbar = () => {
                           </li>
                           <li className="row-span-1">
                             <Link
-                              href={routes.adminPosts}
+                              href={localizedRoutes.adminPosts}
                               legacyBehavior
                               passHref
                             >
@@ -213,7 +225,7 @@ const Navbar = () => {
                           </li>
                           <li className="row-span-1">
                             <Link
-                              href={routes.adminContactSettings}
+                              href={localizedRoutes.adminContactSettings}
                               legacyBehavior
                               passHref
                             >
@@ -299,7 +311,7 @@ const Navbar = () => {
                             closed: { opacity: 0, y: -10 },
                           }}
                         >
-                          <Link href={routes.blog}>
+                          <Link href={localizedRoutes.blog}>
                             <span className="block px-2.5 py-1.5 rounded-md hover:bg-accent transition-colors duration-200">
                               {t('blog')}
                             </span>
@@ -312,7 +324,7 @@ const Navbar = () => {
                             closed: { opacity: 0, y: -10 },
                           }}
                         >
-                          <Link href={routes.contact}>
+                          <Link href={localizedRoutes.contact}>
                             <span className="block px-2.5 py-1.5 rounded-md hover:bg-accent transition-colors duration-200">
                               {t('contact')}
                             </span>
@@ -340,7 +352,7 @@ const Navbar = () => {
                                 closed: { opacity: 0, y: -10 },
                               }}
                             >
-                              <Link href={routes.adminDashboard}>
+                              <Link href={localizedRoutes.adminDashboard}>
                                 <span className="block px-2.5 py-1.5 pl-4 rounded-md hover:bg-accent transition-colors duration-200">
                                   {t('dashboard')}
                                 </span>
@@ -353,7 +365,7 @@ const Navbar = () => {
                                 closed: { opacity: 0, y: -10 },
                               }}
                             >
-                              <Link href={routes.adminPosts}>
+                              <Link href={localizedRoutes.adminPosts}>
                                 <span className="block px-2.5 py-1.5 pl-4 rounded-md hover:bg-accent transition-colors duration-200">
                                   {t('posts')}
                                 </span>
@@ -366,7 +378,7 @@ const Navbar = () => {
                                 closed: { opacity: 0, y: -10 },
                               }}
                             >
-                              <Link href={routes.adminContactSettings}>
+                              <Link href={localizedRoutes.adminContactSettings}>
                                 <span className="block px-2.5 py-1.5 pl-4 rounded-md hover:bg-accent transition-colors duration-200">
                                   {t('contactSettings')}
                                 </span>

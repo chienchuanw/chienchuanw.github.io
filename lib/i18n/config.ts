@@ -58,14 +58,9 @@ export function removeLocaleFromPathname(pathname: string): string {
 
 // 為路徑添加語言代碼
 export function addLocaleToPathname(pathname: string, locale: Locale): string {
-  // 如果是預設語言，不添加語言代碼
-  if (locale === defaultLocale) {
-    return pathname;
-  }
-  
   // 移除現有的語言代碼（如果有）
   const cleanPathname = removeLocaleFromPathname(pathname);
-  
-  // 添加新的語言代碼
+
+  // 添加新的語言代碼（所有語言都顯示前綴，包括預設語言）
   return `/${locale}${cleanPathname === '/' ? '' : cleanPathname}`;
 }
