@@ -5,6 +5,8 @@ import { useRouter } from "next/navigation";
 import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useTranslations, useLocale } from 'next-intl';
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faChevronDown } from "@fortawesome/free-solid-svg-icons";
 
 // Custom components
 import AnimatedBurger from "./AnimatedBurger";
@@ -15,8 +17,6 @@ import {
   NavigationMenu,
   NavigationMenuItem,
   NavigationMenuList,
-  NavigationMenuContent,
-  NavigationMenuTrigger,
   NavigationMenuLink,
 } from "@/components/ui/navigation-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -28,8 +28,6 @@ import { useCurrentUser } from "@/hooks/swr/useCurrentUser";
 import useAuthStore from "@/lib/store/useAuthStore";
 import { useContactInfo } from "@/hooks/swr/useContactInfo";
 
-// routes
-import routes from "@/lib/routes";
 import { cn } from "@/lib/utils";
 
 const Navbar = () => {
@@ -38,6 +36,8 @@ const Navbar = () => {
   const router = useRouter();
   // State for mobile menu
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  // State for admin menu hover
+  const [isAdminHovered, setIsAdminHovered] = useState(false);
   // Ref for the mobile menu container
   const mobileMenuRef = useRef<HTMLDivElement>(null);
 
@@ -175,76 +175,87 @@ const Navbar = () => {
                     </Link>
                   </NavigationMenuItem>
 
-                  {/* Admin 選單與子選單 */}
+                  {/* Admin 選單與子選單 - 使用自定義實作避免與其他選單項目的 hover 狀態衝突 */}
                   {currentLoggedIn && (
                     <NavigationMenuItem>
-                      <NavigationMenuTrigger className="px-3 py-2 text-sm font-medium rounded-md whitespace-nowrap">
-                        {t('admin')}
-                      </NavigationMenuTrigger>
-                      <NavigationMenuContent>
-                        <ul className="grid w-[200px] gap-3 p-4">
-                          <li className="row-span-1">
-                            <Link
-                              href={localizedRoutes.adminDashboard}
-                              legacyBehavior
-                              passHref
+                      <div
+                        className="relative"
+                        onMouseEnter={() => setIsAdminHovered(true)}
+                        onMouseLeave={() => setIsAdminHovered(false)}
+                      >
+                        <button className="px-3 py-2 text-sm font-medium rounded-md whitespace-nowrap transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground focus:outline-none inline-flex items-center">
+                          {t('admin')}
+                          <FontAwesomeIcon
+                            icon={faChevronDown}
+                            className={cn(
+                              "relative top-[1px] ml-1 h-3 w-3 transition-transform duration-300",
+                              isAdminHovered ? "rotate-0" : "rotate-180"
+                            )}
+                            aria-hidden="true"
+                          />
+                        </button>
+
+                        {/* Admin 子選單 */}
+                        <AnimatePresence>
+                          {isAdminHovered && (
+                            <motion.div
+                              initial={{ opacity: 0, y: -10 }}
+                              animate={{ opacity: 1, y: 0 }}
+                              exit={{ opacity: 0, y: -10 }}
+                              transition={{ duration: 0.2 }}
+                              className="absolute top-full left-1/2 -translate-x-1/2 mt-1.5 w-[200px] rounded-md border bg-popover text-popover-foreground shadow-lg z-50"
                             >
-                              <NavigationMenuLink
-                                className={cn(
-                                  "block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
-                                )}
-                              >
-                                <div className="text-sm font-medium leading-none">
-                                  {t('dashboard')}
-                                </div>
-                                <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
-                                  Look at the overall website statistics
-                                </p>
-                              </NavigationMenuLink>
-                            </Link>
-                          </li>
-                          <li className="row-span-1">
-                            <Link
-                              href={localizedRoutes.adminPosts}
-                              legacyBehavior
-                              passHref
-                            >
-                              <NavigationMenuLink
-                                className={cn(
-                                  "block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
-                                )}
-                              >
-                                <div className="text-sm font-medium leading-none">
-                                  {t('posts')}
-                                </div>
-                                <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
-                                  Manage and edit blog posts
-                                </p>
-                              </NavigationMenuLink>
-                            </Link>
-                          </li>
-                          <li className="row-span-1">
-                            <Link
-                              href={localizedRoutes.adminContactSettings}
-                              legacyBehavior
-                              passHref
-                            >
-                              <NavigationMenuLink
-                                className={cn(
-                                  "block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
-                                )}
-                              >
-                                <div className="text-sm font-medium leading-none">
-                                  {t('contactSettings')}
-                                </div>
-                                <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
-                                  Manage your contact page information
-                                </p>
-                              </NavigationMenuLink>
-                            </Link>
-                          </li>
-                        </ul>
-                      </NavigationMenuContent>
+                              <ul className="grid gap-3 p-4">
+                                <li className="row-span-1">
+                                  <Link
+                                    href={localizedRoutes.adminDashboard}
+                                    className={cn(
+                                      "block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
+                                    )}
+                                  >
+                                    <div className="text-sm font-medium leading-none">
+                                      {t('dashboard')}
+                                    </div>
+                                    <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
+                                      Look at the overall website statistics
+                                    </p>
+                                  </Link>
+                                </li>
+                                <li className="row-span-1">
+                                  <Link
+                                    href={localizedRoutes.adminPosts}
+                                    className={cn(
+                                      "block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
+                                    )}
+                                  >
+                                    <div className="text-sm font-medium leading-none">
+                                      {t('posts')}
+                                    </div>
+                                    <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
+                                      Manage and edit blog posts
+                                    </p>
+                                  </Link>
+                                </li>
+                                <li className="row-span-1">
+                                  <Link
+                                    href={localizedRoutes.adminContactSettings}
+                                    className={cn(
+                                      "block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
+                                    )}
+                                  >
+                                    <div className="text-sm font-medium leading-none">
+                                      {t('contactSettings')}
+                                    </div>
+                                    <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
+                                      Manage your contact page information
+                                    </p>
+                                  </Link>
+                                </li>
+                              </ul>
+                            </motion.div>
+                          )}
+                        </AnimatePresence>
+                      </div>
                     </NavigationMenuItem>
                   )}
 
