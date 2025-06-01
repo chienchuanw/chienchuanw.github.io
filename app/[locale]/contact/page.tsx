@@ -16,7 +16,15 @@ export default function Contact() {
   const t = useTranslations('contact');
   const navT = useTranslations('navigation');
   const locale = useLocale();
-  const [contactInfo, setContactInfo] = useState<any>(null);
+  const [contactInfo, setContactInfo] = useState<{
+    name?: string;
+    bio?: string;
+    email?: string;
+    github?: string;
+    linkedin?: string;
+    avatarUrl?: string;
+    skills?: string[];
+  } | null>(null);
   const [loading, setLoading] = useState(true);
 
   // 獲取聯絡頁面資訊

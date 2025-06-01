@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useRouter, useParams } from "next/navigation";
-import { useLocale, useTranslations } from 'next-intl';
+import { useLocale } from 'next-intl';
 import { getPostById, updatePost, generateExcerpt, generateSlug } from "@/lib/posts";
 import MarkdownEditor, {
   MarkdownPreview,
@@ -29,7 +29,6 @@ export default function EditPostPage() {
   const router = useRouter();
   const params = useParams();
   const locale = useLocale();
-  const t = useTranslations('admin.posts');
   const { toast } = useToast();
 
   // 從 URL 參數獲取文章 ID
@@ -348,9 +347,9 @@ export default function EditPostPage() {
               <div className="grid gap-2">
                 <Label>Banner Image</Label>
                 <BannerUploader
-                  postId={postId}
+                  postId={postId || undefined}
                   onImageChange={setBannerImage}
-                  initialImage={bannerImage}
+                  initialImage={bannerImage || undefined}
                 />
                 <p className="text-sm text-muted-foreground">
                   This image will be displayed at the top of your article
@@ -381,7 +380,7 @@ export default function EditPostPage() {
                     onChange={setContent}
                     height={500}
                     preview="edit"
-                    postId={postId}
+                    postId={postId || undefined}
                   />
                 </div>
                 <div className="w-full">
