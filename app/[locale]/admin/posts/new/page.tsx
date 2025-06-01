@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { useLocale, useTranslations } from 'next-intl';
+import { useLocale } from 'next-intl';
 import { createPost, generateExcerpt, generateSlug } from "@/lib/posts";
 import MarkdownEditor, {
   MarkdownPreview,
@@ -26,7 +26,6 @@ import { faArrowLeft, faSave } from "@fortawesome/free-solid-svg-icons";
 export default function NewPostPage() {
   const router = useRouter();
   const locale = useLocale();
-  const t = useTranslations('admin.posts');
   const { toast } = useToast();
 
   // 表單狀態管理

@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useMemo } from "react";
 import { useRouter } from "next/navigation";
-import { useTranslations, useLocale } from 'next-intl';
+import { useLocale } from 'next-intl';
 import { getAllPosts, deletePost, Post } from "@/lib/posts";
 
 // UI Components
@@ -34,12 +34,8 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
-  Pagination,
-  PaginationContent,
   PaginationItem,
   PaginationLink,
-  PaginationNext,
-  PaginationPrevious,
 } from "@/components/ui/pagination";
 
 // Icons
@@ -63,7 +59,6 @@ import { MoreHorizontal } from "lucide-react";
 export default function PostsPage() {
   const router = useRouter();
   const locale = useLocale();
-  const t = useTranslations('admin.posts');
   const { toast } = useToast();
   const [posts, setPosts] = useState<Post[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -74,7 +69,7 @@ export default function PostsPage() {
   const [statusFilter, setStatusFilter] = useState<
     "all" | "published" | "draft"
   >("all");
-  const [postsPerPage, setPostsPerPage] = useState<number>(10);
+  const [postsPerPage] = useState<number>(10);
 
   // Load all posts
   useEffect(() => {
@@ -85,8 +80,8 @@ export default function PostsPage() {
       } catch (error) {
         console.error("Failed to load posts", error);
         toast({
-          title: t('loadError'),
-          description: t('loadErrorDescription'),
+          title: "Load Error",
+          description: "Failed to load posts",
           variant: "destructive",
         });
       } finally {
@@ -95,31 +90,31 @@ export default function PostsPage() {
     }
 
     fetchPosts();
-  }, [toast, t]);
+  }, [toast]);
 
   // Handle post deletion
   const handleDelete = async (id: number) => {
-    if (window.confirm(t('deleteConfirm'))) {
+    if (window.confirm("Are you sure you want to delete this post?")) {
       try {
         const success = await deletePost(id);
         if (success) {
           setPosts(posts.filter((post) => post.id !== id));
           toast({
-            title: t('deleteSuccess'),
-            description: t('deleteSuccessDescription'),
+            title: "Post Deleted",
+            description: "The post has been successfully deleted.",
           });
         } else {
           toast({
-            title: t('deleteError'),
-            description: t('deleteErrorDescription'),
+            title: "Delete Failed",
+            description: "Failed to delete the post.",
             variant: "destructive",
           });
         }
       } catch (error) {
         console.error("Delete post error", error);
         toast({
-          title: t('deleteError'),
-          description: t('deleteErrorGeneral'),
+          title: "Delete Failed",
+          description: "An error occurred while deleting the post.",
           variant: "destructive",
         });
       }
@@ -260,22 +255,22 @@ export default function PostsPage() {
             size="icon"
             onClick={() => router.push(`/${locale}/admin/dashboard`)}
             className="md:mr-2"
-            aria-label={t('backToDashboard')}
+            aria-label="Back to Dashboard"
           >
             <FontAwesomeIcon icon={faArrowLeft} className="h-4 w-4" />
           </Button>
-          <h1 className="text-xl md:text-2xl font-bold">{t('title')}</h1>
+          <h1 className="text-xl md:text-2xl font-bold">Posts</h1>
         </div>
         <Button onClick={() => router.push(`/${locale}/admin/posts/new`)}>
-          <FontAwesomeIcon icon={faPlus} className="h-4 w-4 mr-2" /> {t('addPost')}
+          <FontAwesomeIcon icon={faPlus} className="h-4 w-4 mr-2" /> Add Post
         </Button>
       </div>
 
       <Card className="mb-6">
         <CardHeader>
-          <CardTitle>{t('postsTitle')}</CardTitle>
+          <CardTitle>Manage Posts</CardTitle>
           <CardDescription>
-            {t('postsDescription')}
+            Create, edit, and manage your blog posts
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -286,7 +281,7 @@ export default function PostsPage() {
                 className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4"
               />
               <Input
-                placeholder={t('searchPlaceholder')}
+                placeholder="Search posts..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="pl-9 h-9"
@@ -305,24 +300,24 @@ export default function PostsPage() {
                     />
                     <span className="truncate">
                       {statusFilter === "all"
-                        ? t('allStatus')
+                        ? "All Status"
                         : statusFilter === "published"
-                        ? t('published')
-                        : t('draft')}
+                        ? "Published"
+                        : "Draft"}
                     </span>
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end">
                   <DropdownMenuItem onClick={() => setStatusFilter("all")}>
-                    {t('allStatus')}
+                    All Status
                   </DropdownMenuItem>
                   <DropdownMenuItem
                     onClick={() => setStatusFilter("published")}
                   >
-                    {t('published')}
+                    Published
                   </DropdownMenuItem>
                   <DropdownMenuItem onClick={() => setStatusFilter("draft")}>
-                    {t('draft')}
+                    Draft
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
@@ -343,10 +338,10 @@ export default function PostsPage() {
             </div>
           ) : filteredAndSortedPosts.length === 0 ? (
             <div className="flex flex-col justify-center items-center py-12">
-              <p className="text-muted-foreground mb-4">{t('noPostsAvailable')}</p>
+              <p className="text-muted-foreground mb-4">No posts available</p>
               <Button onClick={() => router.push(`/${locale}/admin/posts/new`)}>
                 <FontAwesomeIcon icon={faPlus} className="h-4 w-4 mr-2" />
-                {t('createFirstPost')}
+                Create First Post
               </Button>
             </div>
           ) : (
@@ -360,26 +355,26 @@ export default function PostsPage() {
                         className="w-[300px] cursor-pointer"
                         onClick={() => handleSort("title")}
                       >
-                        {t('postTitle')} {renderSortIcon("title")}
+                        Post Title {renderSortIcon("title")}
                       </TableHead>
                       <TableHead>Status</TableHead>
                       <TableHead
                         className="cursor-pointer hidden lg:table-cell"
                         onClick={() => handleSort("createdAt")}
                       >
-                        {t('createdDate')} {renderSortIcon("createdAt")}
+                        Created Date {renderSortIcon("createdAt")}
                       </TableHead>
                       <TableHead
                         className="cursor-pointer hidden lg:table-cell"
                         onClick={() => handleSort("publishedAt")}
                       >
-                        {t('publishedDate')} {renderSortIcon("publishedAt")}
+                        Published Date {renderSortIcon("publishedAt")}
                       </TableHead>
                       <TableHead
                         className="cursor-pointer"
                         onClick={() => handleSort("updatedAt")}
                       >
-                        {t('updatedDate')} {renderSortIcon("updatedAt")}
+                        Updated Date {renderSortIcon("updatedAt")}
                       </TableHead>
                       <TableHead className="text-right">Actions</TableHead>
                     </TableRow>
@@ -401,7 +396,7 @@ export default function PostsPage() {
                           <Badge
                             variant={post.published ? "success" : "secondary"}
                           >
-                            {post.published ? t('published') : t('draft')}
+                            {post.published ? "Published" : "Draft"}
                           </Badge>
                         </TableCell>
                         <TableCell className="hidden lg:table-cell">
@@ -435,7 +430,7 @@ export default function PostsPage() {
                                   icon={faEdit}
                                   className="h-4 w-4 mr-2"
                                 />
-                                {t('edit')}
+                                Edit
                               </DropdownMenuItem>
                               <DropdownMenuItem
                                 onClick={() =>
@@ -446,7 +441,7 @@ export default function PostsPage() {
                                   icon={faEye}
                                   className="h-4 w-4 mr-2"
                                 />
-                                {t('view')}
+                                View
                               </DropdownMenuItem>
                               <DropdownMenuSeparator />
                               <DropdownMenuItem
@@ -457,7 +452,7 @@ export default function PostsPage() {
                                   icon={faTrash}
                                   className="h-4 w-4 mr-2"
                                 />
-                                {t('delete')}
+                                Delete
                               </DropdownMenuItem>
                             </DropdownMenuContent>
                           </DropdownMenu>

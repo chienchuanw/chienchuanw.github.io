@@ -10,11 +10,17 @@ const nextConfig = {
     domains: ['localhost'], // 如果有外部圖片來源，請加入域名
   },
 
-  // 輸出設定 - 適用於靜態部署
+  // 輸出設定 - 適用於動態部署
   output: 'standalone',
 
   // 伺服器外部套件
   serverExternalPackages: ['pg', 'postgres'],
+
+  // 實驗性功能
+  experimental: {
+    // 允許部分靜態生成失敗
+    fallbackNodePolyfills: false,
+  },
 };
 
 export default withNextIntl(nextConfig);

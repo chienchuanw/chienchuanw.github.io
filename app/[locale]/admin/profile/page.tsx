@@ -3,7 +3,7 @@
 import React from "react";
 import { useAuth } from "@/lib/context/auth-context";
 import { useRouter } from "next/navigation";
-import { useLocale, useTranslations } from 'next-intl';
+import { useLocale } from 'next-intl';
 import routes from "@/lib/routes";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import ProfileForm from "@/components/profile/profile-form";
@@ -28,7 +28,6 @@ export default function AdminProfilePage() {
   const { user, loading } = useAuth();
   const router = useRouter();
   const locale = useLocale();
-  const t = useTranslations('admin.profile');
 
   if (loading) {
     return (
