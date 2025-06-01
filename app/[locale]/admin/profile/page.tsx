@@ -3,6 +3,7 @@
 import React from "react";
 import { useAuth } from "@/lib/context/auth-context";
 import { useRouter } from "next/navigation";
+import { useLocale, useTranslations } from 'next-intl';
 import routes from "@/lib/routes";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import ProfileForm from "@/components/profile/profile-form";
@@ -16,15 +17,29 @@ import {
   CardFooter,
 } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faArrowLeft } from "@fortawesome/free-solid-svg-icons";
 
-export default function ProfilePage() {
+/**
+ * 管理員個人資料頁面
+ * 提供用戶編輯個人資料和修改密碼的功能
+ */
+export default function AdminProfilePage() {
   const { user, loading } = useAuth();
   const router = useRouter();
+  const locale = useLocale();
+  const t = useTranslations('admin.profile');
 
   if (loading) {
     return (
       <div className="container px-4 mx-auto sm:px-6 py-6 sm:py-10">
         <div className="max-w-3xl mx-auto space-y-4 sm:space-y-6">
+          {/* 返回按鈕骨架 */}
+          <div className="flex items-center gap-4 mb-6">
+            <Skeleton className="h-10 w-10 rounded-md" />
+            <Skeleton className="h-8 w-32" />
+          </div>
+
           {/* User info card skeleton with responsive design */}
           <Card>
             <CardContent className="flex flex-col sm:flex-row items-center sm:items-start space-y-3 sm:space-y-0 sm:space-x-4 p-4 sm:p-6">
@@ -80,6 +95,19 @@ export default function ProfilePage() {
   return (
     <div className="container px-4 mx-auto sm:px-6 py-6 sm:py-10">
       <div className="max-w-3xl mx-auto">
+        {/* 返回按鈕 */}
+        <div className="flex items-center gap-4 mb-6">
+          <Button
+            variant="outline"
+            size="icon"
+            onClick={() => router.push(`/${locale}/admin/dashboard`)}
+            aria-label="Back to Dashboard"
+          >
+            <FontAwesomeIcon icon={faArrowLeft} className="h-4 w-4" />
+          </Button>
+          <h1 className="text-2xl font-bold">Profile Settings</h1>
+        </div>
+
         {user ? (
           <div className="space-y-4 sm:space-y-6">
             {/* User info card with responsive design */}
@@ -123,7 +151,7 @@ export default function ProfilePage() {
         ) : (
           <div className="text-center py-8 sm:py-12">
             <p className="text-lg mb-4">You are not logged in</p>
-            <Button onClick={() => router.push(routes.login)}>
+            <Button onClick={() => router.push(`/${locale}${routes.login}`)}>
               Go to Login
             </Button>
           </div>

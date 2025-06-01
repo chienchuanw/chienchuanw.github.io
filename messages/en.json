@@ -232,6 +232,11 @@
       "passwordUpdateSuccess": "Password updated successfully",
       "passwordUpdateError": "Failed to update password",
       "currentPasswordIncorrect": "Current password is incorrect"
+    },
+    "contactSettings": {
+      "title": "Contact Settings",
+      "description": "Manage the information displayed on your contact page",
+      "backToDashboard": "Back to Dashboard"
     }
   },
   "errors": {

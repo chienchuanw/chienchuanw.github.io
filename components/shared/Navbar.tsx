@@ -82,7 +82,7 @@ const Navbar = () => {
     home: `/${locale}`,
     blog: `/${locale}/blog`,
     contact: `/${locale}/contact`,
-    profile: `/${locale}/profile`,
+    profile: `/${locale}/admin/profile`,
     adminDashboard: `/${locale}/admin/dashboard`,
     adminPosts: `/${locale}/admin/posts`,
     adminContactSettings: `/${locale}/admin/contact-settings`,
