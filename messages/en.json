@@ -75,9 +75,10 @@
     "articleNotFound": "Article not found"
   },
   "contact": {
-    "title": "Contact Me",
+    "title": "Contact Information",
     "subtitle": "Get in touch",
-    "description": "Feel free to reach out to me for any inquiries or collaborations.",
+    "description": "If you're interested in my work or would like to discuss collaboration opportunities, please feel free to reach out through the following channels.",
+    "defaultBio": "Web Developer specializing in Python and TypeScript.",
     "form": {
       "name": "Your Name",
       "email": "Your Email",
@@ -93,6 +94,10 @@
       "phone": "Phone",
       "location": "Location",
       "socialMedia": "Social Media"
+    },
+    "links": {
+      "projects": "Projects",
+      "about": "About"
     }
   },
   "auth": {
