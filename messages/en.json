@@ -103,8 +103,9 @@
   "auth": {
     "login": {
       "title": "Login",
-      "subtitle": "Sign in to your account",
-      "email": "Email",
+      "subtitle": "Enter your information to sign in to your account",
+      "identifier": "Email or Username",
+      "identifierPlaceholder": "name@example.com or username",
       "password": "Password",
       "rememberMe": "Remember me",
       "forgotPassword": "Forgot password?",
@@ -113,7 +114,10 @@
       "success": "Login successful!",
       "error": "Invalid email or password",
       "required": "This field is required",
-      "invalidEmail": "Please enter a valid email address"
+      "invalidEmail": "Please enter a valid email address",
+      "identifierRequired": "Please enter email or username",
+      "passwordMinLength": "Password must be at least 6 characters",
+      "noAccount": "Need an account? Please contact the administrator to create a new account."
     },
     "logout": {
       "success": "Logged out successfully",
