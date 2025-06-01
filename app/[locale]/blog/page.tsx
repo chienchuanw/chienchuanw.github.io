@@ -1,13 +1,15 @@
 "use client";
 
 import { useEffect, useState, useRef, useCallback } from "react";
-import PostPreview from "@/app/blog/PostPreview";
+import PostPreview from "./PostPreview";
 import { Post } from "@/lib/store/useBlogStore";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ScrollToTop } from "@/components/ui/scroll-to-top";
 import * as clientPosts from "@/lib/client/posts";
+import { useTranslations } from 'next-intl';
 
 export default function Blog() {
+  const t = useTranslations('blog');
   const [posts, setPosts] = useState<Post[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
@@ -90,7 +92,7 @@ export default function Blog() {
 
   return (
     <div className="container mx-auto py-10 px-4 md:px-6">
-      <h1 className="text-3xl font-bold mb-10">All Articles</h1>
+      <h1 className="text-3xl font-bold mb-10">{t('title')}</h1>
 
       {/* Scroll to top button */}
       <ScrollToTop />
@@ -114,7 +116,7 @@ export default function Blog() {
         <>
           {posts.length === 0 && !isLoading && !error ? (
             <div className="py-10">
-              <p className="text-center text-gray-500">No posts found.</p>
+              <p className="text-center text-gray-500">{t('noPosts')}</p>
             </div>
           ) : (
             <div className="space-y-16">

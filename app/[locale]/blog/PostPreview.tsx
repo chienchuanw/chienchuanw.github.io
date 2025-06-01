@@ -2,6 +2,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { Badge } from "@/components/ui/badge";
 import { ArrowUpRight } from "lucide-react";
+import { useLocale } from 'next-intl';
 
 type PostPreviewProps = {
   title: string;
@@ -22,9 +23,14 @@ const PostPreview: React.FC<PostPreviewProps> = ({
   date,
   coverImage,
 }) => {
+  const locale = useLocale();
+  
   // Extract a short preview from content (first 150 characters)
   const contentPreview =
     content.length > 150 ? content.substring(0, 150).trim() + "..." : content;
+
+  // 構建支援 locale 的路由
+  const blogPostUrl = `/${locale}/blog/${slug}`;
 
   return (
     <article>
@@ -35,7 +41,7 @@ const PostPreview: React.FC<PostPreviewProps> = ({
           {date && <div className="text-sm text-neutral-500">{date}</div>}
 
           <h2 className="text-3xl font-bold tracking-tight">
-            <Link href={`/blog/${slug}`} className="hover:underline">
+            <Link href={blogPostUrl} className="hover:underline">
               {title}
             </Link>
           </h2>
@@ -56,7 +62,7 @@ const PostPreview: React.FC<PostPreviewProps> = ({
 
           <div className="pt-4">
             <Link
-              href={`/blog/${slug}`}
+              href={blogPostUrl}
               className="inline-flex items-center text-sm font-medium text-neutral-900 hover:text-neutral-700"
             >
               Read More <ArrowUpRight className="ml-1 h-4 w-4" />
@@ -67,7 +73,7 @@ const PostPreview: React.FC<PostPreviewProps> = ({
         {/* Right column - Image */}
         <div>
           <Link
-            href={`/blog/${slug}`}
+            href={blogPostUrl}
             className="block overflow-hidden rounded-md"
           >
             {coverImage ? (
