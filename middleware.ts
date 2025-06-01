@@ -61,11 +61,7 @@ export async function middleware(request: NextRequest) {
 
   // 如果是需要身份驗證的路徑但沒有令牌，重定向到登入頁面
   if (isAuthPath && !authToken) {
-    const loginUrl = new URL(routes.login, request.url);
-    // 保持當前語言
-    if (currentLocale && currentLocale !== defaultLocale) {
-      loginUrl.pathname = `/${currentLocale}${routes.login}`;
-    }
+    const loginUrl = new URL(`/${currentLocale || defaultLocale}/login`, request.url);
     return NextResponse.redirect(loginUrl);
   }
 
@@ -73,24 +69,17 @@ export async function middleware(request: NextRequest) {
   if (isPublicAuthPath && authToken) {
     const referer = request.headers.get("referer");
     const isFormSubmission =
-      request.method === "POST" || (referer && referer.includes(routes.login));
+      request.method === "POST" || (referer && referer.includes("/login"));
 
     if (!isFormSubmission) {
-      const homeUrl = new URL(routes.home, request.url);
-      // 保持當前語言
-      if (currentLocale && currentLocale !== defaultLocale) {
-        homeUrl.pathname = `/${currentLocale}${routes.home}`;
-      }
+      const homeUrl = new URL(`/${currentLocale || defaultLocale}`, request.url);
       return NextResponse.redirect(homeUrl);
     }
   }
 
   // 阻止訪問註冊頁面，重定向到登入頁面
   if (cleanPathname.startsWith("/register")) {
-    const loginUrl = new URL(routes.login, request.url);
-    if (currentLocale && currentLocale !== defaultLocale) {
-      loginUrl.pathname = `/${currentLocale}${routes.login}`;
-    }
+    const loginUrl = new URL(`/${currentLocale || defaultLocale}/login`, request.url);
     return NextResponse.redirect(loginUrl);
   }
 

@@ -5,10 +5,11 @@ import { useRouter } from "next/navigation";
 import { useCurrentUser } from "@/hooks/swr/useCurrentUser";
 import useAuthStore from "@/lib/store/useAuthStore";
 import { Button } from "@/components/ui/button";
-import routes from "@/lib/routes";
+import { useLocale } from 'next-intl';
 
 export function AuthExample() {
   const router = useRouter();
+  const locale = useLocale();
   const { user, isLoading, error, mutate } = useCurrentUser();
   const logout = useAuthStore((state) => state.logout);
 
@@ -42,7 +43,7 @@ export function AuthExample() {
     return (
       <div className="p-4 bg-slate-100 dark:bg-slate-800 rounded-lg">
         <p>您尚未登入</p>
-        <Button className="mt-2" onClick={() => router.push(routes.login)}>
+        <Button className="mt-2" onClick={() => router.push(`/${locale}/login`)}>
           前往登入
         </Button>
       </div>

@@ -103,8 +103,9 @@
   "auth": {
     "login": {
       "title": "登入",
-      "subtitle": "登入您的帳戶",
-      "email": "電子郵件",
+      "subtitle": "輸入您的信息以登入您的帳戶",
+      "identifier": "電子郵件或用戶名",
+      "identifierPlaceholder": "name@example.com 或 username",
       "password": "密碼",
       "rememberMe": "記住我",
       "forgotPassword": "忘記密碼？",
@@ -113,7 +114,10 @@
       "success": "登入成功！",
       "error": "電子郵件或密碼錯誤",
       "required": "此欄位為必填",
-      "invalidEmail": "請輸入有效的電子郵件地址"
+      "invalidEmail": "請輸入有效的電子郵件地址",
+      "identifierRequired": "請輸入電子郵件或用戶名",
+      "passwordMinLength": "密碼至少需要6個字符",
+      "noAccount": "需要帳戶？請與管理員聯絡以創建新帳戶。"
     },
     "logout": {
       "success": "登出成功",
